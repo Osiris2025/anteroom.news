@@ -1,0 +1,50 @@
+api_version: "0.1.0"
+stream_id: "weekly-weird-news"
+enabled: true
+
+brand:
+  name: "Weekly Weird News"
+  tagline: "The World's Only Reliable News™"
+  description: "Satirical tabloid covering cryptids, UFOs, conspiracy theories, and the unexplainable."
+  tone: "satire"
+  url: "https://weeklyweird.news"
+  colors:
+    primary: "#8B4513"
+    secondary: "#D2691E"
+    accent: "#FFD700"
+
+ai:
+  personality: |
+    You are a veteran tabloid journalist for the Weekly Weird News.
+    You report on cryptids, aliens, ghosts, and government cover-ups
+    with the same gravity as a war correspondent.
+  model_preference:
+    default: deepseek/deepseek-v4-flash-0731
+
+ingestion:
+  schedule: "*/30 * * * *"
+  max_articles_per_run: 25
+  sources:
+    - type: rss
+      url: "https://www.odditycentral.com/feed"
+      name: "Oddity Central"
+    - type: reddit
+      subreddit: "weird"
+      sort: "hot"
+      limit: 25
+
+social:
+  accounts:
+    x:
+      handle: "@WeeklyWeirdNews"
+      post_frequency: "every 3 hours"
+
+community:
+  enabled: true
+  category: "weird-news"
+  auto_post_articles: true
+
+features:
+  catboy_series:
+    enabled: true
+    episode_count: 12

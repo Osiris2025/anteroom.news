@@ -18,7 +18,9 @@ services:
       interval: 10s
 
   engine:
-    build: ./engine
+    build:
+      context: .
+      dockerfile: engine/Dockerfile
     container_name: nexus-engine
     depends_on:
       postgres:
@@ -26,7 +28,6 @@ services:
     env_file: .env
     volumes:
       - ./streams:/app/streams:ro
-      - ./engine/src:/app/src
     restart: unless-stopped
 
 volumes:

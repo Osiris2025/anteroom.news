@@ -4,8 +4,9 @@ import { useTheme } from "@/lib/ThemeContext";
 import AdminQueue from "./AdminQueue";
 import AdminUsers from "./AdminUsers";
 import AdminMagazines from "./AdminMagazines";
+import AdminPins from "./AdminPins";
 
-type TabId = "inbox" | "users" | "magazines";
+type TabId = "inbox" | "users" | "magazines" | "pins";
 
 export default function AdminHome() {
   const { currentTheme } = useTheme();
@@ -15,6 +16,7 @@ export default function AdminHome() {
     { id: "inbox", label: "🗞️ Inbox" },
     { id: "users", label: "👤 Users" },
     { id: "magazines", label: "📰 Magazines" },
+    { id: "pins", label: "📌 Pins" },
   ];
 
   return (
@@ -42,7 +44,7 @@ export default function AdminHome() {
           ))}
         </div>
 
-        {tab === "inbox" ? <AdminQueue /> : tab === "users" ? <AdminUsers /> : <AdminMagazines />}
+        {tab === "inbox" ? <AdminQueue /> : tab === "users" ? <AdminUsers /> : tab === "magazines" ? <AdminMagazines /> : <AdminPins />}
       </div>
     </main>
   );

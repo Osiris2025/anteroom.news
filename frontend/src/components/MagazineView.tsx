@@ -78,6 +78,16 @@ export default function MagazineView({ id }: { id: string }) {
       .catch(() => {});
   }, [id]);
 
+  // Active pins (FLASH / IMPORTANT) — hero section above the feed
+  type PinArticle = { id: string; kind: string; runFor: string | null; expiresAt: string | null; pinnedAt: string; article: { id: string; title: string; headline: string | null; summary: string | null; sourceUrl: string | null; imageUrl: string | null; publishedAt: string | null }; magazine: { id: string; name: string } | null };
+  const [pins, setPins] = useState<PinArticle[]>([]);
+  useEffect(() => {
+    fetch("/api/pins/active")
+      .then((r) => r.json())
+      .then((j) => { if (!j.error && Array.isArray(j.pins)) setPins(j.pins); })
+      .catch(() => {});
+  }, []);
+
   const staticStories = ARTICLES.filter((a) => nameToId[a.mag] === id);
   const accent = currentTheme.id === "tabloid" ? "#c1121f" : mag.accent;
   const stories = [
@@ -112,6 +122,40 @@ export default function MagazineView({ id }: { id: string }) {
           <p className="mag-desc">{mag.description}</p>
         </div>
       </header>
+
+      {/* Pinned / FLASH hero section — appears above the feed */}
+      {pins.length > 0 && (
+        <div className="mag-pins-hero" style={{ marginBottom: 24 }}>
+          {pins.map((p) => {
+            const kindColor = p.kind === "FLASH" ? "#ff4444" : p.kind === "IMPORTANT" ? "#ff8800" : "#666";
+            return (
+              <div key={p.id} className="mag-pin-card" style={{
+                border: "2px solid " + kindColor,
+                borderRadius: 10,
+                padding: "16px 20px",
+                marginBottom: 10,
+                background: kindColor + "11",
+                display: "flex",
+                gap: 16,
+                alignItems: "center",
+              }}>
+                <span style={{ background: kindColor, color: "#fff", padding: "4px 12px", borderRadius: 6, fontWeight: 800, fontSize: 11, letterSpacing: 2, whiteSpace: "nowrap" }}>{p.kind}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 18, fontWeight: 700, lineHeight: 1.2, marginBottom: 4 }}>{p.article.headline || p.article.title}</div>
+                  {p.article.summary && <div style={{ fontSize: 13, opacity: 0.8, lineHeight: 1.4 }}>{p.article.summary}</div>}
+                  <div style={{ fontSize: 11, opacity: 0.5, marginTop: 4 }}>{p.magazine?.name || ""}{p.expiresAt ? " · expires " + new Date(p.expiresAt).toLocaleString() : ""}</div>
+                </div>
+                {p.article.sourceUrl && (
+                  <a href={p.article.sourceUrl} target="_blank" rel="noreferrer" style={{
+                    padding: "8px 16px", borderRadius: 6, background: kindColor, color: "#fff",
+                    fontWeight: 700, fontSize: 12, textDecoration: "none", whiteSpace: "nowrap"
+                  }}>Read ↗</a>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       <div className="mag-grid">
         {/* Main stories */}

@@ -23,12 +23,13 @@ const btn: React.CSSProperties = { padding: "5px 9px", borderRadius: 6, border: 
 
 // ArticleCard — magazine change persists immediately (works even for live articles)
 // but updates the card IN PLACE (no re-sort/re-arrange). Status changes reload the list.
-function ArticleCard({ a, magazines, onAct, onMag, onDel, onComment }: {
+function ArticleCard({ a, magazines, onAct, onMag, onDel, onComment, onPin }: {
   a: QArticle; magazines: { id: string; name: string }[];
   onAct: (id: string, patch: any) => void;
   onMag: (id: string, magazineId: string) => void;
   onDel: (id: string) => void;
   onComment: (id: string, title: string) => void;
+  onPin: (id: string, title: string) => void;
 }) {
   const st = STATUS_TPL[a.status] || { label: a.status, bg: "#222", fg: "#aaa" };
 
@@ -63,6 +64,7 @@ function ArticleCard({ a, magazines, onAct, onMag, onDel, onComment }: {
         <button title="Toggle social repeat" onClick={() => onAct(a.id, { socialRepeat: !a.socialRepeat })} style={a.socialRepeat ? { ...btn, background: "#06253a", color: "#58a6ff" } : btn}>↻</button>
         <button title="Make the flagship featured story" onClick={() => onAct(a.id, { featured: !a.featured })} style={a.featured ? { ...btn, background: "#3b2f00", color: "#ffd700" } : btn}>★</button>
         <button title="Generate AI commentary via the magazine's named agent" onClick={() => onComment(a.id, a.title)} style={{ ...btn, color: "#fbbf24", borderColor: "rgba(251,191,36,.4)" }}>⚙ Commentary</button>
+        <button title="Pin as FLASH/hero article" onClick={() => onPin(a.id, a.title)} style={{ ...btn, color: "#ff4444", borderColor: "rgba(255,68,68,.4)" }}>📌 Pin</button>
         {a.sourceUrl && <a href={a.sourceUrl} target="_blank" rel="noreferrer" style={{ color: "var(--accent,#ffd700)", textDecoration: "none", marginLeft: "auto", fontSize: 11, alignSelf: "center" }}>source ↗</a>}
         <button title="Delete" onClick={() => onDel(a.id)} style={{ ...btn, color: "#f87171" }}>🗑</button>
       </div>
@@ -136,6 +138,20 @@ export default function AdminQueue() {
   };
 
   // Generate AI commentary via the magazine's named agent (OpenRouter)
+  const onPin = async (id: string, title: string) => {
+    const kind = prompt("Pin kind (FLASH / IMPORTANT):", "FLASH");
+    if (!kind) return;
+    const runFor = prompt("Duration (24h / 7d / empty for indefinite):", "24h");
+    if (runFor === null) return;
+    const r = await fetch("/api/admin/pins", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ article_id: id, kind, run_for: runFor }),
+    });
+    const j = await r.json();
+    if (j.error) setErr("Pin failed: " + j.error);
+    else alert("Pinned as " + kind + "!");
+  };
+
   const onComment = async (id: string, title: string) => {
     setErr("");
     const r = await fetch("/api/admin/generate-commentary", {
@@ -170,7 +186,7 @@ export default function AdminQueue() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 14 }}>
         {data?.articles.map((a) => (
-          <ArticleCard key={a.id} a={a} magazines={data.magazines} onAct={act} onMag={onMag} onDel={del} onComment={onComment} />
+          <ArticleCard key={a.id} a={a} magazines={data.magazines} onAct={act} onMag={onMag} onDel={del} onComment={onComment} onPin={onPin} />
         ))}
       </div>
 

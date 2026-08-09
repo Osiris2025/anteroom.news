@@ -21,7 +21,14 @@ export default function ThemeRenderer({ magazineId }: { magazineId?: string }) {
   const magazine = magazineId ? MAGAZINES.find((m) => m.id === magazineId) : undefined;
 
   // Semantic body for the ACTIVE theme (internal header suppressed; navbar owns top nav).
-  const structure = { ...currentTheme.structure, hideHeader: true };
+  // When scoped to a magazine, magScope = magazine name -> template hides the hardcoded
+  // "Explore the magazines" hero + full showcase and renders only that magazine's section.
+  // No hardcoded magazine count, so this scales to any number of magazines.
+  const structure = {
+    ...currentTheme.structure,
+    hideHeader: true,
+    magScope: magazine ? magazine.name : "",
+  };
   const html = renderTemplate(structure);
 
   useEffect(() => {

@@ -586,9 +586,11 @@ function hrefFor(a){
 function dh(a){ return ' data-href="'+hrefFor(a)+'"'; }
 
 // Magazines as a grid of showcase cards (for main-content positions).
-function renderMagShowcase(){
+function renderMagShowcase(st){
+  var scopeMag = st && st.magScope; // '';
   var s = '<div class="magshow"><div class="sec-t"><div class="dot"></div><h2>Magazines</h2></div><div class="cards">';
   MAGAZINES.forEach(function(m){
+    if(scopeMag && m.short !== scopeMag && m.name !== scopeMag && m.id !== scopeMag) return;
     s += '<a class="card mag"'+h(m)+'><div class="k"><span class="magdot" style="background:'+m.accent+'"></span>'+m.short+'</div><h3>'+m.name+'</h3><p>'+m.tagline+'</p></a>';
   });
   s += '</div></div>';
@@ -622,6 +624,10 @@ function renderTemplate(st){
 
   var layout = st.layout;
 
+  // When scoped to a magazine, the hero/mast + full "Magazines" showcase are
+  // skipped (the magazine name header lives in ThemeRenderer; only its content shows).
+  var scoped = !!st.magScope;
+
   if(layout==="sidebar-left"){
     s += '<div class="grid"><div class="side">';
     st.sidebar.forEach(function(sb){
@@ -630,8 +636,8 @@ function renderTemplate(st){
       if(sb==="support"){s+='<div class="panel"><h4>Support</h4><a class="btn" href="/support" data-href="/support" style="display:block;text-align:center">Become a Supporter</a></div>';}
     });
     s+='</div><div class="main">';
-    s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>';
-    s += renderMagShowcase();
+    if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
+    if(!scoped){ s += renderMagShowcase(); }
     s += '<div class="mast-sub"><h2>Top stories</h2></div>';
     if(st.showCrawl){ } // crawl already at very top
     s += renderSections(st, st.showStats);
@@ -640,8 +646,8 @@ function renderTemplate(st){
   }
   else if(layout==="sidebar-right"){
     s += '<div class="grid"><div class="main">';
-    s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>';
-    s += renderMagShowcase();
+    if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
+    if(!scoped){ s += renderMagShowcase(); }
     s += '<div class="mast-sub"><h2>Top stories</h2></div>';
     s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
@@ -654,8 +660,8 @@ function renderTemplate(st){
   }
   else if(layout==="center"){
     s += '<div class="grid">';
-    s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>';
-    s += renderMagShowcase();
+    if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
+    if(!scoped){ s += renderMagShowcase(); }
     s += '<div class="mast-sub"><h2>Top stories</h2></div>';
     s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
@@ -750,9 +756,11 @@ function renderSections(st, showStats, full){
   if(showStats){
     s += '<div class="stats"><div class="stat"><b>11</b><span>Articles</span></div><div class="stat"><b>187</b><span>Comments</span></div><div class="stat"><b>7</b><span>Magazines</span></div></div>';
   }
+  var scopeMag = st.magScope; // plain-text magazine name to scope to ('' = show all)
   var magGroups = {};
   ARTICLES.forEach(function(a){ (magGroups[a.mag]=magGroups[a.mag]||[]).push(a); });
   Object.keys(magGroups).forEach(function(mag){
+    if(scopeMag && mag !== scopeMag) return; // scoped: only this magazine's section
     s += '<div class="sec"><div class="sec-t"><div class="dot"></div><h2>'+mag+'</h2></div><div class="cards">';
     magGroups[mag].forEach(function(a){ s += '<div class="card"'+dh(a)+'><div class="k">'+a.k+'</div><h3>'+a.title+'</h3><p>'+a.desc+'</p></div>'; });
     s += '</div></div>';

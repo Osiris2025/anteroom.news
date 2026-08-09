@@ -6,8 +6,9 @@ type LiveArticle = {
   subcategory: string | null; magazine: { id: string; name: string } | null;
 };
 
-// Live pipeline strip. Shows articles approved→live from /api/articles.
-// Pass `magazine={id}` to filter to one magazine (used on magazine/stream pages).
+// Live pipeline strip. Cards open the INTERNAL article reader (/articles/[id]) which
+// has the AI summary + commentary + an external "read the real article" link + comments.
+// `magazine` (optional) filters to one magazine's pipeline articles (magazine/stream pages).
 export default function LiveFeed({ magazine }: { magazine?: string }) {
   const [articles, setArticles] = useState<LiveArticle[]>([]);
 
@@ -33,7 +34,7 @@ export default function LiveFeed({ magazine }: { magazine?: string }) {
       <div style={{ fontSize: 11, letterSpacing: 2, fontWeight: 800, textTransform: "uppercase", color: "var(--accent, #ffd700)", marginBottom: 8 }}>● Live · from the pipeline</div>
       <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))" }}>
         {articles.map((a) => (
-          <a key={a.id} href={a.sourceUrl || "#"} target={a.sourceUrl ? "_blank" : undefined} rel={a.sourceUrl ? "noreferrer" : undefined}
+          <a key={a.id} href={`/articles/${a.id}`}
              style={{ textDecoration: "none", color: "inherit", display: "block", padding: "8px 0", borderTop: "1px solid rgba(150,150,150,.12)" }}>
             <div style={{ fontSize: 10, color: "var(--accent,#ffd700)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 3 }}>
               {a.magazine?.name || "News"}{a.subcategory ? ` / ${a.subcategory}` : ""}

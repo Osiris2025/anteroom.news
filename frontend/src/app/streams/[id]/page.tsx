@@ -1,7 +1,11 @@
-import MagazineView from "@/components/MagazineView";
+import ThemeRenderer from "@/components/ThemeRenderer";
 
-/** Stream page — themed via the theme system (MagazineView uses the theme's own .mag-* CSS). */
+/**
+ * Stream page — renders through the SAME theme engine as the homepage
+ * (ThemeRenderer -> renderTemplate + applyTheme), so EVERY theme's own HTML
+ * template + CSS applies. LiveFeed is filtered to this magazine's articles.
+ */
 export default async function StreamPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  return <MagazineView id={id} />;
+  return <ThemeRenderer magazineId={id} />;
 }

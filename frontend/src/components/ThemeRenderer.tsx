@@ -2,23 +2,25 @@
 import { useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/lib/ThemeContext";
-import { renderTemplate } from "@/lib/themes";
+import { renderTemplate, MAGAZINES } from "@/lib/themes";
 import LiveFeed from "@/components/LiveFeed";
 
 /**
  * ThemeRenderer
  * Renders the shared semantic template for the active theme's structure spec.
+ * - Optional `magazineId`: when set (magazine/stream pages), we render the SAME
+ *   theme template as the homepage (so every theme's own HTML template + CSS apply)
+ *   and the LiveFeed is filtered to that magazine's approved articles.
  * - The app navbar owns the top nav, so the template's internal header is hidden.
- * - Card elements carry data-href -> forwarded to client-side router.
- * - Maintenance + context boxes come from the structure/footer templates.
  */
-export default function ThemeRenderer() {
+export default function ThemeRenderer({ magazineId }: { magazineId?: string }) {
   const router = useRouter();
   const { currentTheme, setTheme } = useTheme();
   const shellRef = useRef<HTMLDivElement>(null);
 
-  // Semantic body for the ACTIVE theme, with the internal header suppressed
-  // (the app navbar mounting above handles top navigation).
+  const magazine = magazineId ? MAGAZINES.find((m) => m.id === magazineId) : undefined;
+
+  // Semantic body for the ACTIVE theme (internal header suppressed; navbar owns top nav).
   const structure = { ...currentTheme.structure, hideHeader: true };
   const html = renderTemplate(structure);
 
@@ -49,7 +51,16 @@ export default function ThemeRenderer() {
 
   return (
     <div>
-      <LiveFeed />
+      {magazine && (
+        <div style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "6px 0 2px" }}>
+          <span style={{ width: 9, height: 9, borderRadius: "50%", background: magazine.accent, display: "inline-block" }} />
+          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: "-0.5px" }}>
+            {magazine.name.toUpperCase()}
+          </h1>
+          <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
+        </div>
+      )}
+      <LiveFeed magazine={magazineId} />
       <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   );

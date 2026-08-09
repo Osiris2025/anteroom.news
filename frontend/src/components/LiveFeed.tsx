@@ -6,17 +6,18 @@ type LiveArticle = {
   subcategory: string | null; magazine: { id: string; name: string } | null;
 };
 
-// Homepage live-feed strip: shows articles approved→live through the intake pipeline
-// (from /api/articles). Theme-aware via CSS vars, sits above the template's Top Stories.
-export default function LiveFeed() {
+// Live pipeline strip. Shows articles approved→live from /api/articles.
+// Pass `magazine={id}` to filter to one magazine (used on magazine/stream pages).
+export default function LiveFeed({ magazine }: { magazine?: string }) {
   const [articles, setArticles] = useState<LiveArticle[]>([]);
 
   useEffect(() => {
-    fetch("/api/articles")
+    const q = magazine ? `?magazine=${magazine}` : "";
+    fetch(`/api/articles${q}`)
       .then((r) => r.json())
       .then((j) => { if (!j.error && Array.isArray(j.articles)) setArticles(j.articles.slice(0, 6)); })
       .catch(() => {});
-  }, []);
+  }, [magazine]);
 
   if (articles.length === 0) return null;
 

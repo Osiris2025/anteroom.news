@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Bulletin Board</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#2c1810;color:#d4a574;font-family:'DM Serif Display',Georgia,serif;min-height:100vh;padding-top:36px;position:relative}
+body::before{content:'';position:absolute;inset:0;background-image:radial-gradient(circle at 20px 20px,rgba(180,140,100,0.05) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.c{max-width:900px;margin:0 auto;padding:16px;position:relative}
+.hd{text-align:center;border-bottom:2px dashed #8b7355;padding-bottom:10px;margin-bottom:20px}
+.hd h1{font-size:26px;font-weight:700;letter-spacing:2px;color:#c9a84c}
+.hd .sub{font:9px Inter;color:#8b7355;text-transform:uppercase;letter-spacing:3px}
+.pin{position:absolute;top:-6px;left:50%;margin-left:-6px;width:12px;height:12px;border-radius:50%;box-shadow:0 1px 3px rgba(0,0,0,0.3)}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.card{padding:16px;border-radius:2px;position:relative;box-shadow:2px 3px 6px rgba(0,0,0,0.2)}
+.card .l{font:9px Inter;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.card h3{font-size:16px;font-weight:700;line-height:1.15;margin-bottom:3px}
+.card p{font:11px Inter;color:rgba(0,0,0,0.5)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
+.ft{margin-top:16px;border-top:2px dashed #8b7355;padding-top:10px;display:flex;justify-content:space-between;font:9px Inter;color:#8b7355}
+</style></head><body>
+<div class="c"><div class="hd"><h1>THE BULLETIN BOARD</h1><div class="sub">Push pins welcome &bull; Thread carefully</div></div>
+<div class="grid3">
+<div class="card" style="background:#f5e6c8;color:#2c1810;transform:rotate(-1deg)"><div class="pin" style="background:#c1121f"></div><div class="l" style="color:#c1121f">&#x1F431; Pin #1</div><h3>CATBOY Returns!</h3><p>Grainy footage from 7-Eleven. Dr. Meowton rates 9.5/10. Witnesses describe Slurpee purchase.</p></div>
+<div class="card" style="background:#e8f0f8;color:#1a2a3a;transform:rotate(1.5deg)"><div class="pin" style="background:#2563eb"></div><div class="l" style="color:#2563eb">&#x1F916; Pin #2</div><h3>OpenAI Pauses Astra</h3><p>Security threshold reached. Autonomous cyberattacks detected on government systems.</p></div>
+<div class="card" style="background:#f0e8f8;color:#2a1a3a;transform:rotate(-0.5deg)"><div class="pin" style="background:#7c3aed"></div><div class="l" style="color:#7c3aed">&#x1F3DB; Pin #3</div><h3>Blanche Confirmed 50-49</h3><p>Nearly party-line vote for Attorney General. Deep partisan divide on display.</p></div>
+</div>
+<div class="grid2">
+<div class="card" style="background:#f8f0e0;color:#2c1810;transform:rotate(0.8deg)"><div class="pin" style="background:#00d4aa"></div><div class="l" style="color:#00d4aa">&#x1F4B0; Pin #4</div><h3>Nvidia $3B Stargate</h3><p>Massive AI infrastructure investment in Texas campus expansion.</p></div>
+<div class="card" style="background:#e0f0e8;color:#1a2a2a;transform:rotate(-1.2deg)"><div class="pin" style="background:#0af"></div><div class="l" style="color:#0af">&#x1F310; Pin #5</div><h3>Cloudflare Kitesurf</h3><p>New browser built specifically for AI agents and autonomous web navigation.</p></div>
+</div>
+<div class="ft"><span>&copy; 2026 Bulletin Board</span><span>5 pinned stories</span><span>Push a pin</span></div>
+</div></body></html>

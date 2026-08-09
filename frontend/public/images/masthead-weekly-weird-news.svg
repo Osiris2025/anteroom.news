@@ -1,0 +1,21 @@
+<svg width="1280" height="360" viewBox="0 0 1280 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Weekly Weird News">
+  <!-- Outer black frame / thin white inner frame -->
+  <rect width="1280" height="360" fill="#191919"/>
+  <rect x="24" y="24" width="1232" height="312" fill="#191919" stroke="#ffffff" stroke-width="4"/>
+
+  <!-- Kicker: WEEKLY WEIRD, small and close to NEWS below (gap, not touching) -->
+  <text x="60" y="78" fill="#ffffff"
+        font-family="Impact,'Arial Black','Franklin Gothic Condensed',sans-serif"
+        font-size="54" font-weight="900" letter-spacing="7">WEEKLY WEIRD</text>
+
+  <!-- Dominant word: NEWS, its cap-height starting just under the kicker -->
+  <text x="58" y="236" fill="#ffffff"
+        font-family="Impact,'Arial Black','Franklin Gothic Condensed',sans-serif"
+        font-size="164" font-weight="900" letter-spacing="-3">NEWS</text>
+
+  <!-- Bottom white tagline bar -->
+  <rect x="24" y="272" width="1232" height="64" fill="#ffffff"/>
+  <text x="640" y="318" text-anchor="middle" fill="#191919"
+        font-family="Impact,'Arial Black','Franklin Gothic Condensed',sans-serif"
+        font-size="34" font-weight="700" letter-spacing="9">FOR THE GENTLEMANLY WEIRD</text>
+</svg>

@@ -1,0 +1,150 @@
+import { pgTable, text, timestamp, integer, boolean, jsonb, primaryKey } from "drizzle-orm/pg-core";
+
+// ---------------------------------------------------------------------------
+// better-auth core tables (users, sessions, accounts, verifications) — DO NOT REMOVE
+// ---------------------------------------------------------------------------
+export const user = pgTable("user", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  emailVerified: boolean("email_verified").notNull().default(false),
+  image: text("image"),
+  role: text("role").notNull().default("user"),
+  tier: text("tier").notNull().default("free"), // content access: guest|free|plus|member
+  status: text("status").notNull().default("active"), // active|disabled
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const session = pgTable("session", {
+  id: text("id").primaryKey(),
+  expiresAt: timestamp("expires_at").notNull(),
+  token: text("token").notNull().unique(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  ipAddress: text("ip_address"),
+  userAgent: text("user_agent"),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+});
+
+export const account = pgTable("account", {
+  id: text("id").primaryKey(),
+  accountId: text("account_id").notNull(),
+  providerId: text("provider_id").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  accessToken: text("access_token"),
+  refreshToken: text("refresh_token"),
+  idToken: text("id_token"),
+  accessTokenExpiresAt: timestamp("access_token_expires_at"),
+  refreshTokenExpiresAt: timestamp("refresh_token_expires_at"),
+  scope: text("scope"),
+  password: text("password"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const verification = pgTable("verification", {
+  id: text("id").primaryKey(),
+  identifier: text("identifier").notNull(),
+  value: text("value").notNull(),
+  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+// Passkey (WebAuthn) credentials table (better-auth passkey plugin)
+export const passkey = pgTable("passkey", {
+  id: text("id").primaryKey(),
+  name: text("name"),
+  publicKey: text("public_key").notNull(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  credentialID: text("credential_id").notNull().unique(),
+  counter: integer("counter").notNull().default(0),
+  deviceType: text("device_type").notNull(),
+  backedUp: boolean("backed_up").notNull().default(false),
+  transports: jsonb("transports"),
+  aaguid: text("aaguid"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// ---------------------------------------------------------------------------
+// AI News Nexus content tables (intake pipeline + rendering + pins)
+// ---------------------------------------------------------------------------
+
+// Magazines — a stream/brand on the site (Tech Pulse, WWN, Climate Watch, ...)
+export const magazine = pgTable("magazine", {
+  id: text("id").primaryKey(), // slug, e.g. "tech-pulse"
+  name: text("name").notNull(),
+  tagline: text("tagline"),
+  description: text("description"),
+  tone: text("tone").notNull().default("neutral"),
+  colors: jsonb("colors"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Categories / subcategories within a magazine
+export const category = pgTable("category", {
+  id: text("id").primaryKey(),
+  magazineId: text("magazine_id")
+    .notNull()
+    .references(() => magazine.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  slug: text("slug").notNull(),
+});
+
+// Articles — the core content entity, shared by all 3 ingress points.
+// Lifecycle: draft -> approved (review queue) -> live. Rejected if unsuitable.
+// Ingress source: autonomous / admin-link / collector.
+export const article = pgTable("article", {
+  id: text("id").primaryKey(),
+  ingress: text("ingress").notNull(), // "autonomous" | "admin-link" | "collector"
+  sourceUrl: text("source_url"),       // original link (evidence)
+  title: text("title").notNull(),
+  headline: text("headline"),          // admin-optional custom header for pinned/FLASH
+  status: text("status").notNull().default("draft"), // draft | approved | live | rejected
+  magazineId: text("magazine_id").references(() => magazine.id, { onDelete: "set null" }),
+  // supporting AI analysis
+  summary: text("summary"),
+  commentary: text("commentary"),
+  aiThoughts: text("ai_thoughts"),
+  warnings: jsonb("warnings"),          // [{level, message}] suitability warnings
+  flagged: boolean("flagged").notNull().default(false), // admin attention needed
+  suitabilityOk: boolean("suitability_ok").notNull().default(false),
+  multiMagazines: jsonb("multi_magazines"), // optional extra magazine ids
+  subcategory: text("subcategory"),        // optional category name/slug admin chose
+  submittedBy: text("submitted_by").references(() => user.id, { onDelete: "set null" }),
+  submittedAt: timestamp("submitted_at").notNull().defaultNow(),
+  reviewedBy: text("reviewed_by").references(() => user.id, { onDelete: "set null" }),
+  reviewedAt: timestamp("reviewed_at"),
+  publishedAt: timestamp("published_at"),
+  socialRepeat: boolean("social_repeat").notNull().default(false), // flag to recycle on social
+  socialPostedAt: timestamp("social_posted_at"),
+  featured: boolean("featured").notNull().default(false), // admin-controlled flagship slot
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Pins — FLASH / IMPORTANT hero placements above date-ordered feed.
+export const pin = pgTable("pin", {
+  id: text("id").primaryKey(),
+  articleId: text("article_id")
+    .notNull()
+    .references(() => article.id, { onDelete: "cascade" }),
+  kind: text("kind").notNull(), // "FLASH" | "IMPORTANT" | other
+  runFor: text("run_for"),       // "24h" | "7d" | "" ("" = until unpinned)
+  expiresAt: timestamp("expires_at"), // null = until unpinned
+  pinnedAt: timestamp("pinned_at").notNull().defaultNow(),
+  unpinnedAt: timestamp("unpinned_at"),
+  active: boolean("active").notNull().default(true),
+});
+
+export type User = typeof user.$inferSelect;
+export type Article = typeof article.$inferSelect;
+export type Pin = typeof pin.$inferSelect;
+export type MagazineRow = typeof magazine.$inferSelect;
+export type CategoryRow = typeof category.$inferSelect;

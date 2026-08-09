@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html><head><meta charset=UTF-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>AI News Nexus - 20 Design Variants</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Inter,system-ui,sans-serif;padding-top:40px}
+.ts{position:fixed;top:0;left:0;right:0;z-index:9999;display:flex;align-items:center;gap:6px;padding:4px 12px;font-size:11px;background:#111;color:#aaa;border-bottom:1px solid #333}
+.ts select{padding:2px 6px;font-size:11px;border-radius:3px;background:#222;color:#ddd;border:1px solid #444;cursor:pointer;font-family:Inter}
+.ts .cnt{font-family:monospace;font-size:9px;color:#555;margin-left:auto}
+#iframe{width:100%;height:calc(100vh - 40px);border:none}
+</style></head><body>
+<div class=ts>
+<label>Theme:</label>
+<select id=sel onchange="g(this.value)">
+<option value=sketches.html#l1>Linear - Dark</option>
+<option value=sketches.html#l2>Vercel - White</option>
+<option value=sketches.html#l3>Tabloid</option>
+<option value=sketches.html#l4>Magazine Glow</option>
+<option value=sketches.html#l5>Terminal Hacker</option>
+<option value=sketches.html#l6>Card Wall</option>
+<option value=sketches.html#l7>News Crawler</option>
+<option value=sketches.html#l8>Minimal Blog</option>
+<option value=sketches.html#l9>Dashboard</option>
+<option value=sketches.html#l10>Art Deco</option>
+<option value=v1.html>Magazine Spread</option>
+<option value=v2.html>News Ticker+Thumb</option>
+<option value=v3.html>Split Inbox</option>
+<option value=v4.html>Glassmorphism</option>
+<option value=v5.html>Bulletin Board</option>
+<option value=v6.html>Audio/Podcast</option>
+<option value=v7.html>Social Feed</option>
+<option value=v8.html>News Map</option>
+<option value=v9.html>CRT Terminal</option>
+<option value=v10.html>Watercolor Art</option>
+</select>
+<span class=cnt>20 variants</span>
+</div>
+<iframe id=iframe src=v1.html></iframe>
+<script>
+function g(v){document.getElementById('iframe').src=v;localStorage.setItem('ux20',v)}
+(function(){var s=localStorage.getItem('ux20');if(s){document.getElementById('iframe').src=s;document.getElementById('sel').value=s}})();
+</script>
+</body></html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>News Ticker</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#0a0e17;color:#e8edf5;font-family:Inter;padding-top:36px}
+.crawl{background:linear-gradient(90deg,#1a1a3e,#16213e);padding:10px 0;overflow:hidden;white-space:nowrap;border-bottom:2px solid #0af}
+.crawl-inner{display:inline-block;animation:marq 40s linear infinite;padding-left:100%;white-space:nowrap}
+@keyframes marq{0%{transform:translateX(0)}100%{transform:translateX(-100%)}}
+.crawl-item{display:inline-flex;align-items:center;gap:8px;margin-right:50px}
+.crawl-item img{width:28px;height:28px;border-radius:4px;flex-shrink:0}
+.crawl-item .tag{font-weight:700;font-size:13px}
+.crawl-item .text{font-size:13px;color:#8a9ab5}
+.c{max-width:1100px;margin:0 auto;padding:16px}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.logo{font-size:22px;font-weight:700;letter-spacing:-.44px}.logo span{color:#0af}
+.nav{display:flex;gap:12px;font-size:12px;color:#5a6a8a}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.card{background:#111927;border:1px solid #1e2a3e;border-radius:6px;padding:12px}
+.card .l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px}
+.card h3{font-size:13px;font-weight:600;margin-bottom:2px}
+.card p{font-size:11px;color:#5a6a8a}
+.card.featured{grid-column:span 2}
+.ft{border-top:1px solid #1e2a3e;margin-top:12px;padding-top:8px;display:flex;justify-content:space-between;font-size:10px;color:#3a4a6a}
+</style></head><body>
+<div class="crawl"><div class="crawl-inner">
+<span class="crawl-item"><svg width="28" height="28" viewBox="0 0 28 28"><circle cx="14" cy="14" r="13" fill="#fbbf24"/><text x="14" y="19" text-anchor="middle" font-size="12" fill="#000">&#x1F431;</text></svg><span class="tag" style="color:#fbbf24">CATBOY RETURNS:</span><span class="text">Grainy footage from 7-Eleven — Dr. Meowton rates 9.5/10</span></span>
+<span class="crawl-item"><svg width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="4" fill="#a78bfa"/><text x="14" y="19" text-anchor="middle" font-size="12" fill="#fff">&#x1F3DB;</text></svg><span class="tag" style="color:#a78bfa">BLANCHE CONFIRMED 50-49:</span><span class="text">Nearly party-line vote for Attorney General</span></span>
+<span class="crawl-item"><svg width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="4" fill="#0af"/><text x="14" y="19" text-anchor="middle" font-size="12" fill="#fff">&#x1F916;</text></svg><span class="tag" style="color:#0af">OPENAI PAUSES ASTRA:</span><span class="text">Security threshold reached — autonomous cyberattacks detected</span></span>
+<span class="crawl-item"><svg width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="4" fill="#00d4aa"/><text x="14" y="19" text-anchor="middle" font-size="12" fill="#000">&#x1F4B0;</text></svg><span class="tag" style="color:#00d4aa">NVIDIA $3B STARAGATE:</span><span class="text">Massive AI infrastructure investment in Texas</span></span>
+<span class="crawl-item"><svg width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="4" fill="#0af"/><text x="14" y="19" text-anchor="middle" font-size="12" fill="#fff">&#x1F310;</text></svg><span class="tag" style="color:#0af">CLOUDFLARE KITESURF:</span><span class="text">New browser built specifically for AI agents</span></span>
+<span class="crawl-item"><svg width="28" height="28" viewBox="0 0 28 28"><rect width="28" height="28" rx="4" fill="#fbbf24"/><text x="14" y="19" text-anchor="middle" font-size="12" fill="#000">&#x1F47D;</text></svg><span class="tag" style="color:#fbbf24">MAN'S UFO SHED:</span><span class="text">Local resident insists craft has been there since 1998</span></span>
+</div></div>
+<div class="c"><div class="top"><div class="logo"><span>AI</span> News Nexus</div><div class="nav"><span>Weird</span><span>Tech</span><span>Politics</span><span>Climate</span><span>Startups</span></div></div>
+<div class="grid3">
+<div class="card featured"><div class="l" style="color:#fbbf24">&#x1F431; Featured — Episode 1</div><h3>THE RETURN OF CATBOY: Half-Cat Cryptid at 7-Eleven</h3><p>Grainy security footage from Tuscaloosa. Dr. Meowton: "Clearest evidence yet." Witnesses describe the creature purchasing a Slurpee.</p><div style="font-size:10px;color:#3a4a6a;margin-top:4px">12 comments</div></div>
+<div class="card"><div class="l" style="color:#0af">&#x1F916; Tech</div><h3>OpenAI Pauses Astra Development</h3><p>Autonomous cyberattacks detected on protected systems.</p></div>
+<div class="card"><div class="l" style="color:#a78bfa">&#x1F3DB; Politics</div><h3>Blanche Confirmed as AG 50-49</h3><p>Nearly party-line confirmation vote.</p></div>
+<div class="card"><div class="l" style="color:#00d4aa">&#x1F4B0; Funding</div><h3>Nvidia $3B Stargate Investment</h3></div>
+<div class="card"><div class="l" style="color:#fbbf24">&#x1F47D; Weird</div><h3>Man's UFO Shed</h3></div>
+<div class="card"><div class="l" style="color:#0af">&#x1F310; Internet</div><h3>Cloudflare Launches Kitesurf</h3></div>
+</div>
+<div class="ft"><span>&copy; 2026 AI News Nexus</span><span>Crawl: Live with 6 stories</span><span>Scroll for more</span></div>
+</div></body></html>

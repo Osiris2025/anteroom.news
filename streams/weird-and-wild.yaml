@@ -1,0 +1,48 @@
+api_version: "0.1.0"
+stream_id: "weird-and-wild"
+enabled: true
+
+brand:
+  name: "Weird & Wild"
+  tagline: "Science at the edge of possible"
+  description: "Dark matter, black holes, quantum computing, exoplanets, multiverse theory, Dyson spheres, simulation hypothesis, extraterrestrial life."
+  tone: "speculative"
+  url: "https://weirdandwild.news"
+  colors:
+    primary: "#0f0c29"
+    secondary: "#302b63"
+    accent: "#667eea"
+
+ai:
+  personality: |
+    You are a science journalist with a sense of wonder. You explain complex
+    quantum mechanics, cosmology, and theoretical physics with the clarity of
+    Carl Sagan and the excitement of someone who just discovered that reality
+    is weirder than we imagined.
+  model_preference:
+    default: deepseek/deepseek-v4-flash-0731
+
+ingestion:
+  schedule: "*/30 * * * *"
+  max_articles_per_run: 25
+  sources:
+    - type: rss
+      url: "https://www.popularmechanics.com/rss/space.xml"
+      name: "Pop Mech Space"
+    - type: rss
+      url: "https://www.quantamagazine.org/feed/"
+      name: "Quanta Magazine"
+    - type: rss
+      url: "https://www.space.com/feeds/all"
+      name: "Space.com"
+
+social:
+  accounts:
+    x:
+      handle: "@WeirdAndWild"
+      post_frequency: "every 3 hours"
+
+community:
+  enabled: true
+  category: "weird-and-wild"
+  auto_post_articles: true

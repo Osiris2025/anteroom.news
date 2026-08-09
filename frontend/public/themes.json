@@ -1,0 +1,454 @@
+[
+  {
+    "id": "linear",
+    "name": "Linear - Dark Precision",
+    "layout": "sidebar-left",
+    "accentStyle": "left-bar",
+    "features": [
+      "sidebar",
+      "newsletter"
+    ],
+    "colors": {
+      "bg": "#08090a",
+      "surface": "#0f1011",
+      "card": "rgba(255,255,255,0.02)",
+      "text": "#f7f8f8",
+      "text2": "#8a8f98",
+      "text3": "#62666d",
+      "accent": "#7170ff",
+      "border": "rgba(255,255,255,0.08)"
+    },
+    "font": "Inter,sans-serif",
+    "radius": "8px",
+    "cardStyle": "outlined"
+  },
+  {
+    "id": "vercel",
+    "name": "Vercel - White Minimal",
+    "layout": "sidebar-left",
+    "accentStyle": "none",
+    "features": [
+      "sidebar",
+      "newsletter"
+    ],
+    "colors": {
+      "bg": "#ffffff",
+      "surface": "#fafafa",
+      "card": "#ffffff",
+      "text": "#171717",
+      "text2": "#4d4d4d",
+      "text3": "#808080",
+      "accent": "#0072f5",
+      "border": "rgba(0,0,0,0.08)"
+    },
+    "font": "Inter,sans-serif",
+    "radius": "6px",
+    "cardStyle": "shadow"
+  },
+  {
+    "id": "tabloid",
+    "name": "Tabloid - Newspaper",
+    "layout": "sidebar-right",
+    "accentStyle": "top-bar",
+    "features": [
+      "sidebar",
+      "poll"
+    ],
+    "colors": {
+      "bg": "#f5f0e8",
+      "surface": "#f0ece4",
+      "card": "#ffffff",
+      "text": "#2a2216",
+      "text2": "#444444",
+      "text3": "#888888",
+      "accent": "#c1121f",
+      "border": "#cccccc"
+    },
+    "font": "Georgia,serif",
+    "radius": "2px",
+    "cardStyle": "bordered"
+  },
+  {
+    "id": "magazine",
+    "name": "Magazine Glow",
+    "layout": "sidebar-right",
+    "accentStyle": "full-tint",
+    "features": [
+      "sidebar",
+      "newsletter",
+      "poll"
+    ],
+    "colors": {
+      "bg": "#fff",
+      "surface": "#f8f9fa",
+      "card": "#ffffff",
+      "text": "#1a1a1a",
+      "text2": "#666666",
+      "text3": "#999999",
+      "accent": "#667eea",
+      "border": "#e0e0e0"
+    },
+    "font": "Space Grotesk,sans-serif",
+    "radius": "16px",
+    "cardStyle": "shadow"
+  },
+  {
+    "id": "terminal",
+    "name": "Terminal Hacker",
+    "layout": "full",
+    "accentStyle": "underline",
+    "features": [
+      "stats"
+    ],
+    "colors": {
+      "bg": "#000000",
+      "surface": "#000000",
+      "card": "#000000",
+      "text": "#00ff00",
+      "text2": "#00aa00",
+      "text3": "#006600",
+      "accent": "#ffff00",
+      "border": "#00ff00"
+    },
+    "font": "IBM Plex Mono,monospace",
+    "radius": "0px",
+    "cardStyle": "bordered"
+  },
+  {
+    "id": "cardwall",
+    "name": "Card Wall - Masonry",
+    "layout": "masonry",
+    "accentStyle": "none",
+    "features": [
+      "poll",
+      "quiz"
+    ],
+    "colors": {
+      "bg": "#f0f2f5",
+      "surface": "#ffffff",
+      "card": "#ffffff",
+      "text": "#1a1a2e",
+      "text2": "#555555",
+      "text3": "#999999",
+      "accent": "#667eea",
+      "border": "#e0e0e0"
+    },
+    "font": "Inter,sans-serif",
+    "radius": "16px",
+    "cardStyle": "shadow"
+  },
+  {
+    "id": "crawler",
+    "name": "News Crawler - TV",
+    "layout": "grid",
+    "accentStyle": "bottom-bar",
+    "features": [
+      "crawl",
+      "sidebar",
+      "poll"
+    ],
+    "colors": {
+      "bg": "#111111",
+      "surface": "#1a1a1a",
+      "card": "#1a1a1a",
+      "text": "#eeeeee",
+      "text2": "#888888",
+      "text3": "#555555",
+      "accent": "#ff4d4d",
+      "border": "#2a2a2a"
+    },
+    "font": "Inter,sans-serif",
+    "radius": "4px",
+    "cardStyle": "bordered"
+  },
+  {
+    "id": "blog",
+    "name": "Minimal Blog",
+    "layout": "single",
+    "accentStyle": "none",
+    "features": [
+      "newsletter"
+    ],
+    "colors": {
+      "bg": "#fafafa",
+      "surface": "#f5f5f5",
+      "card": "#ffffff",
+      "text": "#333333",
+      "text2": "#777777",
+      "text3": "#bbbbbb",
+      "accent": "#333333",
+      "border": "#f0f0f0"
+    },
+    "font": "Inter,sans-serif",
+    "radius": "8px",
+    "cardStyle": "flat"
+  },
+  {
+    "id": "dashboard",
+    "name": "Dashboard",
+    "layout": "grid",
+    "accentStyle": "dot",
+    "features": [
+      "stats",
+      "sidebar"
+    ],
+    "colors": {
+      "bg": "#0a0e17",
+      "surface": "#111927",
+      "card": "#111927",
+      "text": "#c8d6e5",
+      "text2": "#5a6a8a",
+      "text3": "#3a4a6a",
+      "accent": "#00d4aa",
+      "border": "#1e2a3e"
+    },
+    "font": "Inter,sans-serif",
+    "radius": "6px",
+    "cardStyle": "outlined"
+  },
+  {
+    "id": "deco",
+    "name": "Art Deco",
+    "layout": "sidebar-right",
+    "accentStyle": "corner",
+    "features": [
+      "sidebar",
+      "newsletter"
+    ],
+    "colors": {
+      "bg": "#1a1a2e",
+      "surface": "#1a1a2e",
+      "card": "#1a1a2e",
+      "text": "#e8d5b7",
+      "text2": "#a09070",
+      "text3": "#6a5a3a",
+      "accent": "#c9a84c",
+      "border": "#c9a84c"
+    },
+    "font": "Playfair Display,Georgia,serif",
+    "radius": "0px",
+    "cardStyle": "bordered"
+  },
+  {
+    "id": "spread",
+    "name": "Magazine Spread",
+    "layout": "sidebar-right",
+    "accentStyle": "gradient-bar",
+    "features": [
+      "sidebar",
+      "poll"
+    ],
+    "colors": {
+      "bg": "#faf8f5",
+      "surface": "#f0ece4",
+      "card": "#ffffff",
+      "text": "#1a1a1a",
+      "text2": "#555555",
+      "text3": "#999999",
+      "accent": "#c1121f",
+      "border": "#dddddd"
+    },
+    "font": "Playfair Display,Georgia,serif",
+    "radius": "0px",
+    "cardStyle": "flat"
+  },
+  {
+    "id": "ticker",
+    "name": "News Ticker+Thumb",
+    "layout": "grid",
+    "accentStyle": "glow",
+    "features": [
+      "crawl",
+      "stats"
+    ],
+    "colors": {
+      "bg": "#0a0e17",
+      "surface": "#111927",
+      "card": "#111927",
+      "text": "#e8edf5",
+      "text2": "#5a6a8a",
+      "text3": "#3a4a6a",
+      "accent": "#0af",
+      "border": "#1e2a3e"
+    },
+    "font": "Inter,sans-serif",
+    "radius": "6px",
+    "cardStyle": "outlined"
+  },
+  {
+    "id": "split",
+    "name": "Split Inbox",
+    "layout": "split",
+    "accentStyle": "top-bar",
+    "features": [
+      "newsletter"
+    ],
+    "colors": {
+      "bg": "#f5f5f5",
+      "surface": "#ffffff",
+      "card": "#ffffff",
+      "text": "#1a1a1a",
+      "text2": "#666666",
+      "text3": "#999999",
+      "accent": "#0072f5",
+      "border": "#e0e0e0"
+    },
+    "font": "Inter,sans-serif",
+    "radius": "8px",
+    "cardStyle": "flat"
+  },
+  {
+    "id": "glass",
+    "name": "Glassmorphism",
+    "layout": "grid",
+    "accentStyle": "glow",
+    "features": [
+      "poll",
+      "quiz"
+    ],
+    "colors": {
+      "bg": "#0f0c29",
+      "surface": "rgba(255,255,255,0.05)",
+      "card": "rgba(255,255,255,0.05)",
+      "text": "#ffffff",
+      "text2": "rgba(255,255,255,0.5)",
+      "text3": "rgba(255,255,255,0.2)",
+      "accent": "#667eea",
+      "border": "rgba(255,255,255,0.1)"
+    },
+    "font": "Inter,sans-serif",
+    "radius": "20px",
+    "cardStyle": "glass"
+  },
+  {
+    "id": "board",
+    "name": "Bulletin Board",
+    "layout": "masonry",
+    "accentStyle": "corner",
+    "features": [
+      "poll"
+    ],
+    "colors": {
+      "bg": "#2c1810",
+      "surface": "#3a2218",
+      "card": "#f5e6c8",
+      "text": "#d4a574",
+      "text2": "#8b7355",
+      "text3": "#5a4a30",
+      "accent": "#c9a84c",
+      "border": "#8b7355"
+    },
+    "font": "DM Serif Display,Georgia,serif",
+    "radius": "2px",
+    "cardStyle": "pin"
+  },
+  {
+    "id": "audio",
+    "name": "Audio/Podcast",
+    "layout": "list",
+    "accentStyle": "none",
+    "features": [
+      "stats"
+    ],
+    "colors": {
+      "bg": "#0d1117",
+      "surface": "#161b22",
+      "card": "#161b22",
+      "text": "#c9d1d9",
+      "text2": "#5a6a8a",
+      "text3": "#3a4a6a",
+      "accent": "#58a6ff",
+      "border": "#30363d"
+    },
+    "font": "Inter,sans-serif",
+    "radius": "12px",
+    "cardStyle": "player"
+  },
+  {
+    "id": "social",
+    "name": "Social Feed",
+    "layout": "feed",
+    "accentStyle": "none",
+    "features": [],
+    "colors": {
+      "bg": "#000000",
+      "surface": "#000000",
+      "card": "#000000",
+      "text": "#e7e9ea",
+      "text2": "#71767b",
+      "text3": "#555555",
+      "accent": "#1d9bf0",
+      "border": "#2f3336"
+    },
+    "font": "Inter,sans-serif",
+    "radius": "0px",
+    "cardStyle": "post"
+  },
+  {
+    "id": "map",
+    "name": "News Map",
+    "layout": "split",
+    "accentStyle": "none",
+    "features": [
+      "sidebar"
+    ],
+    "colors": {
+      "bg": "#0a0e17",
+      "surface": "#111927",
+      "card": "#111927",
+      "text": "#c8d6e5",
+      "text2": "#5a6a8a",
+      "text3": "#3a4a6a",
+      "accent": "#0af",
+      "border": "#1e2a3e"
+    },
+    "font": "Inter,sans-serif",
+    "radius": "8px",
+    "cardStyle": "outlined"
+  },
+  {
+    "id": "crt",
+    "name": "CRT Terminal",
+    "layout": "full",
+    "accentStyle": "underline",
+    "features": [
+      "stats"
+    ],
+    "colors": {
+      "bg": "#000000",
+      "surface": "#000000",
+      "card": "#000000",
+      "text": "#00ff00",
+      "text2": "#00aa00",
+      "text3": "#006600",
+      "accent": "#ffff00",
+      "border": "#00ff00"
+    },
+    "font": "IBM Plex Mono,monospace",
+    "radius": "0px",
+    "cardStyle": "bordered"
+  },
+  {
+    "id": "water",
+    "name": "Watercolor Art",
+    "layout": "grid",
+    "accentStyle": "full-tint",
+    "features": [
+      "newsletter",
+      "poll"
+    ],
+    "colors": {
+      "bg": "#fef9ef",
+      "surface": "rgba(255,255,255,0.6)",
+      "card": "rgba(255,255,255,0.6)",
+      "text": "#2d2d2d",
+      "text2": "#6a5a4a",
+      "text3": "#9a8a7a",
+      "accent": "#c9a84c",
+      "border": "transparent"
+    },
+    "font": "Space Grotesk,sans-serif",
+    "radius": "20px",
+    "cardStyle": "soft"
+  }
+]

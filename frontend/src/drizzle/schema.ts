@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, boolean, jsonb, primaryKey } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, boolean, jsonb, primaryKey, AnyPgColumn } from "drizzle-orm/pg-core";
 
 // ---------------------------------------------------------------------------
 // better-auth core tables (users, sessions, accounts, verifications) — DO NOT REMOVE
@@ -85,6 +85,9 @@ export const magazine = pgTable("magazine", {
   description: text("description"),
   tone: text("tone").notNull().default("neutral"),
   colors: jsonb("colors"),
+  // per-magazine named AI agent (writes on-site commentary for this magazine)
+  agentName: text("agent_name"),
+  agentModel: text("agent_model").notNull().default("deepseek/deepseek-v4-flash-0731"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
@@ -105,6 +108,7 @@ export const article = pgTable("article", {
   id: text("id").primaryKey(),
   ingress: text("ingress").notNull(), // "autonomous" | "admin-link" | "collector"
   sourceUrl: text("source_url"),       // original link (evidence)
+  imageUrl: text("image_url"),         // og:image hero capture
   title: text("title").notNull(),
   headline: text("headline"),          // admin-optional custom header for pinned/FLASH
   status: text("status").notNull().default("draft"), // draft | approved | live | rejected
@@ -142,6 +146,24 @@ export const pin = pgTable("pin", {
   unpinnedAt: timestamp("unpinned_at"),
   active: boolean("active").notNull().default(true),
 });
+
+// Comments — X/Twitter-style threads on articles (replies via parent_id self-FK).
+export const comment = pgTable("comment", {
+  id: text("id").primaryKey(),
+  articleId: text("article_id")
+    .notNull()
+    .references(() => article.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  parentId: text("parent_id").references((): AnyPgColumn => comment.id, { onDelete: "cascade" }),
+  body: text("body").notNull(),
+  upvotes: integer("upvotes").notNull().default(0),
+  deleted: boolean("deleted").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type CommentRow = typeof comment.$inferSelect;
 
 export type User = typeof user.$inferSelect;
 export type Article = typeof article.$inferSelect;

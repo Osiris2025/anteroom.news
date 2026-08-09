@@ -3,10 +3,19 @@ import { useState } from "react";
 import { useTheme } from "@/lib/ThemeContext";
 import AdminQueue from "./AdminQueue";
 import AdminUsers from "./AdminUsers";
+import AdminMagazines from "./AdminMagazines";
+
+type TabId = "inbox" | "users" | "magazines";
 
 export default function AdminHome() {
   const { currentTheme } = useTheme();
-  const [tab, setTab] = useState<"inbox" | "users">("inbox");
+  const [tab, setTab] = useState<TabId>("inbox");
+
+  const tabs: { id: TabId; label: string }[] = [
+    { id: "inbox", label: "🗞️ Inbox" },
+    { id: "users", label: "👤 Users" },
+    { id: "magazines", label: "📰 Magazines" },
+  ];
 
   return (
     <main style={{ minHeight: "100vh", background: "var(--page-bg, #0b0e11)", color: "var(--fg, #e6e6e6)" }}>
@@ -20,20 +29,20 @@ export default function AdminHome() {
 
         {/* Tabs */}
         <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
-          {(["inbox", "users"] as const).map((t) => (
+          {tabs.map((t) => (
             <button
-              key={t}
-              onClick={() => setTab(t)}
+              key={t.id}
+              onClick={() => setTab(t.id)}
               style={{
-                padding: "8px 18px", borderRadius: 8, border: tab === t ? "1px solid var(--accent,#ffd700)" : "1px solid rgba(150,150,150,.25)",
-                background: tab === t ? "rgba(255,215,0,.12)" : "#13161a", color: tab === t ? "var(--accent,#ffd700)" : "#aaa",
+                padding: "8px 18px", borderRadius: 8, border: tab === t.id ? "1px solid var(--accent,#ffd700)" : "1px solid rgba(150,150,150,.25)",
+                background: tab === t.id ? "rgba(255,215,0,.12)" : "#13161a", color: tab === t.id ? "var(--accent,#ffd700)" : "#aaa",
                 fontWeight: 700, textTransform: "uppercase", letterSpacing: 1, fontSize: 12, cursor: "pointer",
               }}
-            >{t === "inbox" ? "🗞️ Inbox" : "👤 Users"}</button>
+            >{t.label}</button>
           ))}
         </div>
 
-        {tab === "inbox" ? <AdminQueue /> : <AdminUsers />}
+        {tab === "inbox" ? <AdminQueue /> : tab === "users" ? <AdminUsers /> : <AdminMagazines />}
       </div>
     </main>
   );

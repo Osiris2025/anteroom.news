@@ -49,6 +49,7 @@ services:
       DATABASE_URL: postgresql://nexus:${NEXUS_DB_PASSWORD:-changeme}@postgres:5432/nexus
       AUTH_URL: ${AUTH_URL:-https://nexus.osiris2025.com}
       BETTER_AUTH_SECRET: ${AUTH_SECRET:-dev-only-change-me}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
       # External ingress reaches the app on port 3000 inside the container (EXPOSE 3000)
     restart: unless-stopped
     networks:

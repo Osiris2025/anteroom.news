@@ -82,7 +82,7 @@ export default function MagazineView({ id }: { id: string }) {
   type PinArticle = { id: string; kind: string; runFor: string | null; expiresAt: string | null; pinnedAt: string; article: { id: string; title: string; headline: string | null; summary: string | null; sourceUrl: string | null; imageUrl: string | null; publishedAt: string | null }; magazine: { id: string; name: string } | null };
   const [pins, setPins] = useState<PinArticle[]>([]);
   useEffect(() => {
-    fetch("/api/pins/active")
+    fetch("/api/pins")
       .then((r) => r.json())
       .then((j) => { if (!j.error && Array.isArray(j.pins)) setPins(j.pins); })
       .catch(() => {});

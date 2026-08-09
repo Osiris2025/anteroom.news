@@ -23,6 +23,7 @@ export async function GET(req: NextRequest) {
       sourceUrl: r.article.sourceUrl,
       summary: r.article.summary,
       commentary: r.article.commentary,
+      status: r.article.status,
       aiThoughts: r.article.aiThoughts,
       subcategory: r.article.subcategory,
       publishedAt: r.article.publishedAt,

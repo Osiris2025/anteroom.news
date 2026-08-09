@@ -1,11 +1,7 @@
-import ThemeRenderer from "@/components/ThemeRenderer";
+import MagazineView from "@/components/MagazineView";
 
-/**
- * Stream page — renders through the SAME theme engine as the homepage
- * (ThemeRenderer -> renderTemplate + applyTheme), so every theme's own
- * HTML template + CSS applies. This is the path that renders themes correctly.
- */
+/** Stream page — themed via the theme system (MagazineView uses the theme's own .mag-* CSS). */
 export default async function StreamPage({ params }: { params: Promise<{ id: string }> }) {
-  await params;
-  return <ThemeRenderer />;
+  const { id } = await params;
+  return <MagazineView id={id} />;
 }

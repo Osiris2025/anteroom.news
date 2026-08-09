@@ -5,8 +5,9 @@ import AdminQueue from "./AdminQueue";
 import AdminUsers from "./AdminUsers";
 import AdminMagazines from "./AdminMagazines";
 import AdminPins from "./AdminPins";
+import AdminLinkDrop from "./AdminLinkDrop";
 
-type TabId = "inbox" | "users" | "magazines" | "pins";
+type TabId = "inbox" | "linkdrop" | "users" | "magazines" | "pins";
 
 export default function AdminHome() {
   const { currentTheme } = useTheme();
@@ -14,6 +15,7 @@ export default function AdminHome() {
 
   const tabs: { id: TabId; label: string }[] = [
     { id: "inbox", label: "🗞️ Inbox" },
+    { id: "linkdrop", label: "🔗 Link Drop" },
     { id: "users", label: "👤 Users" },
     { id: "magazines", label: "📰 Magazines" },
     { id: "pins", label: "📌 Pins" },
@@ -44,7 +46,7 @@ export default function AdminHome() {
           ))}
         </div>
 
-        {tab === "inbox" ? <AdminQueue /> : tab === "users" ? <AdminUsers /> : tab === "magazines" ? <AdminMagazines /> : <AdminPins />}
+        {tab === "inbox" ? <AdminQueue /> : tab === "linkdrop" ? <AdminLinkDrop /> : tab === "users" ? <AdminUsers /> : tab === "magazines" ? <AdminMagazines /> : <AdminPins />}
       </div>
     </main>
   );

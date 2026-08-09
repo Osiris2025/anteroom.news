@@ -167,6 +167,7 @@ export async function GET() {
 
   <h2 style="font-size: 16px;">How to use</h2>
   <ol class="steps">
+    <li>Sign in to <a href="https://nexus.osiris2025.com">nexus.osiris2025.com</a></li>
     <li>Drag the <strong>"Save to Nexus"</strong> button above to your browser's bookmarks bar</li>
     <li>Sign in to <a href="https://nexus.osiris2025.com">nexus.osiris2025.com</a> (required for bookmarklet to work)</li>
     <li>When you find an interesting article, click the bookmarklet</li>

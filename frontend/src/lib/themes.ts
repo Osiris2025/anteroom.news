@@ -640,7 +640,10 @@ function renderTemplate(st){
     if(!scoped){ s += renderMagShowcase(); }
     s += '<div class="mast-sub"><h2>Top stories</h2></div>';
     if(st.showCrawl){ } // crawl already at very top
-    s += renderSections(st, st.showStats);
+    // Scoped magazine pages: skip static filler story-cards (they only link back to
+        // the same magazine page = "click refreshes"). Real articles come via the LiveFeed
+        // pipeline strip above, which links to the internal reader.
+    if(!scoped){ s += renderSections(st, st.showStats); }
     if(st.showPoll){ s += renderPoll(); }
     s += '</div></div>';
   }
@@ -649,7 +652,7 @@ function renderTemplate(st){
     if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
     if(!scoped){ s += renderMagShowcase(); }
     s += '<div class="mast-sub"><h2>Top stories</h2></div>';
-    s += renderSections(st, st.showStats);
+    if(!scoped){ s += renderSections(st, st.showStats); }
     if(st.showPoll){ s += renderPoll(); }
     s += '</div><div class="side">';
     st.sidebar.forEach(function(sb){
@@ -663,7 +666,7 @@ function renderTemplate(st){
     if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
     if(!scoped){ s += renderMagShowcase(); }
     s += '<div class="mast-sub"><h2>Top stories</h2></div>';
-    s += renderSections(st, st.showStats);
+    if(!scoped){ s += renderSections(st, st.showStats); }
     if(st.showPoll){ s += renderPoll(); }
     s += '</div>';
   }

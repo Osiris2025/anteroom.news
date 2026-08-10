@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useTheme } from "@/lib/ThemeContext";
 import { renderTemplate, MAGAZINES } from "@/lib/themes";
 import LiveFeed from "@/components/LiveFeed";
+import MagazineTopStories from "@/components/MagazineTopStories";
 
 /**
  * ThemeRenderer
@@ -80,6 +81,7 @@ export default function ThemeRenderer({ magazineId }: { magazineId?: string }) {
         </div>
       )}
       <LiveFeed magazine={magazine ? magazine.id : undefined} />
+      {magazine && <MagazineTopStories magazine={magazine.id} />}
       <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   );

@@ -638,7 +638,9 @@ function renderTemplate(st){
     s+='</div><div class="main">';
     if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
     if(!scoped){ s += renderMagShowcase(); }
-    s += '<div class="mast-sub"><h2>Top stories</h2></div>';
+    // Scoped non-WWN pages show a real "Top Stories" block above (MagazineTopStories),
+    // so skip the template's empty placeholder heading (kept for WWN where CATBOY fills it).
+    if(!scoped || st.magScope === "Weekly Weird News"){ s += '<div class="mast-sub"><h2>Top stories</h2></div>'; }
     if(st.showCrawl){ } // crawl already at very top
     s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
@@ -648,7 +650,7 @@ function renderTemplate(st){
     s += '<div class="grid"><div class="main">';
     if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
     if(!scoped){ s += renderMagShowcase(); }
-    s += '<div class="mast-sub"><h2>Top stories</h2></div>';
+    if(!scoped || st.magScope === "Weekly Weird News"){ s += '<div class="mast-sub"><h2>Top stories</h2></div>'; }
     s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
     s += '</div><div class="side">';
@@ -662,7 +664,7 @@ function renderTemplate(st){
     s += '<div class="grid">';
     if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
     if(!scoped){ s += renderMagShowcase(); }
-    s += '<div class="mast-sub"><h2>Top stories</h2></div>';
+    if(!scoped || st.magScope === "Weekly Weird News"){ s += '<div class="mast-sub"><h2>Top stories</h2></div>'; }
     s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
     s += '</div>';

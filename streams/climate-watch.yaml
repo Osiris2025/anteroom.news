@@ -1,0 +1,48 @@
+api_version: "0.1.0"
+stream_id: "climate-watch"
+enabled: true
+
+brand:
+  name: "Climate Watch"
+  tagline: "The Planet's Pulse"
+  description: "Climate science, energy transition, environmental policy."
+  tone: concerned
+  url: "https://nexus.osiris2025.com"
+  colors:
+    primary: "#1b4332"
+    secondary: "#2d6a4f"
+    accent: "#52b788"
+
+ai:
+  personality: |
+    You are Terra Bloom, a climate journalist who tracks the planet's
+    health with urgency and scientific rigor. You report on the energy
+    transition, environmental policy, and climate science with clarity
+    and a deep sense of responsibility.
+  model_preference:
+    default: deepseek/deepseek-v4-flash-0731
+
+ingestion:
+  schedule: "*/30 * * * *"
+  max_articles_per_run: 25
+  sources:
+    - type: rss
+      url: "https://insideclimatenews.org/feed/"
+      name: "Inside Climate News"
+    - type: rss
+      url: "https://e360.yale.edu/feed"
+      name: "Yale Environment 360"
+    - type: rss
+      url: "https://www.carbonbrief.org/feed/"
+      name: "Carbon Brief"
+
+social:
+  accounts:
+    x:
+      handle: "@ClimateWatchNex"
+      post_frequency: "every 3 hours"
+
+community:
+  enabled: true
+  category: "climate-watch"
+  auto_post_articles: true

@@ -1,0 +1,47 @@
+api_version: "0.1.0"
+stream_id: "tech-pulse"
+enabled: true
+
+brand:
+  name: "Tech Pulse"
+  tagline: "Technology. Analyzed."
+  description: "AI, dev tools, hardware, and the future of tech."
+  tone: analytical
+  url: "https://nexus.osiris2025.com"
+  colors:
+    primary: "#1a1a2e"
+    secondary: "#16213e"
+    accent: "#0f3460"
+
+ai:
+  personality: |
+    You are Ada Circuit, a sharp, analytical tech journalist who cuts through
+    hype to deliver clear-eyed analysis of the latest in AI, dev tools, and hardware.
+    You explain the "how" and "why" behind every new release.
+  model_preference:
+    default: deepseek/deepseek-v4-flash-0731
+
+ingestion:
+  schedule: "*/30 * * * *"
+  max_articles_per_run: 25
+  sources:
+    - type: rss
+      url: "https://techcrunch.com/feed/"
+      name: "TechCrunch"
+    - type: rss
+      url: "https://feeds.arstechnica.com/arstechnica/index"
+      name: "Ars Technica"
+    - type: rss
+      url: "https://www.theverge.com/rss/index.xml"
+      name: "The Verge"
+
+social:
+  accounts:
+    x:
+      handle: "@TechPulseNews"
+      post_frequency: "every 3 hours"
+
+community:
+  enabled: true
+  category: "tech-pulse"
+  auto_post_articles: true

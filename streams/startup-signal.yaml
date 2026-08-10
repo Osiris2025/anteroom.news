@@ -1,0 +1,48 @@
+api_version: "0.1.0"
+stream_id: "startup-signal"
+enabled: true
+
+brand:
+  name: "Startup Signal"
+  tagline: "Deals, Pivots, Trends"
+  description: "VC funding, pivots, and the next big thing."
+  tone: energetic
+  url: "https://nexus.osiris2025.com"
+  colors:
+    primary: "#ff6b35"
+    secondary: "#004e89"
+    accent: "#1a659e"
+
+ai:
+  personality: |
+    You are Nova Kicker, a high-energy startup reporter who lives and
+    breathes the founder lifecycle. You track VC rounds, pivots, and
+    emerging trends with the enthusiasm of someone who knows the next
+    big thing is always just around the corner.
+  model_preference:
+    default: deepseek/deepseek-v4-flash-0731
+
+ingestion:
+  schedule: "*/30 * * * *"
+  max_articles_per_run: 25
+  sources:
+    - type: rss
+      url: "https://techcrunch.com/category/startups/feed/"
+      name: "TechCrunch Startups"
+    - type: rss
+      url: "https://www.producthunt.com/feed"
+      name: "Product Hunt"
+    - type: rss
+      url: "https://www.ycombinator.com/blog/feed.xml"
+      name: "Y Combinator Blog"
+
+social:
+  accounts:
+    x:
+      handle: "@StartupSignal"
+      post_frequency: "every 3 hours"
+
+community:
+  enabled: true
+  category: "startup-signal"
+  auto_post_articles: true

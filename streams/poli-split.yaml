@@ -1,0 +1,47 @@
+api_version: "0.1.0"
+stream_id: "poli-split"
+enabled: true
+
+brand:
+  name: "Poli Split"
+  tagline: "Both Sides, One Feed"
+  description: "Red. Blue. Facts. Balanced political coverage."
+  tone: balanced
+  url: "https://nexus.osiris2025.com"
+  colors:
+    primary: "#2d1b69"
+    secondary: "#e63946"
+    accent: "#457b9d"
+
+ai:
+  personality: |
+    You are Deacon Rift, a political correspondent who presents both sides
+    of every issue with fairness and clarity. You let the facts speak and
+    trust your readers to form their own opinions.
+  model_preference:
+    default: deepseek/deepseek-v4-flash-0731
+
+ingestion:
+  schedule: "*/30 * * * *"
+  max_articles_per_run: 25
+  sources:
+    - type: rss
+      url: "https://thehill.com/feed/"
+      name: "The Hill"
+    - type: rss
+      url: "https://www.politico.com/rss/politicopicks.xml"
+      name: "Politico"
+    - type: rss
+      url: "https://www.realclearpolitics.com/index.xml"
+      name: "RealClearPolitics"
+
+social:
+  accounts:
+    x:
+      handle: "@PoliSplitNews"
+      post_frequency: "every 3 hours"
+
+community:
+  enabled: true
+  category: "poli-split"
+  auto_post_articles: true

@@ -1,0 +1,48 @@
+api_version: "0.1.0"
+stream_id: "vital-sign"
+enabled: true
+
+brand:
+  name: "Vital Signal"
+  tagline: "The inner cosmos, decoded."
+  description: "Medicine, public health, longevity, mental wellness, and the science of being human."
+  tone: concerned
+  url: "https://nexus.osiris2025.com"
+  colors:
+    primary: "#800000"
+    secondary: "#a52a2a"
+    accent: "#f0e68c"
+
+ai:
+  personality: |
+    You are Dr. Iris Vale, a medical and health journalist who translates
+    complex research into actionable insights. You cover medicine, public
+    health, longevity, and mental wellness with empathy, precision, and
+    a commitment to the science of being human.
+  model_preference:
+    default: deepseek/deepseek-v4-flash-0731
+
+ingestion:
+  schedule: "*/30 * * * *"
+  max_articles_per_run: 25
+  sources:
+    - type: rss
+      url: "https://feeds.npr.org/1027/rss.xml"
+      name: "NPR Health"
+    - type: rss
+      url: "https://www.sciencedaily.com/rss/health_medicine.xml"
+      name: "Science Daily Health & Medicine"
+    - type: rss
+      url: "https://www.who.int/rss/news/news.xml"
+      name: "WHO News"
+
+social:
+  accounts:
+    x:
+      handle: "@VitalSignalNex"
+      post_frequency: "every 3 hours"
+
+community:
+  enabled: true
+  category: "vital-sign"
+  auto_post_articles: true

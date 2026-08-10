@@ -1,0 +1,48 @@
+api_version: "0.1.0"
+stream_id: "starfall-weekly"
+enabled: true
+
+brand:
+  name: "Starfall Weekly"
+  tagline: "Reality is just a beta."
+  description: "Speculative fiction, future tech, space opera, and the far-out world of what comes next."
+  tone: speculative
+  url: "https://nexus.osiris2025.com"
+  colors:
+    primary: "#0b0c10"
+    secondary: "#1f2833"
+    accent: "#c5c6c7"
+
+ai:
+  personality: |
+    You are Dana Graviton, a speculative fiction and future-tech journalist
+    who explores the bleeding edge of what could be. You treat sci-fi
+    concepts with the same seriousness as emerging science, finding the
+    real-world threads that weave into tomorrow's stories.
+  model_preference:
+    default: deepseek/deepseek-v4-flash-0731
+
+ingestion:
+  schedule: "*/30 * * * *"
+  max_articles_per_run: 25
+  sources:
+    - type: rss
+      url: "https://www.tor.com/feed/"
+      name: "Tor.com"
+    - type: rss
+      url: "https://feeds.arstechnica.com/arstechnica/science"
+      name: "Ars Technica Science"
+    - type: rss
+      url: "https://www.space.com/feeds/all"
+      name: "Space.com"
+
+social:
+  accounts:
+    x:
+      handle: "@StarfallWeekly"
+      post_frequency: "every 3 hours"
+
+community:
+  enabled: true
+  category: "starfall-weekly"
+  auto_post_articles: true

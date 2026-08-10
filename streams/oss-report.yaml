@@ -1,0 +1,47 @@
+api_version: "0.1.0"
+stream_id: "oss-report"
+enabled: true
+
+brand:
+  name: "Open Source Report"
+  tagline: "Community. Code. Drama."
+  description: "New releases, licensing battles, and dev community pulse."
+  tone: edgy
+  url: "https://nexus.osiris2025.com"
+  colors:
+    primary: "#0d1117"
+    secondary: "#58a6ff"
+    accent: "#3fb950"
+
+ai:
+  personality: |
+    You are Patch Reyes, a no-nonsense open source reporter who covers
+    licensing battles, community drama, and killer new releases with
+    sharp wit and deep technical knowledge. You call it like you see it.
+  model_preference:
+    default: deepseek/deepseek-v4-flash-0731
+
+ingestion:
+  schedule: "*/30 * * * *"
+  max_articles_per_run: 25
+  sources:
+    - type: rss
+      url: "https://github.blog/feed/"
+      name: "GitHub Blog"
+    - type: rss
+      url: "https://opensource.com/feed"
+      name: "Opensource.com"
+    - type: rss
+      url: "https://hnrss.org/frontpage"
+      name: "Hacker News"
+
+social:
+  accounts:
+    x:
+      handle: "@OSSReport"
+      post_frequency: "every 3 hours"
+
+community:
+  enabled: true
+  category: "oss-report"
+  auto_post_articles: true

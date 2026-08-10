@@ -640,10 +640,7 @@ function renderTemplate(st){
     if(!scoped){ s += renderMagShowcase(); }
     s += '<div class="mast-sub"><h2>Top stories</h2></div>';
     if(st.showCrawl){ } // crawl already at very top
-    // Scoped magazine pages: skip static filler story-cards (they only link back to
-        // the same magazine page = "click refreshes"). Real articles come via the LiveFeed
-        // pipeline strip above, which links to the internal reader.
-    if(!scoped){ s += renderSections(st, st.showStats); }
+    s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
     s += '</div></div>';
   }
@@ -652,7 +649,7 @@ function renderTemplate(st){
     if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
     if(!scoped){ s += renderMagShowcase(); }
     s += '<div class="mast-sub"><h2>Top stories</h2></div>';
-    if(!scoped){ s += renderSections(st, st.showStats); }
+    s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
     s += '</div><div class="side">';
     st.sidebar.forEach(function(sb){
@@ -666,7 +663,7 @@ function renderTemplate(st){
     if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
     if(!scoped){ s += renderMagShowcase(); }
     s += '<div class="mast-sub"><h2>Top stories</h2></div>';
-    if(!scoped){ s += renderSections(st, st.showStats); }
+    s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
     s += '</div>';
   }
@@ -759,11 +756,23 @@ function renderSections(st, showStats, full){
   if(showStats){
     s += '<div class="stats"><div class="stat"><b>11</b><span>Articles</span></div><div class="stat"><b>187</b><span>Comments</span></div><div class="stat"><b>7</b><span>Magazines</span></div></div>';
   }
-  var scopeMag = st.magScope; // plain-text magazine name to scope to ('' = show all)
+  var scoped = !!st.magScope;
+  var scopeMag = st.magScope;
+  if(scoped && scopeMag !== "Weekly Weird News"){
+    // Scoped non-WWN page: skip static filler (self-linking cards = click refresh).
+    // Real articles come via the LiveFeed pipeline strip above (internal reader links).
+    return s;
+  }
+  if(scopeMag === "Weekly Weird News"){
+    // Scoped WWN page: show the CATBOY flagship (real episode route).
+    return s + '<div class="sec"><div class="sec-t"><div class="dot"></div><h2>Weekly Weird News</h2></div><div class="cards">'
+      + '<a class="card wide" href="/streams/weekly-weird-news/catboy-episode-1" data-href="/streams/weekly-weird-news/catboy-episode-1"><div class="k" style="color:#fbbf24">CATBOY</div><h3>The Return of Catboy: Grainy Photo Confirms Half-Cat Cryptid at 7-Eleven</h3><p>Grainy security footage from a Tuscaloosa 7-Eleven. Dr. Meowton rates 9.5/10.</p></a>'
+      + '</div></div>';
+  }
   var magGroups = {};
   ARTICLES.forEach(function(a){ (magGroups[a.mag]=magGroups[a.mag]||[]).push(a); });
   Object.keys(magGroups).forEach(function(mag){
-    if(scopeMag && mag !== scopeMag) return; // scoped: only this magazine's section
+    if(scopeMag && mag !== scopeMag) return;
     s += '<div class="sec"><div class="sec-t"><div class="dot"></div><h2>'+mag+'</h2></div><div class="cards">';
     magGroups[mag].forEach(function(a){ s += '<div class="card"'+dh(a)+'><div class="k">'+a.k+'</div><h3>'+a.title+'</h3><p>'+a.desc+'</p></div>'; });
     s += '</div></div>';

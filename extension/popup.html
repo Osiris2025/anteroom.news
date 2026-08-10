@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Save to Nexus</title>
+  <style>
+    :root { --accent: #ffd700; --bg: #0b0e11; --card: #13161a; --text: #e6e6e6; --muted: #8a8f98; }
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; background: var(--bg); color: var(--text); width: 320px; margin: 0; padding: 14px; font-size: 13px; line-height: 1.5; }
+    h1 { font-size: 15px; font-weight: 800; margin: 0 0 2px; display: flex; align-items: center; gap: 6px; }
+    .accent { color: var(--accent); }
+    .sub { color: var(--muted); font-size: 11px; margin-bottom: 12px; }
+    .card { background: var(--card); border: 1px solid rgba(150,150,150,.15); border-radius: 10px; padding: 12px; margin-bottom: 10px; }
+    .url { font-size: 11px; color: var(--muted); word-break: break-all; max-height: 40px; overflow: hidden; }
+    .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 4px; }
+    button { width: 100%; padding: 10px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; border: 1px solid rgba(255,215,0,.4); background: rgba(255,215,0,.12); color: var(--accent); }
+    button:disabled { opacity: .5; cursor: wait; }
+    .status { font-size: 16px; text-align: center; padding: 8px 0; }
+    .warn { padding: 7px 9px; border-radius: 6px; margin-top: 6px; font-size: 11px; display: flex; gap: 6px; align-items: flex-start; }
+    .block { background: #3a0a0a; color: #f87171; }
+    .warn-lv { background: #3a2f00; color: #ffd700; }
+    .info { background: rgba(150,150,150,.1); color: #aaa; }
+    .mag { display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 700; background: rgba(255,215,0,.12); color: var(--accent); margin-top: 6px; }
+    a { color: var(--accent); }
+    .foot { font-size: 10px; color: var(--muted); text-align: center; margin-top: 8px; }
+    .err { color: #f87171; font-size: 12px; margin-top: 6px; }
+  </style>
+</head>
+<body>
+  <h1>⚡ <span class="accent">Save to Nexus</span></h1>
+  <div class="sub">AI News Nexus link collector</div>
+
+  <div class="card">
+    <div class="label">Current page</div>
+    <div class="url" id="pageUrl">…</div>
+  </div>
+
+  <button id="saveBtn">💾 Save to Nexus</button>
+  <div id="status" class="status"></div>
+
+  <div id="result"></div>
+
+  <div class="foot">Drafts land in the <a href="https://nexus.osiris2025.com/admin" target="_blank">Dispatch Desk</a> inbox for review.</div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

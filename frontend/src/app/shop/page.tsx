@@ -87,12 +87,13 @@ export default function ShopPage() {
                 gap: 8,
               }}
             >
-              {/* Product image placeholder */}
+              {/* Product image */}
               <div
                 style={{
                   width: "100%",
                   aspectRatio: "1",
                   borderRadius: 8,
+                  overflow: "hidden",
                   background: "linear-gradient(135deg, #7c3aed, #2563eb)",
                   display: "flex",
                   alignItems: "center",
@@ -101,7 +102,17 @@ export default function ShopPage() {
                   opacity: 0.8,
                 }}
               >
-                {p.category === "swag" ? "🧢" : "📦"}
+                {p.imageUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={p.imageUrl}
+                    alt={p.name}
+                    style={{ width: "100%", height: "100%", objectFit: "cover", display: "block", opacity: 1 }}
+                    loading="lazy"
+                  />
+                ) : (
+                  (p.category === "swag" ? "🧢" : "📦")
+                )}
               </div>
 
               {/* Category badge */}

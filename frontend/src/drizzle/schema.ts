@@ -163,6 +163,22 @@ export const comment = pgTable("comment", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Products — SWAG / marketplace catalog (catboy mugs, sweatshirts, digital goods)
+export const product = pgTable("product", {
+  id: text("id").primaryKey(),
+  name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
+  description: text("description"),
+  priceCents: integer("price_cents").notNull().default(0),
+  salePriceCents: integer("sale_price_cents"),
+  imageUrl: text("image_url"),
+  category: text("category").notNull().default("swag"),
+  tags: jsonb("tags"),
+  active: boolean("active").notNull().default(true),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export type CommentRow = typeof comment.$inferSelect;
 
 export type User = typeof user.$inferSelect;
@@ -170,3 +186,4 @@ export type Article = typeof article.$inferSelect;
 export type Pin = typeof pin.$inferSelect;
 export type MagazineRow = typeof magazine.$inferSelect;
 export type CategoryRow = typeof category.$inferSelect;
+export type ProductRow = typeof product.$inferSelect;

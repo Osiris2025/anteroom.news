@@ -65,6 +65,12 @@ export default function Navbar() {
             >
               Social
             </Link>
+            <Link
+              href="/shop"
+              className="text-sm font-medium text-pink-600 dark:text-pink-400 hover:text-pink-500 dark:hover:text-pink-300 transition-colors"
+            >
+              Shop
+            </Link>
             {streams.map((s) => (
               <Link
                 key={s.name}

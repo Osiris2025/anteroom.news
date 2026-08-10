@@ -3,10 +3,14 @@ AI Discovery Agents — RSS scraping and database ingestion for AI News Nexus.
 """
 
 import hashlib
+import html
 import logging
+import re
+import urllib.request
 import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from typing import Optional
+from urllib.parse import urljoin
 from uuid import uuid4
 
 import httpx
@@ -15,6 +19,99 @@ import feedparser
 from ..config import StreamConfig
 
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Image extraction helpers
+# ---------------------------------------------------------------------------
+# Short user-agent for fetching article pages (og:image extraction).
+_IMG_HEADERS = {
+    "User-Agent": "Mozilla/5.0 (compatible; AI-News-Nexus/1.0; +https://nexus.osiris2025.com)",
+}
+
+def _resolve_url(url: str) -> str:
+    """Clean up a raw image URL found in a feed/meta tag."""
+    if not url:
+        return ""
+    url = html.unescape(url.strip().strip("\"' "))
+    if url.startswith("//"):
+        return "https:" + url
+    if url.startswith(("http://", "https://", "data:")):
+        return url
+    return url
+
+
+def _feed_image(entry) -> str:
+    """Try to pull an image off the feed entry without an extra HTTP request.
+
+    Checks (in order): media_content, media_thumbnail, enclosures with
+    image mimetype, and link types that are images.
+    """
+    if not hasattr(entry, "keys"):
+        return ""
+    data = getattr(entry, "media_content", None)
+    if data:
+        for m in data:
+            url = _resolve_url(m.get("url", ""))
+            if url:
+                return url
+    data = getattr(entry, "media_thumbnail", None)
+    if data:
+        for m in data:
+            url = _resolve_url(m.get("url", ""))
+            if url:
+                return url
+    encl = getattr(entry, "enclosures", None)
+    if encl:
+        for e in encl:
+            typ = (e.get("type", "") or "")
+            if "image" in typ:
+                url = _resolve_url(e.get("href", "") or e.get("url", ""))
+                if url:
+                    return url
+    links = getattr(entry, "links", None)
+    if links:
+        for lk in links:
+            rel = (lk.get("type", "") or "") + "|" + (lk.get("rel", "") or "")
+            if "image" in rel:
+                url = _resolve_url(lk.get("href", ""))
+                if url:
+                    return url
+    # IMAGE tag inside the description/summary HTML (common in some feeds).
+    return ""
+
+
+def _summary_image(summary: str) -> str:
+    """Extract the first <img src> from an (HTML) summary, if any."""
+    if not summary:
+        return ""
+    m = re.search(r'<img[^>]+src=["\']([^"\']+)["\']', summary)
+    return _resolve_url(m.group(1)) if m else ""
+
+
+def _page_og_image(page_url: str) -> str:
+    """Fetch the article page and return og:image / twitter:image (bounded)."""
+    if not page_url or not page_url.startswith("http"):
+        return ""
+    try:
+        req = urllib.request.Request(page_url, headers=_IMG_HEADERS)
+        with urllib.request.urlopen(req, timeout=6) as resp:
+            ctype = resp.headers.get("Content-Type", "")
+            if "html" not in ctype and "text" not in ctype and ctype:
+                return ""
+            body = resp.read(200000).decode("utf-8", "ignore")
+        pat = (
+            r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']',
+            r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']',
+            r'<meta[^>]+name=["\']twitter:image["\'][^>]+content=["\']([^"\']+)["\']',
+        )
+        for p in pat:
+            m = re.search(p, body, re.I)
+            if m:
+                return _resolve_url(urljoin(page_url, m.group(1)))
+        return ""
+    except Exception:
+        return ""
+
 
 # ---------------------------------------------------------------------------
 # RSS feed scraper
@@ -39,13 +136,18 @@ def fetch_rss(url: str, timeout: int = 30) -> list[dict]:
 
         # Extract description / summary
         summary = ""
+        raw_summary = ""
         if hasattr(entry, "summary"):
-            summary = entry.summary
+            summary = raw_summary = entry.summary
         elif hasattr(entry, "description"):
-            summary = entry.description
+            summary = raw_summary = entry.description
+        # Grab an image before HTML is stripped: feed media first, then an
+        # <img> in the summary, and finally fetch the article page's og:image.
+        image_url = _feed_image(entry) or _summary_image(raw_summary)
+        if not image_url:
+            image_url = _page_og_image(link)
         # Strip HTML tags for clean summary
         if summary:
-            import re
             summary = re.sub(r"<[^>]+>", "", summary)
             summary = summary[:500]
 
@@ -62,6 +164,7 @@ def fetch_rss(url: str, timeout: int = 30) -> list[dict]:
             "title": title,
             "summary": summary,
             "published": published,
+            "image_url": image_url or None,
         })
 
     return articles
@@ -110,9 +213,27 @@ def fetch_reddit(subreddit: str, sort: str = "hot", limit: int = 25) -> list[dic
             "title": title,
             "summary": summary or f"[Reddit r/{subreddit}]",
             "published": published,
+            "image_url": _reddit_image(post),
         })
 
     return articles
+
+
+def _reddit_image(post: dict) -> str:
+    """Best available image for a Reddit post (thumbnail/preview/url)."""
+    if post.get("url", "").endswith((".jpg", ".jpeg", ".png", ".gif", ".webp")):
+        return post["url"]
+    thumb = post.get("thumbnail", "")
+    if isinstance(thumb, str) and thumb.startswith(("http://", "https://")) and "default" not in thumb:
+        return thumb
+    preview = post.get("preview", {})
+    if isinstance(preview, dict) and preview.get("images"):
+        imgs = preview["images"][0]
+        if isinstance(imgs, dict):
+            src = ((imgs.get("source") or {}) or {}).get("url", "")
+            if src:
+                return _resolve_url(src)
+    return ""
 
 
 # ---------------------------------------------------------------------------
@@ -237,8 +358,8 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
             with db_conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO article (id, ingress, source_url, title, summary, status, magazine_id, published_at)
-                    VALUES (%s, %s, %s, %s, %s, 'draft', %s, %s)
+                    INSERT INTO article (id, ingress, source_url, title, summary, status, magazine_id, published_at, image_url)
+                    VALUES (%s, %s, %s, %s, %s, 'draft', %s, %s, %s)
                     ON CONFLICT (source_url) DO NOTHING
                     """,
                     (
@@ -249,6 +370,7 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
                         art.get("summary", ""),
                         art.get("magazine_id"),  # may be None for YAML-config sources w/o mag
                         art.get("published"),
+                        art.get("image_url"),  # may be None when no image found
                     ),
                 )
                 if cur.rowcount > 0:

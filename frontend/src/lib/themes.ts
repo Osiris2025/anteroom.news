@@ -641,9 +641,9 @@ function renderTemplate(st){
     s+='</div><div class="main">';
     if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
     if(!scoped){ s += renderMagShowcase(); }
-    // Scoped non-WWN pages show a real "Top Stories" block above (MagazineTopStories),
-    // so skip the template's empty placeholder heading (kept for WWN where CATBOY fills it).
-    if(!scoped || st.magScope === "Weekly Weird News"){ s += '<div class="mast-sub"><h2>Top stories</h2></div>'; }
+    // Scoped pages: the real "Top Stories" grid (from published articles) renders above in
+    // MagazineTopStories, so the template's static placeholder heading is removed entirely.
+    if(!scoped){ s += '<div class="mast-sub"><h2>Top stories</h2></div>'; }
     if(st.showCrawl){ } // crawl already at very top
     s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
@@ -653,7 +653,7 @@ function renderTemplate(st){
     s += '<div class="grid"><div class="main">';
     if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
     if(!scoped){ s += renderMagShowcase(); }
-    if(!scoped || st.magScope === "Weekly Weird News"){ s += '<div class="mast-sub"><h2>Top stories</h2></div>'; }
+    if(!scoped){ s += '<div class="mast-sub"><h2>Top stories</h2></div>'; }
     s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
     s += '</div><div class="side">';
@@ -667,7 +667,7 @@ function renderTemplate(st){
     s += '<div class="grid">';
     if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
     if(!scoped){ s += renderMagShowcase(); }
-    if(!scoped || st.magScope === "Weekly Weird News"){ s += '<div class="mast-sub"><h2>Top stories</h2></div>'; }
+    if(!scoped){ s += '<div class="mast-sub"><h2>Top stories</h2></div>'; }
     s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
     s += '</div>';
@@ -762,22 +762,15 @@ function renderSections(st, showStats, full){
     s += '<div class="stats"><div class="stat"><b>11</b><span>Articles</span></div><div class="stat"><b>187</b><span>Comments</span></div><div class="stat"><b>7</b><span>Magazines</span></div></div>';
   }
   var scoped = !!st.magScope;
-  var scopeMag = st.magScope;
-  if(scoped && scopeMag !== "Weekly Weird News"){
-    // Scoped non-WWN page: skip static filler (self-linking cards = click refresh).
-    // Real articles come via the LiveFeed pipeline strip above (internal reader links).
+  if(scoped){
+    // Scoped magazine pages: the real "Top Stories" grid (from published articles)
+    // renders above in MagazineTopStories. Skip static template filler/placeholders
+    // so there's no duplicate section.
     return s;
-  }
-  if(scopeMag === "Weekly Weird News"){
-    // Scoped WWN page: show the CATBOY flagship (real episode route).
-    return s + '<div class="sec"><div class="sec-t"><div class="dot"></div><h2>Weekly Weird News</h2></div><div class="cards">'
-      + '<a class="card wide" href="/streams/weekly-weird-news/catboy-episode-1" data-href="/streams/weekly-weird-news/catboy-episode-1"><div class="k" style="color:#fbbf24">CATBOY</div><h3>The Return of Catboy: Grainy Photo Confirms Half-Cat Cryptid at 7-Eleven</h3><p>Grainy security footage from a Tuscaloosa 7-Eleven. Dr. Meowton rates 9.5/10.</p></a>'
-      + '</div></div>';
   }
   var magGroups = {};
   ARTICLES.forEach(function(a){ (magGroups[a.mag]=magGroups[a.mag]||[]).push(a); });
   Object.keys(magGroups).forEach(function(mag){
-    if(scopeMag && mag !== scopeMag) return;
     s += '<div class="sec"><div class="sec-t"><div class="dot"></div><h2>'+mag+'</h2></div><div class="cards">';
     magGroups[mag].forEach(function(a){ s += '<div class="card"'+dh(a)+'><div class="k">'+a.k+'</div><h3>'+a.title+'</h3><p>'+a.desc+'</p></div>'; });
     s += '</div></div>';

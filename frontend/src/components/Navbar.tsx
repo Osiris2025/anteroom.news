@@ -53,6 +53,18 @@ export default function Navbar() {
             AI News Nexus
           </Link>
           <div className="hidden md:flex items-center gap-6">
+            <Link
+              href="/collect"
+              className="text-sm font-medium text-amber-600 dark:text-amber-400 hover:text-amber-500 dark:hover:text-amber-300 transition-colors"
+            >
+              Collect
+            </Link>
+            <Link
+              href="/social-feed"
+              className="text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-colors"
+            >
+              Social
+            </Link>
             {streams.map((s) => (
               <Link
                 key={s.name}

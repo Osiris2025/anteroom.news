@@ -485,6 +485,7 @@ export const MAGAZINES: Magazine[] = [
   { id:"climate-watch", name:"Climate Watch", short:"Climate Watch", tagline:"The Planet's Pulse", description:"Climate science, energy transition, environmental policy.", color:"#059669", accent:"#34d399", theme:"dashboard", tags:["ticker","alert","game","anecdote"] },
   { id:"startup-signal", name:"Startup Signal", short:"Startup", tagline:"Deals, Pivots, Trends", description:"VC funding, pivots, and the next big thing.", color:"#d97706", accent:"#fbbf24", theme:"magazine", tags:["ticker","crosspost","puzzle","alert"] },
   { id:"oss-report", name:"Open Source Report", short:"OSS Report", tagline:"Community. Code. Drama.", description:"New releases, licensing battles, and dev community pulse.", color:"#dc2626", accent:"#f87171", theme:"terminal", tags:["alert","crosspost","game"] },
+  { id:"starfall-weekly", name:"Starfall Weekly", short:"Starfall", tagline:"Reality is just a beta.", description:"Speculative fiction, future tech, space opera, and the far-out world of what comes next.", color:"#0f380f", accent:"#00ff40", theme:"crt", tags:["ticker","alert","crosspost","puzzle"] },
 ];
 
 export const magazineTheme: Record<string, string> = {
@@ -496,6 +497,7 @@ export const magazineTheme: Record<string, string> = {
   "startup-signal": "magazine",
   "oss-report": "terminal",
   "local-lens": "blog",
+  "starfall-weekly": "crt",
 };
 
 // Plural alias matching what ThemeContext imports.

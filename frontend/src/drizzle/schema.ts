@@ -101,6 +101,20 @@ export const category = pgTable("category", {
   slug: text("slug").notNull(),
 });
 
+// Sources — DB-backed RSS/Reddit feeds per magazine, editable in the admin UI.
+// The engine reads these during discovery so admin-added feeds get pulled.
+export const source = pgTable("source", {
+  id: text("id").primaryKey(),
+  magazineId: text("magazine_id")
+    .references(() => magazine.id, { onDelete: "cascade" }),
+  type: text("type").notNull().default("rss"),
+  url: text("url").notNull(),
+  name: text("name"),
+  sort: text("sort").default("hot"),
+  limit: integer("limit").notNull().default(25),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 // Articles — the core content entity, shared by all 3 ingress points.
 // Lifecycle: draft -> approved (review queue) -> live. Rejected if unsuitable.
 // Ingress source: autonomous / admin-link / collector.
@@ -187,3 +201,4 @@ export type Pin = typeof pin.$inferSelect;
 export type MagazineRow = typeof magazine.$inferSelect;
 export type CategoryRow = typeof category.$inferSelect;
 export type ProductRow = typeof product.$inferSelect;
+export type SourceRow = typeof source.$inferSelect;

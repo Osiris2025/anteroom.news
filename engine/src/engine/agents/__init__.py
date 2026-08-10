@@ -150,6 +150,83 @@ def scan_stream_sources(config: StreamConfig) -> list[dict]:
 # Database writer
 # ---------------------------------------------------------------------------
 
+def run_db_sources(configs: list, db_url: str) -> list[dict]:
+    """Query the DB 'source' table and scrape any admin-added feeds.
+
+    Returns a list of article dicts (with id, stream_id, source_name set) — ready
+    for deduplication and insertion downstream. Magazines that already have a
+    YAML StreamConfig reuse it so personalities/behaviour stay consistent;
+    otherwise a minimal default config is generated.
+    """
+    import psycopg2
+
+    config_by_id = {c.stream_id: c for c in configs} if configs else {}
+
+    from ..config import AIConfig, Brand, Ingestion, Source, StreamConfig
+
+    conn = psycopg2.connect(db_url)
+    try:
+        with conn.cursor() as cur:
+            cur.execute(
+                """
+                SELECT s.magazine_id, s.type, s.url, s.name, s.sort, s."limit",
+                       m.name AS magazine_name, m.tone
+                FROM source s
+                LEFT JOIN magazine m ON m.id = s.magazine_id
+                WHERE s.magazine_id IS NOT NULL
+                ORDER BY s.magazine_id
+                """
+            )
+            rows = cur.fetchall()
+    finally:
+        conn.close()
+
+    if not rows:
+        logger.info("  No DB-backed sources to scan.")
+        return []
+
+    grouped: dict[str, list] = {}
+    for magazine_id, stype, url, name, sort, limit, mname, mtone in rows:
+        grouped.setdefault(magazine_id, []).append({
+            "type": stype, "url": url, "name": name, "sort": sort, "limit": limit,
+        })
+
+    all_articles: list[dict] = []
+    for magazine_id, sources in grouped.items():
+        # Reuse an existing config's brand/AI persona if present, else default.
+        base = config_by_id.get(magazine_id)
+        src_objs = []
+        for s in sources:
+            if s["type"] == "reddit":
+                # DB stores the subreddit name in `url`; scanner expects `subreddit`.
+                src_objs.append(Source(
+                    type="reddit", subreddit=s["url"] or "", url="",
+                    name=s["name"] or f"r/{s['url']}",
+                    sort=s["sort"] or "hot", limit=s["limit"] or 25,
+                ))
+            else:
+                src_objs.append(Source(
+                    type="rss", url=s["url"] or "", name=s["name"] or s["url"],
+                    sort=s["sort"] or "hot", limit=s["limit"] or 25,
+                ))
+
+        scan_cfg = StreamConfig(
+            stream_id=magazine_id,
+            brand=(base.brand if base else Brand(name=mname or magazine_id, tone=mtone or "neutral")),
+            ai=(base.ai if base else AIConfig()),
+            ingestion=Ingestion(sources=src_objs),
+        )
+
+        articles = scan_stream_sources(scan_cfg)
+        # Tag each discovered article with its magazine id so insert storage assigns it.
+        for a in articles:
+            a["magazine_id"] = magazine_id
+        logger.info("  %s (DB sources): found %d articles", magazine_id, len(articles))
+        all_articles.extend(articles)
+
+    return all_articles
+
+
 def insert_articles(db_conn, articles: list[dict]) -> int:
     """Insert articles into the DB, skipping duplicates by source_url."""
     import psycopg2.extras
@@ -160,8 +237,8 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
             with db_conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO article (id, ingress, source_url, title, summary, status, published_at)
-                    VALUES (%s, %s, %s, %s, %s, 'draft', %s)
+                    INSERT INTO article (id, ingress, source_url, title, summary, status, magazine_id, published_at)
+                    VALUES (%s, %s, %s, %s, %s, 'draft', %s, %s)
                     ON CONFLICT (source_url) DO NOTHING
                     """,
                     (
@@ -170,6 +247,7 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
                         art["source_url"],
                         art["title"],
                         art.get("summary", ""),
+                        art.get("magazine_id"),  # may be None for YAML-config sources w/o mag
                         art.get("published"),
                     ),
                 )
@@ -195,6 +273,11 @@ def run_discovery(configs: list[StreamConfig], db_url: str) -> dict:
         articles = scan_stream_sources(cfg)
         logger.info("  %s: found %d new articles", cfg.stream_id, len(articles))
         all_articles.extend(articles)
+
+    # Also scan DB-backed sources added via the admin UI (Part B).
+    db_articles = run_db_sources(configs, db_url)
+    logger.info("DB-backed sources yielded %d articles total", len(db_articles))
+    all_articles.extend(db_articles)
 
     if not all_articles:
         logger.info("No new articles discovered.")

@@ -12,13 +12,25 @@ import LiveFeed from "@/components/LiveFeed";
  *   theme template as the homepage (so every theme's own HTML template + CSS apply)
  *   and the LiveFeed is filtered to that magazine's approved articles.
  * - The app navbar owns the top nav, so the template's internal header is hidden.
+ *
+ * Magazine URL slug ≠ canonical id (2026-08-10): the static MAGAZINES id for New
+ * Frontiers in Science is `weird-and-wild`, so /magazines/new-frontiers-in-science
+ * (name-slugified) did NOT resolve. We resolve with a slugify fallback
+ * (id match → slugified name → slugified short) and use the RESOLVED mag.id
+ * (never the raw URL slug) for the LiveFeed fetch — DB articles are stored under
+ * the canonical id. This lives in the component only; themes.ts is untouched.
  */
 export default function ThemeRenderer({ magazineId }: { magazineId?: string }) {
   const router = useRouter();
   const { currentTheme, setTheme } = useTheme();
   const shellRef = useRef<HTMLDivElement>(null);
 
-  const magazine = magazineId ? MAGAZINES.find((m) => m.id === magazineId) : undefined;
+  const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  const magazine = magazineId
+    ? MAGAZINES.find((m) => m.id === magazineId) ||
+      MAGAZINES.find((m) => slugify(m.name) === magazineId) ||
+      MAGAZINES.find((m) => slugify(m.short) === magazineId)
+    : undefined;
 
   // Semantic body for the ACTIVE theme (internal header suppressed; navbar owns top nav).
   // When scoped to a magazine, magScope = magazine name -> template hides the hardcoded
@@ -67,7 +79,7 @@ export default function ThemeRenderer({ magazineId }: { magazineId?: string }) {
           <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
         </div>
       )}
-      <LiveFeed magazine={magazineId} />
+      <LiveFeed magazine={magazine ? magazine.id : undefined} />
       <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   );

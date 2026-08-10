@@ -73,6 +73,11 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
             </a>
           ) : (
             <a key={it.article!.id} href={`/articles/${it.article!.id}`} className={it.className} style={cardLink}>
+              {it.article!.imageUrl ? (
+                <div className="mz-ed-thumb">
+                  <img src={it.article!.imageUrl} alt="" loading="lazy" />
+                </div>
+              ) : null}
               <div className="mz-ed-kicker">
                 {it.article!.pinned && it.article!.pinKind ? (
                   <span className="mz-ed-pin">{it.article!.pinKind}</span>
@@ -132,6 +137,9 @@ const totemCss = `
 #${UID} .mz-ed-quote { grid-column: span 6; justify-content: center; }
 
 #${UID} .mz-ed-kicker { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent, #ffd700); font-weight: 800; }
+#${UID} .mz-ed-thumb { margin: -18px -20px 14px; border-radius: 12px 12px 0 0; overflow: hidden; background: var(--card-bg, rgba(127,127,127,.08)); }
+#${UID} .mz-ed-thumb img { display: block; width: 100%; height: 130px; object-fit: cover; }
+#${UID} .mz-ed-card.tall .mz-ed-thumb img { height: 180px; }
 #${UID} .mz-ed-pin { padding: 2px 8px; border-radius: 999px; border: 1px solid var(--accent, #ffd700); font-size: 9px; letter-spacing: 1px; }
 #${UID} .mz-ed-title { font-size: 17px; font-weight: 800; line-height: 1.28; letter-spacing: -0.01em; }
 #${UID} .mz-ed-card.wide .mz-ed-title { font-size: 20px; }

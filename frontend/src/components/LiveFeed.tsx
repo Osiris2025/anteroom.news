@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 type LiveArticle = {
   id: string; title: string; summary: string | null; sourceUrl: string | null;
   subcategory: string | null; magazine: { id: string; name: string } | null;
-  pinned?: boolean; pinKind?: string | null;
+  imageUrl?: string | null; pinned?: boolean; pinKind?: string | null;
 };
 
 // Resolve the number of pipeline cards to render based on viewport so they fill
@@ -55,12 +55,20 @@ export default function LiveFeed({ magazine }: { magazine?: string }) {
       <div style={{ display: "grid", gap: 10, gridTemplateColumns: `repeat(${shown.length}, minmax(0,1fr))` }}>
         {shown.map((a) => (
           <a key={a.id} href={`/articles/${a.id}`}
-             style={{ textDecoration: "none", color: "inherit", display: "block", padding: "8px 0", borderTop: a.pinned ? "2px solid var(--accent, #ffd700)" : "1px solid rgba(150,150,150,.12)", minWidth: 0 }}>
+             style={{ textDecoration: "none", color: "inherit", display: "flex", gap: 10, alignItems: "flex-start", padding: "8px 0", borderTop: a.pinned ? "2px solid var(--accent, #ffd700)" : "1px solid rgba(150,150,150,.12)", minWidth: 0 }}>
+            {a.imageUrl ? (
+              <span style={{ flex: "0 0 44px", width: 44, height: 44, borderRadius: 8, overflow: "hidden", background: "var(--card-bg, rgba(127,127,127,.08))" }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={a.imageUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} loading="lazy" />
+              </span>
+            ) : null}
+            <span style={{ minWidth: 0 }}>
             <div style={{ fontSize: 10, color: "var(--accent,#ffd700)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {a.pinned ? `${a.pinKind || "PINNED"} · ` : ""}{a.magazine?.name || "News"}{a.subcategory ? ` / ${a.subcategory}` : ""}
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</div>
             {a.summary && <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.summary}</div>}
+            </span>
           </a>
         ))}
       </div>

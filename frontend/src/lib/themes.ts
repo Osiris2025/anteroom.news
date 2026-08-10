@@ -486,8 +486,8 @@ export const MAGAZINES: Magazine[] = [
   { id:"startup-signal", name:"Startup Signal", short:"Startup", tagline:"Deals, Pivots, Trends", description:"VC funding, pivots, and the next big thing.", color:"#d97706", accent:"#fbbf24", theme:"magazine", tags:["ticker","crosspost","puzzle","alert"] },
   { id:"oss-report", name:"Open Source Report", short:"OSS Report", tagline:"Community. Code. Drama.", description:"New releases, licensing battles, and dev community pulse.", color:"#dc2626", accent:"#f87171", theme:"terminal", tags:["alert","crosspost","game"] },
   { id:"starfall-weekly", name:"Starfall Weekly", short:"Starfall", tagline:"Reality is just a beta.", description:"Speculative fiction, future tech, space opera, and the far-out world of what comes next.", color:"#0f380f", accent:"#00ff40", theme:"crt", tags:["ticker","alert","crosspost","puzzle"] },
+  { id:"vital-sign", name:"Vital Signal", short:"Vital Signal", tagline:"The inner cosmos, decoded.", description:"Medicine, public health, longevity, mental wellness, and the science of being human.", color:"#0b5563", accent:"#2dd4bf", theme:"dashboard", tags:["ticker","alert","puzzle","anecdote"] },
 ];
-
 export const magazineTheme: Record<string, string> = {
   "weekly-weird-news": "tabloid",
   "weird-and-wild": "glass",
@@ -498,6 +498,7 @@ export const magazineTheme: Record<string, string> = {
   "oss-report": "terminal",
   "local-lens": "blog",
   "starfall-weekly": "crt",
+  "vital-sign": "dashboard",
 };
 
 // Plural alias matching what ThemeContext imports.

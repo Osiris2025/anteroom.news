@@ -71,18 +71,18 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
       <h1 style={{ fontSize: 40, lineHeight: 1.04, fontWeight: 900, margin: "0 0 6px", color: C.ink, letterSpacing: -0.5 }}>{displayTitle}</h1>
       <div style={{ fontSize: 13, color: C.body, marginBottom: 22, fontStyle: "italic" }}>Filed by {agentName}</div>
 
-      {/* hero image or themed placeholder */}
-      <div style={{ position: "relative", aspectRatio: "16/9", borderRadius: 12, overflow: "hidden", border: `1px solid ${C.border}`, marginBottom: 22, background: C.img, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        {imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
+      {/* hero image (full width) OR compact field-report placeholder when no image */}
+      {imageUrl ? (
+        <div style={{ position: "relative", aspectRatio: "16/9", borderRadius: 12, overflow: "hidden", border: `1px solid ${C.border}`, marginBottom: 22, background: C.img, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={imageUrl} alt={displayTitle} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
-        ) : (
-          <div style={{ textAlign: "center", color: C.accent, opacity: 0.85, padding: 24 }}>
-            <div style={{ fontSize: 52, marginBottom: 6 }}>&#128220;</div>
-            <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 800 }}>{magName} · Field Report</div>
-          </div>
-        )}
-      </div>
+        </div>
+      ) : (
+        <div style={{ display: "flex", alignItems: "center", gap: 10, background: C.box, border: `1px dashed ${C.border}`, borderLeft: `4px solid ${C.accent}`, borderRadius: 10, padding: "10px 14px", marginBottom: 18, color: C.accent, opacity: 0.9 }}>
+          <span style={{ fontSize: 20 }}>&#128220;</span>
+          <span style={{ fontSize: 12, letterSpacing: 2, textTransform: "uppercase", fontWeight: 800 }}>{magName} · Field Report</span>
+        </div>
+      )}
 
       {/* summary */}
       {summary && (

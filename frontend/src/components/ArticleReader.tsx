@@ -101,7 +101,7 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
           </div>
         </div>
         {commentary ? (
-          <div style={{ fontSize: 15, lineHeight: 1.6, color: C.body, whiteSpace: "pre-wrap" }}>{commentary}</div>
+          <div style={{ fontSize: 15, lineHeight: 1.6, color: C.ink, whiteSpace: "pre-wrap" }}>{commentary}</div>
         ) : (
           <div style={{ fontSize: 14, color: C.body, fontStyle: "italic" }}>No commentary yet — an editor can generate it from the Dispatch Desk.</div>
         )}

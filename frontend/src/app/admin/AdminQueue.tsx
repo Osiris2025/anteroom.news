@@ -6,7 +6,7 @@ type QArticle = {
   id: string; title: string; sourceUrl: string | null; summary: string | null;
   warnings: any; status: string; ingress: string; flagged: boolean; suitabilityOk: boolean;
   subcategory: string | null; createdAt: string; publishedAt: string | null; socialRepeat: boolean;
-  featured: boolean;
+  featured: boolean; efx: string | null;
   magazine: { id: string; name: string } | null;
 };
 type QResp = { magazines: { id: string; name: string }[]; articles: QArticle[] };
@@ -20,6 +20,14 @@ const STATUS_TPL: Record<string, { label: string; bg: string; fg: string }> = {
 
 const sel: React.CSSProperties = { padding: "8px 12px", borderRadius: 8, border: "1px solid rgba(150,150,150,.3)", background: "#111", color: "#e6e6e6", fontSize: 13, cursor: "pointer", minWidth: 150 };
 const btn: React.CSSProperties = { padding: "5px 9px", borderRadius: 6, border: "1px solid rgba(150,150,150,.25)", background: "#1a1d21", color: "#ccc", fontSize: 12, cursor: "pointer" };
+
+// Cinematic CSS effects that can be applied to an article's hero image when approved/published.
+const EFX_OPTS: { value: string; label: string }[] = [
+  { value: "", label: "🎞 No effect" },
+  { value: "vhs", label: "📼 VHS / surveillance" },
+  { value: "rain", label: "🌧 Rain" },
+  { value: "lightning", label: "⚡ Lightning" },
+];
 
 // ArticleCard — magazine change persists immediately (works even for live articles)
 // but updates the card IN PLACE (no re-sort/re-arrange). Status changes reload the list.
@@ -63,6 +71,11 @@ function ArticleCard({ a, magazines, onAct, onMag, onDel, onComment, onPin }: {
         <button title="Assign / create subcategory" onClick={() => { const v = prompt("Subcategory:", a.subcategory || ""); if (v !== null) onAct(a.id, { subcategory: v.trim() || null }); }} style={btn}>🏷</button>
         <button title="Toggle social repeat" onClick={() => onAct(a.id, { socialRepeat: !a.socialRepeat })} style={a.socialRepeat ? { ...btn, background: "#06253a", color: "#58a6ff" } : btn}>↻</button>
         <button title="Make the flagship featured story" onClick={() => onAct(a.id, { featured: !a.featured })} style={a.featured ? { ...btn, background: "#3b2f00", color: "#ffd700" } : btn}>★</button>
+        <select title="Cinematic effect for the hero image (VHS / rain / lightning…)" value={a.efx || ""}
+          onChange={(e) => onAct(a.id, { efx: e.target.value || null })}
+          style={{ ...sel, minWidth: 120, padding: "5px 8px", fontSize: 11 }}>
+          {EFX_OPTS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+        </select>
         <button title="Generate AI commentary via the magazine's named agent" onClick={() => onComment(a.id, a.title)} style={{ ...btn, color: "#fbbf24", borderColor: "rgba(251,191,36,.4)" }}>⚙ Commentary</button>
         <button title="Pin as FLASH/hero article" onClick={() => onPin(a.id, a.title)} style={{ ...btn, color: "#ff4444", borderColor: "rgba(255,68,68,.4)" }}>📌 Pin</button>
         {a.sourceUrl && <a href={a.sourceUrl} target="_blank" rel="noreferrer" style={{ color: "var(--accent,#ffd700)", textDecoration: "none", marginLeft: "auto", fontSize: 11, alignSelf: "center" }}>source ↗</a>}

@@ -64,6 +64,7 @@ export async function GET(req: NextRequest) {
       subcategory: r.article.subcategory,
       socialRepeat: r.article.socialRepeat,
       featured: r.article.featured,
+      efx: r.article.efx,
       createdAt: r.article.createdAt,
       publishedAt: r.article.publishedAt,
       magazine: r.magazine ? { id: r.magazine.id, name: r.magazine.name } : null,

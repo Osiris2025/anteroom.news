@@ -31,6 +31,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
         headline: a.headline,
         sourceUrl: a.sourceUrl,
         imageUrl: a.imageUrl,
+        efx: a.efx,
         summary: a.summary,
         commentary: a.commentary,
         subcategory: a.subcategory,

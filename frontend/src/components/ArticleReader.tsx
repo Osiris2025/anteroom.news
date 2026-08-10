@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import ArticleComments from "./ArticleComments";
+import ArticleEfx from "./ArticleEfx";
 
 type ReaderArticle = {
   id: string;
@@ -8,6 +9,7 @@ type ReaderArticle = {
   headline?: string | null;
   sourceUrl?: string | null;
   imageUrl?: string | null;
+  efx?: string | null;
   summary?: string | null;
   commentary?: string | null;
   subcategory?: string | null;
@@ -49,7 +51,7 @@ function palette(themeId: string) {
 
 export default function ArticleReader({ article, magazine, themeId }: { article: ReaderArticle; magazine: ReaderMag; themeId: string }) {
   const C = palette(themeId);
-  const { title, headline, sourceUrl, imageUrl, summary, commentary, subcategory, publishedAt } = article;
+  const { title, headline, sourceUrl, imageUrl, efx, summary, commentary, subcategory, publishedAt } = article;
   const magName = magazine?.name || "AI News Nexus";
   const agentName = magazine?.agentName || "The Desk";
   const displayTitle = headline || title;
@@ -76,6 +78,7 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
         <div style={{ position: "relative", aspectRatio: "16/9", borderRadius: 12, overflow: "hidden", border: `1px solid ${C.border}`, marginBottom: 22, background: C.img, display: "flex", alignItems: "center", justifyContent: "center" }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={imageUrl} alt={displayTitle} style={{ width: "100%", height: "100%", objectFit: "cover" }} onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }} />
+          <ArticleEfx efx={efx || null} />
         </div>
       ) : (
         <div style={{ display: "flex", alignItems: "center", gap: 10, background: C.box, border: `1px dashed ${C.border}`, borderLeft: `4px solid ${C.accent}`, borderRadius: 10, padding: "10px 14px", marginBottom: 18, color: C.accent, opacity: 0.9 }}>

@@ -61,6 +61,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     upd.featured = !!body.featured;
   }
   if (body.flagged !== undefined) upd.flagged = !!body.flagged;
+  if (body.efx !== undefined) upd.efx = body.efx || null; // 'vhs' | 'rain' | 'lightning' | null
 
   const [updated] = await db.update(article).set(upd).where(eq(article.id, id)).returning();
   return Response.json({ article: updated });

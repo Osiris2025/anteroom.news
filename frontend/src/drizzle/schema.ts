@@ -144,6 +144,7 @@ export const article = pgTable("article", {
   socialRepeat: boolean("social_repeat").notNull().default(false), // flag to recycle on social
   socialPostedAt: timestamp("social_posted_at"),
   featured: boolean("featured").notNull().default(false), // admin-controlled flagship slot
+  efx: text("efx"),          // optional cinematic CSS effect: 'vhs' | 'rain' | 'lightning' | null
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

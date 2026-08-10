@@ -2,13 +2,13 @@ import { eq } from "drizzle-orm";
 import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
-import { magazineTheme } from "@/lib/themes";
-import ArticleReader from "@/components/ArticleReader";
+import ArticlePageClient from "@/components/ArticlePageClient";
 
 // /articles/[id] — public on-site article reader (server component).
-// Renders the article title, hero image (or themed placeholder), the saved summary,
-// the per-magazine AI agent's commentary, a prominent link-out to the source, and
-// the X-style comment thread. Themed via the magazine's mapped theme (never setTheme).
+// Fetches the article + its magazine, then hands off to ArticlePageClient, which
+// themes the reader with the USER'S active theme (user choice always wins), not a
+// static magazine->theme map. Keeps the dark/light palette consistent with the rest
+// of the page so headlines stay readable on any theme.
 export default async function ArticlePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
@@ -22,10 +22,9 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
   if (!r || !r.article) notFound();
   const a = r.article;
   const mag = r.magazine;
-  const themeId = mag?.id ? (magazineTheme[mag.id] || "linear") : "linear";
 
   return (
-    <ArticleReader
+    <ArticlePageClient
       article={{
         id: a.id,
         title: a.title,
@@ -38,7 +37,6 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
         publishedAt: a.publishedAt,
       }}
       magazine={mag ? { id: mag.id, name: mag.name, agentName: mag.agentName, agentModel: mag.agentModel } : null}
-      themeId={themeId}
     />
   );
 }

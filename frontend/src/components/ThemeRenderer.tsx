@@ -5,6 +5,7 @@ import { useTheme } from "@/lib/ThemeContext";
 import { renderTemplate, MAGAZINES } from "@/lib/themes";
 import LiveFeed from "@/components/LiveFeed";
 import MagazineTopStories from "@/components/MagazineTopStories";
+import MagazineEditorial from "@/components/MagazineEditorial";
 
 /**
  * ThemeRenderer
@@ -12,6 +13,9 @@ import MagazineTopStories from "@/components/MagazineTopStories";
  * - Optional `magazineId`: when set (magazine/stream pages), we render the SAME
  *   theme template as the homepage (so every theme's own HTML template + CSS apply)
  *   and the LiveFeed is filtered to that magazine's approved articles.
+ *   Magazine pages additionally get an editorial composition: a LEADER hero, the
+ *   LiveFeed pipeline strip, and an asymmetric magazine grid (double-span cards +
+ *   pull-quotes). The homepage (no magazineId) stays as the plain themed shell.
  * - The app navbar owns the top nav, so the template's internal header is hidden.
  *
  * Magazine URL slug ≠ canonical id (2026-08-10): the static MAGAZINES id for New
@@ -80,6 +84,8 @@ export default function ThemeRenderer({ magazineId }: { magazineId?: string }) {
           <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
         </div>
       )}
+      {/* Editorial composition — only on magazine/stream pages */}
+      {magazine && <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />}
       <LiveFeed magazine={magazine ? magazine.id : undefined} />
       {magazine && <MagazineTopStories magazine={magazine.id} />}
       <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />

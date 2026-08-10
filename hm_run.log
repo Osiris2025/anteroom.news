@@ -1,0 +1,19 @@
+WARNING:  database "nexus" has a collation version mismatch
+DETAIL:  The database was created using collation version 2.41, but the operating system provides version 2.36.
+HINT:  Rebuild all objects in this database that use the default collation and run ALTER DATABASE nexus REFRESH COLLATION VERSION, or build PostgreSQL with the right library version.
+CATEGORIZED 468 of 1000
+DIST {'true-crime-killers': 54, 'mythology-folklore': 62, 'conspiracy-coverup': 61, 'lost-cities-places': 25, 'nazi-occult-secrets': 33, 'cults-religion': 10, 'ancient-wonders': 89, 'ufo-aliens': 15, 'cryptids-creatures': 17, 'war-military': 62, 'haunted-ghosts': 14, 'medical-weird': 26}
+GENERATED mythology-folklore 435024 B
+GENERATED nazi-occult-secrets 401578 B
+GENERATED lost-cities-places 420871 B
+GENERATED true-crime-killers 290278 B
+GENERATED ancient-wonders 446486 B
+GENERATED cryptids-creatures 264049 B
+GENERATED cults-religion 247054 B
+GENERATED ufo-aliens 333689 B
+GENERATED conspiracy-coverup 259831 B
+GENERATED haunted-ghosts 245903 B
+GENERATED medical-weird 466773 B
+GENERATED war-military 258849 B
+GENERATED_COUNT 12
+ASSIGNED 468

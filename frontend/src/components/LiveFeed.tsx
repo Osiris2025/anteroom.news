@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 type LiveArticle = {
   id: string; title: string; summary: string | null; sourceUrl: string | null;
   subcategory: string | null; magazine: { id: string; name: string } | null;
+  pinned?: boolean; pinKind?: string | null;
 };
 
 // Resolve the number of pipeline cards to render based on viewport so they fill
@@ -17,7 +18,8 @@ function rowCount(width: number): number {
 
 // Live pipeline strip. Cards open the INTERNAL article reader (/articles/[id]) which
 // has the AI summary + commentary + an external "read the real article" link + comments.
-// `magazine` (optional) filters to one magazine's pipeline articles.
+// `magazine` (optional) filters to one magazine's pipeline articles. Pinned articles
+// surface first (the /api/articles route orders pins ahead of the date feed).
 export default function LiveFeed({ magazine }: { magazine?: string }) {
   const [articles, setArticles] = useState<LiveArticle[]>([]);
   const [count, setCount] = useState(4);
@@ -53,9 +55,9 @@ export default function LiveFeed({ magazine }: { magazine?: string }) {
       <div style={{ display: "grid", gap: 10, gridTemplateColumns: `repeat(${shown.length}, minmax(0,1fr))` }}>
         {shown.map((a) => (
           <a key={a.id} href={`/articles/${a.id}`}
-             style={{ textDecoration: "none", color: "inherit", display: "block", padding: "8px 0", borderTop: "1px solid rgba(150,150,150,.12)", minWidth: 0 }}>
+             style={{ textDecoration: "none", color: "inherit", display: "block", padding: "8px 0", borderTop: a.pinned ? "2px solid var(--accent, #ffd700)" : "1px solid rgba(150,150,150,.12)", minWidth: 0 }}>
             <div style={{ fontSize: 10, color: "var(--accent,#ffd700)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-              {a.magazine?.name || "News"}{a.subcategory ? ` / ${a.subcategory}` : ""}
+              {a.pinned ? `${a.pinKind || "PINNED"} · ` : ""}{a.magazine?.name || "News"}{a.subcategory ? ` / ${a.subcategory}` : ""}
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.title}</div>
             {a.summary && <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{a.summary}</div>}

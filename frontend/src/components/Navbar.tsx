@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import ThemeSelector from '@/components/ThemeSelector';
-import MagazineSwitcher from '@/components/MagazineSwitcher';
 import { useSession } from '@/lib/auth-client';
 
 const ADMIN_ROLES = ['superadmin', 'admin'];
@@ -45,8 +44,8 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-1 shrink-0">
-            <MagazineSwitcher />
-            <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white hover:text-tech dark:hover:text-tech-light transition-colors shrink-0">
+            {/* The magazine hamburger is mounted globally in layout.tsx (fixed, top-left). */}
+            <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white hover:text-tech dark:hover:text-tech-light transition-colors shrink-0" style={{ marginLeft: 44 }}>
               AI News Nexus
             </Link>
           </div>

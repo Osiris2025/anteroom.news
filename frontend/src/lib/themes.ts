@@ -538,6 +538,11 @@ export function applyTheme(t: Theme): void {
     ".magshow .card.mag .k .magdot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;vertical-align:middle} " +
     ".magshow .card.mag h3{font-size:14px;font-weight:700;margin-bottom:2px} .magshow .card.mag p{font-size:11px;line-height:1.35} " +
     ".mast-sub{margin:18px 0 12px} .mast-sub h2{font-size:12px;text-transform:uppercase;letter-spacing:1.2px;opacity:.75;margin:0} " +
+    // Sidebar-left layouts: when the left column has no real content, drop it and
+    // center the main column between the page margins (no empty open column on home).
+    ".grid.grid-full{grid-template-columns:1fr !important;max-width:1160px;margin:0 auto;padding:24px 20px} " +
+    ".grid.grid-full .main{max-width:880px;margin:0 auto;width:100%} " +
+    ".grid.grid-side{grid-template-columns:230px 1fr !important} " +
     // Shared magazine-view styles (page inherits the active theme's paper/serif look)
     ".magazine-view{max-width:1000px;margin:0 auto} " +
     ".mag-mast{border-bottom:3px double currentColor;padding-bottom:16px;margin-bottom:20px} " +
@@ -634,14 +639,20 @@ function renderTemplate(st){
   var scoped = !!st.magScope;
 
   if(layout==="sidebar-left"){
-    s += '<div class="grid"><div class="side">';
+    // Build the sidebar content first. Only render a left column if it has real
+    // content (nav/subscribe are now owned by the global hamburger + footer, so on
+    // the homepage this is usually empty -> drop the column and center the main).
+    var sideHTML = "";
     st.sidebar.forEach(function(sb){
-      if(sb==="nav"){ /* magazine nav suppressed — global MagazineSwitcher (☰) owns it */ }
-      if(sb==="subscribe"){s+='<div class="panel"><h4>Subscribe</h4><input placeholder="email"><a class="btn" href="/subscribe" data-href="/subscribe" style="display:block;text-align:center">Subscribe</a></div>';}
-      if(sb==="support"){s+='<div class="panel"><h4>Support</h4><a class="btn" href="/support" data-href="/support" style="display:block;text-align:center">Become a Supporter</a></div>';}
+      if(sb==="subscribe"){sideHTML+='<div class="panel"><h4>Subscribe</h4><input placeholder="email"><a class="btn" href="/subscribe" data-href="/subscribe" style="display:block;text-align:center">Subscribe</a></div>';}
+      if(sb==="support"){sideHTML+='<div class="panel"><h4>Support</h4><a class="btn" href="/support" data-href="/support" style="display:block;text-align:center">Become a Supporter</a></div>';}
     });
-    s+='</div><div class="main">';
-    if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
+    if(sideHTML){
+      s += '<div class="grid grid-side"><div class="side">' + sideHTML + '</div><div class="main">';
+    } else {
+      s += '<div class="grid grid-full"><div class="main">';
+    }
+    if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>' + MAGAZINES.length + ' magazines; AI-analyzed daily.</p></div>'; }
     if(!scoped){ s += renderMagShowcase(); }
     // Scoped pages: the real "Top Stories" grid (from published articles) renders above in
     // MagazineTopStories, so the template's static placeholder heading is removed entirely.

@@ -5,16 +5,17 @@ import { useEffect, useState } from "react";
 import { MAGAZINES } from "@/lib/themes";
 
 /**
- * Global magazine-switcher (hamburger + left drawer + pinnable rail).
- * Replaces ALL the scattered magazine menus (theme header .nav / sidebar nav /
- * footer columns / navbar inline rows) with a single app-level switcher.
+ * Global magazine-switcher — hamburger + left drawer + pinnable rail.
+ * Mounted OUTSIDE the navbar (in the root layout) so its fixed elements live at
+ * body stacking level. That's what makes open/close reliable: the hamburger is a
+ * fixed, always-on-top button, so clicking it always toggles the menu.
  *
- * - Hamburger (top-left, inside the Navbar row) opens a slide-in overlay drawer.
- * - Clicking a magazine navigates to /magazines/<id> AND closes the overlay.
- * - Pinnable on >=768px: pin keeps the list open as a persistent left rail
- *   (body padding shifts content right); the ❌ unpins it. Preference persisted
- *   in localStorage. On <768px no pin control and it's overlay-only.
- * - Theme-independent neutral styling (scoped `.nexus-switch-*`, one <style>).
+ * - Hamburger (top-left) toggles a left slide-in drawer listing every magazine.
+ * - Clicking a magazine navigates to /magazines/<id> AND closes.
+ * - Pinnable on >=768px: pin turns the list into a persistent left rail and the
+ *   page content flows to its right (no overlay). Preference in localStorage.
+ * - On <768px: no pin; always a slide-in overlay.
+ * - Escape / backdrop / ✕ / clicking the hamburger all close it.
  */
 
 const PIN_KEY = "nexus-magazine-pinned";
@@ -40,13 +41,29 @@ export default function MagazineSwitcher() {
 
   const railActive = isDesktop && pinned;
 
-  // When the pinned rail is active, shift the page right so it never covers content.
+  // Make the pinned rail a REAL left edge: shift the page content right so it
+  // flows beside the rail instead of being overlapped.
   useEffect(() => {
-    document.body.style.paddingLeft = railActive ? RAIL_W + "px" : "";
+    document.documentElement.style.setProperty(
+      "--nexus-rail-w",
+      railActive ? RAIL_W + "px" : "0px"
+    );
+    document.body.classList.toggle("nexus-rail-on", railActive);
     return () => {
-      document.body.style.paddingLeft = "";
+      document.documentElement.style.removeProperty("--nexus-rail-w");
+      document.body.classList.remove("nexus-rail-on");
     };
   }, [railActive]);
+
+  // Escape closes; also close on history navigation (e.g. a soft nav that didn't remount).
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open]);
 
   const togglePin = () =>
     setPinned((p) => {
@@ -60,21 +77,6 @@ export default function MagazineSwitcher() {
     });
 
   const closeOverlay = () => setOpen(false);
-
-  // Escape closes the overlay; also close when leaving a magazine page (address change).
-  useEffect(() => {
-    if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setOpen(false);
-    };
-    const onPop = () => setOpen(false);
-    window.addEventListener("keydown", onKey);
-    window.addEventListener("popstate", onPop);
-    return () => {
-      window.removeEventListener("keydown", onKey);
-      window.removeEventListener("popstate", onPop);
-    };
-  }, [open]);
 
   const list = (onSelect: () => void) => (
     <nav className="nexus-switch-list">
@@ -108,12 +110,7 @@ export default function MagazineSwitcher() {
           </button>
         )}
         {!isRail && (
-          <button
-            type="button"
-            onClick={closeOverlay}
-            aria-label="Close"
-            className="nexus-switch-ico"
-          >
+          <button type="button" onClick={closeOverlay} aria-label="Close" className="nexus-switch-ico">
             ✕
           </button>
         )}
@@ -123,22 +120,25 @@ export default function MagazineSwitcher() {
 
   return (
     <>
-      {/* Hamburger — always visible on every page/theme unless the pinned rail is open. */}
-      {!railActive && (
-        <button
-          type="button"
-          onClick={() => setOpen((o) => !o)}
-          aria-label="Open magazine menu"
-          aria-expanded={open}
-          className="nexus-switch-btn"
-        >
-          <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-            <path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z" />
-          </svg>
-        </button>
+      {/* Fixed hamburger — always on top & clickable (opens right over the navbar). */}
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-label="Open magazine menu"
+        aria-expanded={open}
+        className="nexus-switch-btn"
+      >
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
+          <path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z" />
+        </svg>
+      </button>
+
+      {/* Backdrop (overlay mode only) */}
+      {!railActive && open && (
+        <div className="nexus-switch-backdrop" onClick={closeOverlay} />
       )}
 
-      {/* Persistent pinned rail (desktop only) */}
+      {/* Pinned rail — a real left edge; page flows right (no overlay). */}
       {railActive && (
         <aside className="nexus-switch nexus-switch-rail" aria-label="Magazines">
           {head(true)}
@@ -146,29 +146,32 @@ export default function MagazineSwitcher() {
         </aside>
       )}
 
-      {/* Slide-in overlay drawer (mobile, or desktop when not pinned) */}
+      {/* Slide-in drawer (mobile, or desktop when not pinned) */}
       {!railActive && open && (
-        <>
-          <div className="nexus-switch-backdrop" onClick={closeOverlay} />
-          <aside className="nexus-switch nexus-switch-drawer" role="dialog" aria-label="Magazines">
-            {head(false)}
-            {list(closeOverlay)}
-          </aside>
-        </>
+        <aside className="nexus-switch nexus-switch-drawer" role="dialog" aria-label="Magazines">
+          {head(false)}
+          {list(closeOverlay)}
+        </aside>
       )}
 
       <style>{`
-        /* Neutral, theme-independent magazine-switcher styles (scoped). */
+        /* Global: when the rail is pinned, shift content right so nothing is overlapped. */
+        body.nexus-rail-on { padding-left: var(--nexus-rail-w, 264px); }
+        body.nexus-rail-on nav, body.nexus-rail-on main { max-width: calc(1160px - 24px); margin-left: 0; }
+
         .nexus-switch-btn{
+          position:fixed;top:14px;left:16px;z-index:120;
           display:inline-flex;align-items:center;justify-content:center;
-          width:36px;height:36px;border-radius:8px;flex:none;z-index:96;position:relative;
-          background:transparent;border:1px solid rgba(127,127,127,.28);
-          color:inherit;cursor:pointer;margin-right:4px;padding:0;
-          transition:background .15s;
+          width:40px;height:40px;border-radius:10px;
+          background:rgba(127,127,127,.12);border:1px solid rgba(127,127,127,.4);
+          color:inherit;cursor:pointer;padding:0;box-shadow:0 2px 10px rgba(0,0,0,.25);
+          transition:background .15s, transform .12s;
         }
-        .nexus-switch-btn:hover{background:rgba(127,127,127,.12);}
+        .nexus-switch-btn:hover{background:rgba(127,127,127,.22);}
+        .nexus-switch-btn[aria-expanded="true"]{background:rgba(0,0,0,.55);color:#fff;}
+
         .nexus-switch{
-          position:fixed;top:0;bottom:0;left:0;z-index:95;
+          position:fixed;top:0;bottom:0;left:0;z-index:110;
           width:min(320px,86vw);height:100vh;
           background:#10131a;color:#e7e9ee;
           border-right:1px solid rgba(255,255,255,.12);
@@ -176,12 +179,14 @@ export default function MagazineSwitcher() {
           display:flex;flex-direction:column;overflow:hidden;
           font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
         }
-        .nexus-switch-rail{z-index:80;width:264px;max-width:100%;animation:none;}
+        .nexus-switch-rail{z-index:105;left:0;width:264px;max-width:100%;animation:none;box-shadow:none;}
+        /* Push each row's left edge against the rail by the rail width. */
+        body.nexus-rail-on .nexus-switch-rail{left:0;}
         .nexus-switch-drawer{animation:nexusSlide .22s ease;}
-        .nexus-switch-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:90;}
+        .nexus-switch-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:109;}
         .nexus-switch-head{
           display:flex;align-items:center;justify-content:space-between;
-          padding:14px 16px;border-bottom:1px solid rgba(255,255,255,.12);flex:none;
+          padding:20px 16px 14px;border-bottom:1px solid rgba(255,255,255,.12);flex:none;
         }
         .nexus-switch-brand{font-weight:800;letter-spacing:1px;font-size:13px;text-transform:uppercase;color:#e7e9ee;}
         .nexus-switch-head-actions{display:flex;align-items:center;gap:4px;}
@@ -199,6 +204,9 @@ export default function MagazineSwitcher() {
         .nexus-switch-item:hover{background:rgba(255,255,255,.09);}
         .nexus-switch-dot{width:10px;height:10px;border-radius:50%;flex:none;}
         @keyframes nexusSlide{from{transform:translateX(-100%);}to{transform:translateX(0);}}
+
+        /* The app navbar is full-width; keep its brand clear of the fixed hamburger. */
+        .nexus-brand-shift{margin-left:44px;}
       `}</style>
     </>
   );

@@ -49,7 +49,10 @@ function ArticleCard({ a, magazines, onAct, onMag, onDel, onComment, onPin }: {
         {a.flagged && <span title="flagged" style={{ color: "#ffd700" }}>⚑</span>}
         {!a.suitabilityOk && <span title="unsuitable" style={{ color: "#f87171" }}>⚠</span>}
         {a.socialRepeat && <span title="social repeat" style={{ color: "#58a6ff" }}>↻</span>}
-        <span style={{ marginLeft: "auto", opacity: 0.6, textTransform: "uppercase", letterSpacing: 1 }}>{a.ingress}</span>
+        <span style={{ marginLeft: "auto", display: "flex", alignItems: "center", gap: 8, opacity: 0.6, textTransform: "uppercase", letterSpacing: 1 }}>
+          {a.createdAt && <span title={`Dropped ${new Date(a.createdAt).toLocaleString()}`} style={{ color: "#58a6ff", whiteSpace: "nowrap" }}>🕓 {new Date(a.createdAt).toLocaleDateString()} {new Date(a.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</span>}
+          {a.ingress}
+        </span>
       </div>
       <div style={{ padding: 12, flex: 1 }}>
         <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.25, marginBottom: 6 }}>{a.title}</div>

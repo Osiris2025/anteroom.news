@@ -460,8 +460,8 @@ export const ARTICLES: any[] = [
   {mag:"Weekly Weird News", k:"UFO SHED", color:"#fbbf24", title:"Local Man's Shed Contains UFO Since 1998", desc:"Authorities: 'Please stop calling.'" },
   {mag:"Tech Pulse", k:"OPENAI", color:"#60a5fa", title:"OpenAI Slows Astra Development Over Security Fears", desc:"Autonomous cyberattack capability detected on protected systems.", wide:true },
   {mag:"Tech Pulse", k:"NVIDIA", color:"#60a5fa", title:"Nvidia to Invest $3B in Stargate Data Center", desc:"Massive AI infrastructure bet in Texas." },
-  {mag:"Poli Split", k:"BLANCHE", color:"#a78bfa", title:"Blanche Confirmed as Attorney General in 50-49 Vote", desc:"Nearly party-line vote. Partisan divide deepens." },
-  {mag:"Poli Split", k:"KITESURF", color:"#a78bfa", title:"Cloudflare Launches Kitesurf Browser for AI Agents", desc:"A browser built for autonomous agents." }
+  { mag:"Political Picture", k:"BLANCHE", color:"#a78bfa", title:"Blanche Confirmed as Attorney General in 50-49 Vote", desc:"Nearly party-line vote. Partisan divide deepens." },
+  { mag:"Political Picture", k:"KITESURF", color:"#a78bfa", title:"Cloudflare Launches Kitesurf Browser for AI Agents", desc:"A browser built for autonomous agents." }
 ];
 
 // Single data source for the 7 magazines. Used by the primary-site showcase and
@@ -481,12 +481,12 @@ export const MAGAZINES: Magazine[] = [
   { id:"weekly-weird-news", name:"Weekly Weird News", short:"Weird News", tagline:"The World's Only Reliable News™", description:"Satirical tabloid covering cryptids, UFOs, and the unexplainable.", color:"#8B4513", accent:"#FFD700", theme:"tabloid", tags:["anecdote","puzzle","crosspost","alert"] },
   { id:"weird-and-wild", name:"New Frontiers in Science", short:"New Frontiers", tagline:"Possible · But Weirdly Unlikely", description:"Antigravity, black holes, free energy, cold fusion, and the far-out science that might — just might — be real.", color:"#302b63", accent:"#667eea", theme:"glass", tags:["puzzle","game","ticker","alert"] },
   { id:"tech-pulse", name:"Tech Pulse", short:"Tech Pulse", tagline:"Technology. Analyzed.", description:"AI, dev tools, hardware, and the future of tech.", color:"#1e3a5f", accent:"#58a6ff", theme:"linear", tags:["ticker","alert","crosspost","puzzle"] },
-  { id:"poli-split", name:"Poli Split", short:"Poli Split", tagline:"Both Sides, One Feed", description:"Red. Blue. Facts. Balanced political coverage.", color:"#7c3aed", accent:"#a78bfa", theme:"vercel", tags:["alert","ticker","crosspost"] },
+  { id:"poli-split", name:"Political Picture", short:"Political", tagline:"Both Sides, One Feed", description:"Red. Blue. Facts. Balanced political coverage.", color:"#7c3aed", accent:"#a78bfa", theme:"vercel", tags:["alert","ticker","crosspost"] },
   { id:"climate-watch", name:"Climate Watch", short:"Climate Watch", tagline:"The Planet's Pulse", description:"Climate science, energy transition, environmental policy.", color:"#059669", accent:"#34d399", theme:"dashboard", tags:["ticker","alert","game","anecdote"] },
   { id:"startup-signal", name:"Startup Signal", short:"Startup", tagline:"Deals, Pivots, Trends", description:"VC funding, pivots, and the next big thing.", color:"#d97706", accent:"#fbbf24", theme:"magazine", tags:["ticker","crosspost","puzzle","alert"] },
   { id:"oss-report", name:"Open Source Report", short:"OSS Report", tagline:"Community. Code. Drama.", description:"New releases, licensing battles, and dev community pulse.", color:"#dc2626", accent:"#f87171", theme:"terminal", tags:["alert","crosspost","game"] },
   { id:"starfall-weekly", name:"Starfall Weekly", short:"Starfall", tagline:"Reality is just a beta.", description:"Speculative fiction, future tech, space opera, and the far-out world of what comes next.", color:"#0f380f", accent:"#00ff40", theme:"crt", tags:["ticker","alert","crosspost","puzzle"] },
-  { id:"vital-sign", name:"Vital Signal", short:"Vital Signal", tagline:"The inner cosmos, decoded.", description:"Medicine, public health, longevity, mental wellness, and the science of being human.", color:"#0b5563", accent:"#2dd4bf", theme:"dashboard", tags:["ticker","alert","puzzle","anecdote"] },
+  { id:"vital-sign", name:"Vital Signs", short:"Vital Signs", tagline:"The inner cosmos, decoded.", description:"Medicine, public health, longevity, mental wellness, and the science of being human.", color:"#0b5563", accent:"#2dd4bf", theme:"dashboard", tags:["ticker","alert","puzzle","anecdote"] },
 ];
 export const magazineTheme: Record<string, string> = {
   "weekly-weird-news": "tabloid",
@@ -583,9 +583,9 @@ export function applyTheme(t: Theme): void {
 // Route mapping for clickable cards (data-href drives client-side navigation in ThemeRenderer).
 var MAGIDS = {
   "Weekly Weird News":"weekly-weird-news", "Weird & Wild":"weird-and-wild",
-  "Tech Pulse":"tech-pulse", "Poli Split":"poli-split",
+  "Tech Pulse":"tech-pulse", "Poli Split":"poli-split", "Political Picture":"poli-split",
   "Climate Watch":"climate-watch", "Startup Signal":"startup-signal",
-  "Open Source Report":"oss-report", "Local Lens":"local-lens"
+  "Open Source Report":"oss-report", "Local Lens":"local-lens", "Vital Signs":"vital-sign"
 };
 function hrefFor(a){
   if(a.k === "CATBOY"){ return "/streams/weekly-weird-news/catboy-episode-1"; }

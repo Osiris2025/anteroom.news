@@ -104,14 +104,15 @@ export default function MagazineSwitcher() {
             onClick={togglePin}
             title={isRail ? "Unpin" : "Pin open"}
             aria-label={isRail ? "Unpin magazine menu" : "Pin magazine menu open"}
-            className="nexus-switch-ico"
+            aria-pressed={isRail}
+            className={"nexus-switch-pin" + (isRail ? " on" : "")}
           >
-            {isRail ? "❌" : "📌"}
+            {isRail ? "❌ Unpin" : "📌 Pin open"}
           </button>
         )}
         {!isRail && (
-          <button type="button" onClick={closeOverlay} aria-label="Close" className="nexus-switch-ico">
-            ✕
+          <button type="button" onClick={closeOverlay} aria-label="Close" className="nexus-switch-ico nexus-switch-close">
+            ✕ Close
           </button>
         )}
       </div>
@@ -189,7 +190,22 @@ export default function MagazineSwitcher() {
           padding:20px 16px 14px;border-bottom:1px solid rgba(255,255,255,.12);flex:none;
         }
         .nexus-switch-brand{font-weight:800;letter-spacing:1px;font-size:13px;text-transform:uppercase;color:#e7e9ee;}
-        .nexus-switch-head-actions{display:flex;align-items:center;gap:4px;}
+        .nexus-switch-head-actions{display:flex;align-items:center;gap:6px;}
+        .nexus-switch-pin{
+          padding:9px 14px;border-radius:9px;cursor:pointer;font-weight:700;font-size:13px;
+          line-height:1;color:#ffd75e;background:rgba(255,215,94,.12);
+          border:1px solid rgba(255,215,94,.45);transition:background .15s, transform .06s;
+          display:inline-flex;align-items:center;gap:6px;min-height:38px;
+        }
+        .nexus-switch-pin:hover{background:rgba(255,215,94,.22);}
+        .nexus-switch-pin:active{transform:scale(.97);}
+        .nexus-switch-pin.on{color:#fff;background:rgba(255,120,110,.16);border-color:rgba(255,120,110,.5);}
+        .nexus-switch-close{
+          padding:9px 14px;border-radius:9px;cursor:pointer;font-weight:700;font-size:13px;
+          line-height:1;color:#cdd3dd;background:transparent;border:1px solid rgba(255,255,255,.18);
+          display:inline-flex;align-items:center;gap:6px;min-height:38px;
+        }
+        .nexus-switch-close:hover{background:rgba(255,255,255,.1);}
         .nexus-switch-ico{
           background:transparent;border:1px solid rgba(255,255,255,.14);border-radius:6px;
           cursor:pointer;font-size:14px;line-height:20px;color:#cdd3dd;padding:2px 6px;

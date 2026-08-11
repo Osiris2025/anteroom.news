@@ -61,6 +61,21 @@ export default function MagazineSwitcher() {
 
   const closeOverlay = () => setOpen(false);
 
+  // Escape closes the overlay; also close when leaving a magazine page (address change).
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const onPop = () => setOpen(false);
+    window.addEventListener("keydown", onKey);
+    window.addEventListener("popstate", onPop);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      window.removeEventListener("popstate", onPop);
+    };
+  }, [open]);
+
   const list = (onSelect: () => void) => (
     <nav className="nexus-switch-list">
       {MAGAZINES.map((m) => (
@@ -146,7 +161,7 @@ export default function MagazineSwitcher() {
         /* Neutral, theme-independent magazine-switcher styles (scoped). */
         .nexus-switch-btn{
           display:inline-flex;align-items:center;justify-content:center;
-          width:36px;height:36px;border-radius:8px;flex:none;
+          width:36px;height:36px;border-radius:8px;flex:none;z-index:96;position:relative;
           background:transparent;border:1px solid rgba(127,127,127,.28);
           color:inherit;cursor:pointer;margin-right:4px;padding:0;
           transition:background .15s;

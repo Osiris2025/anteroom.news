@@ -9,7 +9,7 @@ export interface Theme {
 }
 
 export const themes: Theme[] = [
-  { id:"linear", name:"Linear \u2014 Dark Precision", structure: {layout:"sidebar-left", sidebar:["nav","subscribe"], showPoll:false, showQuiz:false, showCrawl:false, showStats:false, footer:"minimal"}, css: `
+  { id:"linear", name:"Linear \u2014 Dark Precision", structure: {layout:"sidebar-left", sidebar:["nav"], showPoll:false, showQuiz:false, showCrawl:false, showStats:false, footer:"minimal"}, css: `
       body{background:#08090a;color:#f7f8f8}
       .header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid rgba(255,255,255,0.06)}
       .brand{font-size:17px;font-weight:700;color:#f7f8f8}
@@ -39,7 +39,7 @@ export const themes: Theme[] = [
       .card p{font-size:11px;color:#8a8f98;line-height:1.4}
       .foot{margin-top:28px;border-top:1px solid rgba(255,255,255,0.06);padding:14px 20px;display:flex;justify-content:space-between;font-size:10px;color:#62666d}
     ` },
-  { id:"vercel", name:"Vercel \u2014 White Minimal", structure: {layout:"sidebar-left", sidebar:["nav","subscribe"], showPoll:false, showQuiz:false, showCrawl:false, showStats:false, footer:"minimal"}, css: `
+  { id:"vercel", name:"Vercel \u2014 White Minimal", structure: {layout:"sidebar-left", sidebar:["nav"], showPoll:false, showQuiz:false, showCrawl:false, showStats:false, footer:"minimal"}, css: `
       body{background:#fff;color:#171717}
       .header{display:flex;justify-content:space-between;align-items:center;padding:14px 20px}
       .brand{font-size:17px;font-weight:600;color:#171717}
@@ -594,7 +594,9 @@ function renderMagShowcase(st){
   var s = '<div class="magshow"><div class="sec-t"><div class="dot"></div><h2>Magazines</h2></div><div class="cards">';
   MAGAZINES.forEach(function(m){
     if(scopeMag && m.short !== scopeMag && m.name !== scopeMag && m.id !== scopeMag) return;
-    s += '<a class="card mag"'+h(m)+'><div class="k"><span class="magdot" style="background:'+m.accent+'"></span>'+m.short+'</div><h3>'+m.name+'</h3><p>'+m.tagline+'</p></a>';
+    s += '<a class="card mag"' + h(m) + '><div class="k"><span class="magdot" style="background:'+m.accent+'"></span>'+m.short+'</div><h3>'+m.name+'</h3>'
+       + '<p class="magtag">'+m.tagline+'</p>'
+       + '<p class="magdesc">'+(m.description||'')+'</p></a>';
   });
   s += '</div></div>';
   return s;

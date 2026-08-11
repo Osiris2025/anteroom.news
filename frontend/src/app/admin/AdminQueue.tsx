@@ -4,6 +4,7 @@ import { useTheme } from "@/lib/ThemeContext";
 
 type QArticle = {
   id: string; title: string; sourceUrl: string | null; summary: string | null;
+  commentary: string | null;
   warnings: any; status: string; ingress: string; flagged: boolean; suitabilityOk: boolean;
   subcategory: string | null; createdAt: string; publishedAt: string | null; socialRepeat: boolean;
   featured: boolean; efx: string | null; siteName?: string | null;
@@ -40,6 +41,8 @@ function ArticleCard({ a, magazines, onAct, onMag, onDel, onComment, onPin }: {
   onPin: (id: string, title: string) => void;
 }) {
   const st = STATUS_TPL[a.status] || { label: a.status, bg: "#222", fg: "#aaa" };
+  const [showCommentary, setShowCommentary] = useState(false);
+  const hasCommentary = !!a.commentary && a.commentary.trim().length > 0;
 
   return (
     <article style={{ border: "1px solid rgba(150,150,150,.15)", borderRadius: 10, overflow: "hidden", background: "var(--card-bg, rgba(255,255,255,.03))", display: "flex", flexDirection: "column" }}>
@@ -80,7 +83,22 @@ function ArticleCard({ a, magazines, onAct, onMag, onDel, onComment, onPin }: {
           style={{ ...sel, minWidth: 120, padding: "5px 8px", fontSize: 11 }}>
           {EFX_OPTS.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </select>
-        <button title="Generate AI commentary via the magazine's named agent" onClick={() => onComment(a.id, a.title)} style={{ ...btn, color: "#fbbf24", borderColor: "rgba(251,191,36,.4)" }}>⚙ Commentary</button>
+        <button
+          title={hasCommentary ? "View existing commentary (click to show/hide)" : "Generate AI commentary via the magazine's named agent"}
+          onClick={() => hasCommentary ? setShowCommentary((s) => !s) : onComment(a.id, a.title)}
+          style={hasCommentary
+            ? { ...btn, color: "#34d399", borderColor: "rgba(52,211,153,.45)" }
+            : { ...btn, color: "#fbbf24", borderColor: "rgba(251,191,36,.4)" }}
+        >⚙ Commentary{hasCommentary ? " ✓" : ""}</button>
+        {hasCommentary && showCommentary && (
+          <div style={{ width: "100%", marginTop: 8, padding: "10px 12px", background: "rgba(52,211,153,.06)", border: "1px solid rgba(52,211,153,.3)", borderRadius: 8, fontSize: 12.5, lineHeight: 1.5, display: "block", whiteSpace: "pre-wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+              <span style={{ fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", fontSize: 10, color: "#34d399" }}>Existing commentary</span>
+              <button title="Regenerate commentary" onClick={() => onComment(a.id, a.title)} style={{ ...btn, marginLeft: "auto", color: "#fbbf24", borderColor: "rgba(251,191,36,.4)", fontSize: 11, padding: "2px 7px" }}>↻ regenerate</button>
+            </div>
+            {a.commentary}
+          </div>
+        )}
         <button title="Pin as FLASH/hero article" onClick={() => onPin(a.id, a.title)} style={{ ...btn, color: "#ff4444", borderColor: "rgba(255,68,68,.4)" }}>📌 Pin</button>
         {a.sourceUrl && <a href={a.sourceUrl} target="_blank" rel="noreferrer" style={{ color: "var(--accent,#ffd700)", textDecoration: "none", marginLeft: "auto", fontSize: 11, alignSelf: "center" }}>source ↗</a>}
         <button title="Delete" onClick={() => onDel(a.id)} style={{ ...btn, color: "#f87171" }}>🗑</button>

@@ -6,7 +6,7 @@ type QArticle = {
   id: string; title: string; sourceUrl: string | null; summary: string | null;
   warnings: any; status: string; ingress: string; flagged: boolean; suitabilityOk: boolean;
   subcategory: string | null; createdAt: string; publishedAt: string | null; socialRepeat: boolean;
-  featured: boolean; efx: string | null;
+  featured: boolean; efx: string | null; siteName?: string | null;
   magazine: { id: string; name: string } | null;
 };
 type QResp = { magazines: { id: string; name: string }[]; articles: QArticle[] };
@@ -60,6 +60,7 @@ function ArticleCard({ a, magazines, onAct, onMag, onDel, onComment, onPin }: {
           {magazines.find((m) => m.id === a.magazine?.id)?.name || "Unassigned"}{a.subcategory ? ` / ${a.subcategory}` : ""}
         </div>
         {a.summary && <p style={{ fontSize: 13, opacity: 0.8, margin: "0 0 8px", lineHeight: 1.45 }}>{a.summary}</p>}
+        {a.siteName && <div style={{ fontSize: 10, color: "#58a6ff", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>{a.siteName}</div>}
       </div>
       <div style={{ padding: "8px 10px", borderTop: "1px solid rgba(150,150,150,.12)", display: "flex", flexWrap: "wrap", gap: 6 }}>
         {a.status === "draft" && <Btn onClick={() => onAct(a.id, { status: "approved" })} bg="#00331f" fg="#34d399">✓ Approve</Btn>}

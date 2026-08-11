@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { headers } from "next/headers";
 import { eq, desc, and, ilike, or } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { article, magazine } from "@/drizzle/schema";
+import { article, magazine, source } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
@@ -32,6 +32,24 @@ export async function GET(req: NextRequest) {
 
   try {
     const magazines = await db.select({ id: magazine.id, name: magazine.name }).from(magazine);
+
+    // Friendly site names from the source table, keyed by hostname (lowercased).
+    const srcRows = await db.select({ name: source.name, url: source.url }).from(source);
+    const srcByHost = new Map<string, string>();
+    for (const s of srcRows) {
+      try {
+        if (s.url) srcByHost.set(new URL(s.url).hostname.replace(/^www\./, "").toLowerCase(), s.name || "");
+      } catch { /* ignore */ }
+    }
+    const siteNameFor = (u?: string | null): string => {
+      if (!u) return "";
+      try {
+        const h = new URL(u).hostname.replace(/^www\./, "").toLowerCase();
+        return srcByHost.get(h) || h;
+      } catch {
+        return u;
+      }
+    };
 
     const query = db.select().from(article).leftJoin(magazine, eq(article.magazineId, magazine.id));
     const conds: any[] = [];
@@ -68,6 +86,7 @@ export async function GET(req: NextRequest) {
       createdAt: r.article.createdAt,
       publishedAt: r.article.publishedAt,
       magazine: r.magazine ? { id: r.magazine.id, name: r.magazine.name } : null,
+      siteName: siteNameFor(r.article.sourceUrl),
     }));
 
     return Response.json({ magazines, articles });

@@ -18,6 +18,54 @@ import feedparser
 
 from ..config import StreamConfig
 
+# ---------------------------------------------------------------------------
+# Junk-deal filter — reject money-saving / coupon / %-off content at ingest.
+# HIGH-PRECISION: only drop obvious retail/coupon content. We deliberately do
+# NOT match bare words like "deal", "savings", "save", "cheap" that appear in
+# normal reporting (e.g. "Senate budget deal", "DOGE savings claims"). Those
+# caused false positives before. We require clear commerce intent: a coupon /
+# promo-code / %-off / price-drop phrase, OR a URL path on a deal-heavy host.
+# ---------------------------------------------------------------------------
+_JUNK_DEAL_RE = re.compile(
+    r"\b(coupon|coupons|promo\s?code|promo\s+codes|discount\s+code|discount\s+codes|"
+    r"voucher|vouchers)\b|"
+    r"\b(\d+\s*%(\s*(-|\s+))?(off|discount)|up\s+to\s+\d+\s*%\s*off|"
+    r"off\s+your\s+(order|purchase|first\s+order)|best\s+deals?\s+(for|this|of)\b)\b|"
+    r"\bdeals?\s+of\s+the\s+day\b|\bon\s+sale\b|\bclearance\b|\bmarked\s+down\b|"
+    r"\bdeal\s+alert\b|\bprice\s+drop\b|\btoday\s+only\b|"
+    r"\b(today\'?s?\s+|this\s+)deals?\b",
+    re.IGNORECASE,
+)
+
+# Path markers that definitively indicate coupon/promo content.
+_JUNK_PATH_MARKERS = (
+    "/deals/", "-promo-code-", "-coupon-", "-coupons-", "-discount-code-",
+    "-black-friday/", "promo-code", "/promo-codes", "/coupon-codes"
+)
+
+# Hosts that are almost entirely deal/coupon content.
+_JUNK_HOSTS = (
+    "slickdeals.net", "dealnews.com", "deals.kinja.com", "theblackfriday.com",
+    "coupons.com", "retailmenot.com", "thekrazycouponlady.com",
+)
+
+
+def is_junk_deal(article: dict) -> bool:
+    """True if an article is clearly money-saving/coupon/% off junk (drop it)."""
+    title = str(article.get("title") or "")
+    url = (article.get("source_url") or "").lower()
+    host = url.split("/", 3)[2] if url.startswith(("http://", "https://")) and "/" in url.split("/", 3)[2] else (url or "")
+    host = host.replace("www.", "")
+    # Deal-heavy hosts: junk unless it's clearly a product *review* on a news site.
+    if any(h in host for h in ("slickdeals.net", "dealnews.com", "coupons.com",
+                               "retailmenot.com", "theblackfriday.com", "thekrazycouponlady.com")):
+        return True
+    # Obvious phrases in the headline.
+    if _JUNK_DEAL_RE.search(title):
+        return True
+    # URL path markers on consumer/tech sites that don't do real journalism.
+    return any(m in url for m in _JUNK_PATH_MARKERS)
+
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -354,6 +402,9 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
 
     inserted = 0
     for art in articles:
+        if is_junk_deal(art):
+            logger.info("  JUNK-DEAL SKIP: %s", art.get("title", "?")[:80])
+            continue
         try:
             with db_conn.cursor() as cur:
                 cur.execute(

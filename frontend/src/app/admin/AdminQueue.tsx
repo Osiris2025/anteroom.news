@@ -32,7 +32,7 @@ const EFX_OPTS: { value: string; label: string }[] = [
 
 // ArticleCard — magazine change persists immediately (works even for live articles)
 // but updates the card IN PLACE (no re-sort/re-arrange). Status changes reload the list.
-function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDel, onComment, onPin }: {
+function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDel, onComment, onPin, onSubcat }: {
   a: QArticle; magazines: { id: string; name: string }[];
   subcatsByMag: Record<string, string[]>; addSubcat: (magazineId: string | null | undefined, name: string) => void;
   onAct: (id: string, patch: any) => void;
@@ -40,6 +40,7 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
   onDel: (id: string) => void;
   onComment: (id: string, title: string) => void;
   onPin: (id: string, title: string) => void;
+  onSubcat: (id: string, subcategory: string | null) => void;
 }) {
   const st = STATUS_TPL[a.status] || { label: a.status, bg: "#222", fg: "#aaa" };
   const [showCommentary, setShowCommentary] = useState(false);
@@ -52,7 +53,7 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
   const applySubcat = (v: string) => {
     const val = (v && v.trim()) || null;
     if (val) addSubcat(a.magazine?.id, val);
-    onAct(a.id, { subcategory: val });
+    onSubcat(a.id, val);
     setShowSubcat(false);
     setNewSubcat("");
   };
@@ -233,6 +234,15 @@ export default function AdminQueue() {
     } : d);
   };
 
+  // subcategory change: PATCH immediately, update the card IN PLACE (no reload, no re-sort,
+  // no jumping/disappearing). The global growing list is updated separately via addSubcat.
+  const onSubcat = async (id: string, subcategory: string | null) => {
+    const r = await fetch(`/api/admin/article/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ subcategory }) });
+    const j = await r.json();
+    if (j.error) { setErr(j.error); return; }
+    setData((d) => d ? { ...d, articles: d.articles.map((x) => x.id === id ? { ...x, subcategory } : x) } : d);
+  };
+
   // create a new magazine on demand
   const newMag = async () => {
     const name = prompt("New magazine name:");
@@ -325,7 +335,7 @@ export default function AdminQueue() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 14 }}>
         {data?.articles.map((a) => (
-          <ArticleCard key={a.id} a={a} subcatsByMag={subcatsByMag} addSubcat={addSubcat} magazines={data.magazines} onAct={act} onMag={onMag} onDel={del} onComment={onComment} onPin={onPin} />
+          <ArticleCard key={a.id} a={a} subcatsByMag={subcatsByMag} addSubcat={addSubcat} magazines={data.magazines} onAct={act} onMag={onMag} onDel={del} onComment={onComment} onPin={onPin} onSubcat={onSubcat} />
         ))}
       </div>
 

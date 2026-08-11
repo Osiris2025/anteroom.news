@@ -3,13 +3,8 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import ThemeSelector from '@/components/ThemeSelector';
+import MagazineSwitcher from '@/components/MagazineSwitcher';
 import { useSession } from '@/lib/auth-client';
-
-const streams = [
-  { name: 'Tech Pulse', href: '/streams/tech-pulse', color: 'text-tech-dark dark:text-tech-light' },
-  { name: 'Poli Split', href: '/streams/poli-split', color: 'text-poli-dark dark:text-poli-light' },
-  { name: 'Weekly Weird', href: '/streams/weekly-weird-news', color: 'text-weird-dark dark:text-weird-light' },
-];
 
 const ADMIN_ROLES = ['superadmin', 'admin'];
 
@@ -49,9 +44,12 @@ export default function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
-          <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white hover:text-tech dark:hover:text-tech-light transition-colors shrink-0">
-            AI News Nexus
-          </Link>
+          <div className="flex items-center gap-1 shrink-0">
+            <MagazineSwitcher />
+            <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white hover:text-tech dark:hover:text-tech-light transition-colors shrink-0">
+              AI News Nexus
+            </Link>
+          </div>
           <div className="hidden md:flex items-center gap-6">
             <Link
               href="/collect"
@@ -71,15 +69,6 @@ export default function Navbar() {
             >
               Shop
             </Link>
-            {streams.map((s) => (
-              <Link
-                key={s.name}
-                href={s.href}
-                className="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-tech dark:hover:text-tech-light transition-colors"
-              >
-                {s.name}
-              </Link>
-            ))}
           </div>
           <div className="flex items-center gap-3">
             {isAdmin && (

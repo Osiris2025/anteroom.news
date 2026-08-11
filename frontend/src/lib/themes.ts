@@ -634,7 +634,7 @@ function renderTemplate(st){
   if(layout==="sidebar-left"){
     s += '<div class="grid"><div class="side">';
     st.sidebar.forEach(function(sb){
-      if(sb==="nav"){s += renderMagSideNav();}
+      if(sb==="nav"){ /* magazine nav suppressed — global MagazineSwitcher (☰) owns it */ }
       if(sb==="subscribe"){s+='<div class="panel"><h4>Subscribe</h4><input placeholder="email"><a class="btn" href="/subscribe" data-href="/subscribe" style="display:block;text-align:center">Subscribe</a></div>';}
       if(sb==="support"){s+='<div class="panel"><h4>Support</h4><a class="btn" href="/support" data-href="/support" style="display:block;text-align:center">Become a Supporter</a></div>';}
     });
@@ -658,7 +658,7 @@ function renderTemplate(st){
     if(st.showPoll){ s += renderPoll(); }
     s += '</div><div class="side">';
     st.sidebar.forEach(function(sb){
-      if(sb==="nav"){s += renderMagSideNav();}
+      if(sb==="nav"){ /* magazine nav suppressed — global MagazineSwitcher (☰) owns it */ }
       if(sb==="support"){s+='<div class="panel"><h4>Support</h4><a class="btn" href="/support" data-href="/support" style="display:block;text-align:center">Become a Supporter</a></div>';}
     });
     s+='</div></div>';

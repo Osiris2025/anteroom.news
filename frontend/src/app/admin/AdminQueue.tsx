@@ -32,8 +32,9 @@ const EFX_OPTS: { value: string; label: string }[] = [
 
 // ArticleCard — magazine change persists immediately (works even for live articles)
 // but updates the card IN PLACE (no re-sort/re-arrange). Status changes reload the list.
-function ArticleCard({ a, magazines, onAct, onMag, onDel, onComment, onPin }: {
+function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDel, onComment, onPin }: {
   a: QArticle; magazines: { id: string; name: string }[];
+  subcatsByMag: Record<string, string[]>; addSubcat: (magazineId: string | null | undefined, name: string) => void;
   onAct: (id: string, patch: any) => void;
   onMag: (id: string, magazineId: string) => void;
   onDel: (id: string) => void;
@@ -43,6 +44,18 @@ function ArticleCard({ a, magazines, onAct, onMag, onDel, onComment, onPin }: {
   const st = STATUS_TPL[a.status] || { label: a.status, bg: "#222", fg: "#aaa" };
   const [showCommentary, setShowCommentary] = useState(false);
   const hasCommentary = !!a.commentary && a.commentary.trim().length > 0;
+  const [showSubcat, setShowSubcat] = useState(false);
+  const [newSubcat, setNewSubcat] = useState("");
+  const parentMagId = a.magazine?.id || "none";
+  const subcats = subcatsByMag[parentMagId] || [];
+
+  const applySubcat = (v: string) => {
+    const val = (v && v.trim()) || null;
+    if (val) addSubcat(a.magazine?.id, val);
+    onAct(a.id, { subcategory: val });
+    setShowSubcat(false);
+    setNewSubcat("");
+  };
 
   return (
     <article style={{ border: "1px solid rgba(150,150,150,.15)", borderRadius: 10, overflow: "hidden", background: "var(--card-bg, rgba(255,255,255,.03))", display: "flex", flexDirection: "column" }}>
@@ -75,7 +88,36 @@ function ArticleCard({ a, magazines, onAct, onMag, onDel, onComment, onPin }: {
           <option value="">→ magazine</option>
           {magazines.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
         </select>
-        <button title="Assign / create subcategory" onClick={() => { const v = prompt("Subcategory:", a.subcategory || ""); if (v !== null) onAct(a.id, { subcategory: v.trim() || null }); }} style={btn}>🏷</button>
+        <button title="Assign / create subcategory"
+          onClick={() => { setNewSubcat(a.subcategory || ""); setShowSubcat((s) => !s); }}
+          style={{ ...btn, color: a.subcategory ? "#34d399" : btn.color, borderColor: a.subcategory ? "rgba(52,211,153,.45)" : btn.borderColor }}>🏷</button>
+        {showSubcat && (
+          <div className="nexus-subcat-pop" style={{ marginTop: 8, width: "100%", background: "rgba(22,26,32,.98)", border: "1px solid rgba(150,150,150,.3)", borderRadius: 10, padding: 12, boxShadow: "0 10px 30px rgba(0,0,0,.5)", zIndex: 60 }}>
+            <div style={{ fontSize: 10, textTransform: "uppercase", letterSpacing: 1, fontWeight: 700, color: "var(--accent,#ffd700)", marginBottom: 8 }}>
+              Subcategory · {a.magazine?.name || "Unassigned"}
+            </div>
+            {subcats.length > 0 ? (
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 6, marginBottom: 10, maxHeight: 120, overflowY: "auto" }}>
+                {subcats.map((s) => (
+                  <button key={s} type="button"
+                    onClick={() => applySubcat(s)}
+                    style={{ ...btn, flex: "0 0 auto", padding: "5px 10px", fontSize: 11, fontWeight: 600, background: s === a.subcategory ? "rgba(52,211,153,.18)" : "transparent", color: s === a.subcategory ? "#34d399" : "#cdd3dd", borderColor: s === a.subcategory ? "rgba(52,211,153,.5)" : "rgba(150,150,150,.25)" }}>
+                    {s}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <div style={{ fontSize: 11, color: "#8a8f98", marginBottom: 10 }}>No subcategories yet for this magazine — create the first below.</div>
+            )}
+            <div style={{ display: "flex", gap: 6 }}>
+              <input value={newSubcat} onChange={(e) => setNewSubcat(e.target.value)} placeholder="New subcategory…"
+                onKeyDown={(e) => { if (e.key === "Enter") applySubcat(newSubcat); }}
+                style={{ flex: 1, minWidth: 0, padding: "7px 9px", borderRadius: 7, border: "1px solid rgba(150,150,150,.3)", background: "#0d0f12", color: "#e6e6e6", fontSize: 12 }} />
+              <button type="button" onClick={() => applySubcat(newSubcat)} disabled={!newSubcat.trim()} style={{ ...btn, fontWeight: 700, color: "var(--accent,#ffd700)", borderColor: "rgba(255,215,0,.4)", padding: "5px 10px" }}>Add</button>
+              {a.subcategory && <button type="button" onClick={() => applySubcat("")} title="Clear" style={{ ...btn, color: "#f87171", borderColor: "rgba(248,113,113,.35)", padding: "5px 8px" }}>✕</button>}
+            </div>
+          </div>
+        )}
         <button title="Toggle social repeat" onClick={() => onAct(a.id, { socialRepeat: !a.socialRepeat })} style={a.socialRepeat ? { ...btn, background: "#06253a", color: "#58a6ff" } : btn}>↻</button>
         <button title="Make the flagship featured story" onClick={() => onAct(a.id, { featured: !a.featured })} style={a.featured ? { ...btn, background: "#3b2f00", color: "#ffd700" } : btn}>★</button>
         <select title="Cinematic effect for the hero image (VHS / rain / lightning…)" value={a.efx || ""}
@@ -119,6 +161,47 @@ export default function AdminQueue() {
   const [q, setQ] = useState("");
   const [err, setErr] = useState("");
   const [genLoading, setGenLoading] = useState(false);
+  // Growing list of subcategories, KEYED BY PARENT MAGAZINE so an article only
+  // sees choices from its own magazine (e.g. no "Fish Tales" under Tech). Seeded
+  // from localStorage and refreshed with any seen in the loaded queue.
+  const [subcatsByMag, setSubcatsByMag] = useState<Record<string, string[]>>(() => {
+    try {
+      const raw = JSON.parse(localStorage.getItem("nexus-subcategories") || "{}");
+      return (raw && typeof raw === "object") ? raw : {};
+    } catch { return {}; }
+  });
+  useEffect(() => {
+    if (!data) return;
+    const seen: Record<string, Set<string>> = {};
+    Object.entries(subcatsByMag).forEach(([k, v]) => {
+      if (Array.isArray(v)) seen[k] = new Set(v.filter((s) => typeof s === "string"));
+    });
+    data.articles.forEach((a) => {
+      if (!a.subcategory) return;
+      const key = a.magazine?.id || "none";
+      if (!seen[key]) seen[key] = new Set();
+      seen[key].add(a.subcategory);
+    });
+    const merged: Record<string, string[]> = {};
+    Object.entries(seen).forEach(([k, s]) => { merged[k] = Array.from(s).sort((x, y) => x.localeCompare(y)); });
+    setSubcatsByMag(merged);
+    try { localStorage.setItem("nexus-subcategories", JSON.stringify(merged)); } catch { /* ignore */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
+
+  // Persist a new subcategory under its parent magazine so it grows that magazine's list.
+  const addSubcat = (magazineId: string | null | undefined, name: string) => {
+    const n = name.trim();
+    if (!n) return;
+    const key = magazineId || "none";
+    setSubcatsByMag((prev) => {
+      const cur = prev[key] || [];
+      const merged = cur.includes(n) ? cur : [...cur, n].sort((x, y) => x.localeCompare(y));
+      const next = { ...prev, [key]: merged };
+      try { localStorage.setItem("nexus-subcategories", JSON.stringify(next)); } catch { /* ignore */ }
+      return next;
+    });
+  };
 
   const load = () => {
     const params = new URLSearchParams();
@@ -242,7 +325,7 @@ export default function AdminQueue() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 14 }}>
         {data?.articles.map((a) => (
-          <ArticleCard key={a.id} a={a} magazines={data.magazines} onAct={act} onMag={onMag} onDel={del} onComment={onComment} onPin={onPin} />
+          <ArticleCard key={a.id} a={a} subcatsByMag={subcatsByMag} addSubcat={addSubcat} magazines={data.magazines} onAct={act} onMag={onMag} onDel={del} onComment={onComment} onPin={onPin} />
         ))}
       </div>
 

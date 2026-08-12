@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MAGAZINES } from "@/lib/themes";
+import TopNavItems from "@/components/TopNavItems";
 
 /**
  * Global magazine-switcher — hamburger + left drawer + pinnable rail.
@@ -78,20 +79,34 @@ export default function MagazineSwitcher() {
 
   const closeOverlay = () => setOpen(false);
 
-  const list = (onSelect: () => void) => (
-    <nav className="nexus-switch-list">
-      {MAGAZINES.map((m) => (
-        <Link
-          key={m.id}
-          href={"/magazines/" + m.id}
-          onClick={onSelect}
-          className="nexus-switch-item"
-        >
-          <span className="nexus-switch-dot" style={{ background: m.accent }} />
-          <span className="nexus-switch-name">{m.name}</span>
-        </Link>
-      ))}
-    </nav>
+  // Let TopNavItems close the drawer when tapped (mobile/tablet).
+  useEffect(() => {
+    (window as any).__nexusCloseDrawer = closeOverlay;
+    return () => { delete (window as any).__nexusCloseDrawer; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open]);
+
+  const list = (onSelect: () => void, showTopItems: boolean) => (
+    <>
+      {showTopItems && (
+        <div className="nexus-switch-top" style={{ padding: "10px 10px 4px", borderBottom: "1px solid rgba(255,255,255,.1)", marginBottom: 4 }}>
+          <TopNavItems vertical />
+        </div>
+      )}
+      <nav className="nexus-switch-list">
+        {MAGAZINES.map((m) => (
+          <Link
+            key={m.id}
+            href={"/magazines/" + m.id}
+            onClick={onSelect}
+            className="nexus-switch-item"
+          >
+            <span className="nexus-switch-dot" style={{ background: m.accent }} />
+            <span className="nexus-switch-name">{m.name}</span>
+          </Link>
+        ))}
+      </nav>
+    </>
   );
 
   const head = (isRail: boolean) => (
@@ -143,7 +158,7 @@ export default function MagazineSwitcher() {
       {railActive && (
         <aside className="nexus-switch nexus-switch-rail" aria-label="Magazines">
           {head(true)}
-          {list(() => {})}
+          {list(() => {}, false)}
         </aside>
       )}
 
@@ -151,7 +166,7 @@ export default function MagazineSwitcher() {
       {!railActive && open && (
         <aside className="nexus-switch nexus-switch-drawer" role="dialog" aria-label="Magazines">
           {head(false)}
-          {list(closeOverlay)}
+          {list(closeOverlay, true)}
         </aside>
       )}
 

@@ -1,0 +1,33 @@
+# Nexus Social Publisher — bare-metal systemd unit (optional; works equally via Docker)
+# Install: cp publisher/publisher.service /etc/systemd/system/nexus-publisher.service
+#          systemctl daemon-reload
+#          systemctl enable --now nexus-publisher
+#
+# Expects the venv at /opt/nexus-publisher/venv and env in /etc/nexus-publisher.env
+# (SITE_BASE_URL, DATABASE_URL, SOCIAL_DISABLED, platform creds).
+
+[Unit]
+Description=Nexus Social Publisher — post articles to social platforms
+After=network-online.target postgresql.service docker.service
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=todd
+EnvironmentFile=/etc/nexus-publisher.env
+ExecStart=/opt/nexus-publisher/venv/bin/python -m publisher.run post
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target
+
+# Optional recurring timer (create /etc/systemd/system/nexus-publisher.timer):
+#   [Unit]
+#   Description=Publish due social posts on a schedule
+#
+#   [Timer]
+#   OnCalendar=*-*-* 09,12,15,18,21:00:00
+#   Persistent=true
+#
+#   [Install]
+#   WantedBy=timers.target

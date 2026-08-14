@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nexus-publisher"
+version = "0.1.0"
+description = "Standalone social publisher for AI News Nexus articles (X / Bluesky / LinkedIn)"
+requires-python = ">=3.10"
+dependencies = [
+    "psycopg2-binary",
+]
+
+[project.optional-dependencies]
+bluesky = ["atproto"]
+
+[project.scripts]
+nexus-social = "publisher.run:main"
+
+[tool.setuptools]
+packages = ["publisher", "publisher.adapters"]

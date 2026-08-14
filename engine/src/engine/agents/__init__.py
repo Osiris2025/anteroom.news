@@ -181,6 +181,8 @@ def fetch_rss(url: str, timeout: int = 30) -> list[dict]:
         title = entry.get("title", "").strip()
         if not title:
             continue
+        # Decode HTML character references so titles don't store raw &#8217; etc.
+        title = html.unescape(title)
 
         # Extract description / summary
         summary = ""
@@ -194,9 +196,10 @@ def fetch_rss(url: str, timeout: int = 30) -> list[dict]:
         image_url = _feed_image(entry) or _summary_image(raw_summary)
         if not image_url:
             image_url = _page_og_image(link)
-        # Strip HTML tags for clean summary
+        # Strip HTML tags for clean summary, then decode entities
         if summary:
             summary = re.sub(r"<[^>]+>", "", summary)
+            summary = html.unescape(summary)
             summary = summary[:500]
 
         published = None

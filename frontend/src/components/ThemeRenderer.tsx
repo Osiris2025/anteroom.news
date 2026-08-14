@@ -25,16 +25,27 @@ import MagazineEditorial from "@/components/MagazineEditorial";
  * (never the raw URL slug) for the LiveFeed fetch — DB articles are stored under
  * the canonical id. This lives in the component only; themes.ts is untouched.
  */
-export default function ThemeRenderer({ magazineId }: { magazineId?: string }) {
+export default function ThemeRenderer({ magazineId, dbMagazine }: { magazineId?: string; dbMagazine?: { id: string; name: string | null; tagline: string | null; description: string | null } | null }) {
   const router = useRouter();
   const { currentTheme, setTheme } = useTheme();
   const shellRef = useRef<HTMLDivElement>(null);
 
   const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
-  const magazine = magazineId
+  const staticMag = magazineId
     ? MAGAZINES.find((m) => m.id === magazineId) ||
       MAGAZINES.find((m) => slugify(m.name) === magazineId) ||
       MAGAZINES.find((m) => slugify(m.short) === magazineId)
+    : undefined;
+
+  // DB is the source of truth for name/tagline (admin-editable); the static
+  // MAGAZINES entry only supplies accent/theme/fallback text.
+  const magazine = magazineId
+    ? {
+        ...(staticMag || {}),
+        id: dbMagazine?.id || staticMag?.id || magazineId,
+        name: (dbMagazine?.name || staticMag?.name || ""),
+        tagline: (dbMagazine?.tagline || staticMag?.tagline || ""),
+      }
     : undefined;
 
   // Semantic body for the ACTIVE theme (internal header suppressed; navbar owns top nav).

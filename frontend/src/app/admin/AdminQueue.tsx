@@ -32,7 +32,7 @@ const EFX_OPTS: { value: string; label: string }[] = [
 
 // ArticleCard — magazine change persists immediately (works even for live articles)
 // but updates the card IN PLACE (no re-sort/re-arrange). Status changes reload the list.
-function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDel, onComment, onPin, onSubcat }: {
+function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDel, onComment, onPin, onSubcat, onStatus }: {
   a: QArticle; magazines: { id: string; name: string }[];
   subcatsByMag: Record<string, string[]>; addSubcat: (magazineId: string | null | undefined, name: string) => void;
   onAct: (id: string, patch: any) => void;
@@ -41,6 +41,7 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
   onComment: (id: string, title: string) => void;
   onPin: (id: string, title: string) => void;
   onSubcat: (id: string, subcategory: string | null) => void;
+  onStatus: (id: string, newStatus: string) => void;
 }) {
   const st = STATUS_TPL[a.status] || { label: a.status, bg: "#222", fg: "#aaa" };
   const [showCommentary, setShowCommentary] = useState(false);
@@ -80,10 +81,10 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
         {a.siteName && <div style={{ fontSize: 10, color: "#58a6ff", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>{a.siteName}</div>}
       </div>
       <div style={{ padding: "8px 10px", borderTop: "1px solid rgba(150,150,150,.12)", display: "flex", flexWrap: "wrap", gap: 6 }}>
-        {a.status === "draft" && <Btn onClick={() => onAct(a.id, { status: "approved" })} bg="#00331f" fg="#34d399">✓ Approve</Btn>}
-        {a.status === "approved" && <Btn onClick={() => onAct(a.id, { status: "live" })} bg="#06253a" fg="#58a6ff">Publish</Btn>}
-        {a.status !== "rejected" && <Btn onClick={() => onAct(a.id, { status: "rejected" })} bg="#3a0a0a" fg="#f87171">✕ Reject</Btn>}
-        {a.status === "rejected" && <Btn onClick={() => onAct(a.id, { status: "draft" })} bg="#222" fg="#aaa">↩ Draft</Btn>}
+        {a.status === "draft" && <Btn onClick={() => onStatus(a.id, "approved")} bg="#00331f" fg="#34d399">✓ Approve</Btn>}
+        {a.status === "approved" && <Btn onClick={() => onStatus(a.id, "live")} bg="#06253a" fg="#58a6ff">Publish</Btn>}
+        {a.status !== "rejected" && <Btn onClick={() => onStatus(a.id, "rejected")} bg="#3a0a0a" fg="#f87171">✕ Reject</Btn>}
+        {a.status === "rejected" && <Btn onClick={() => onStatus(a.id, "draft")} bg="#222" fg="#aaa">↩ Draft</Btn>}
         <select title="Change magazine (applies immediately)" value={a.magazine?.id || ""}
           onChange={(e) => e.target.value && onMag(a.id, e.target.value)} style={{ ...sel, minWidth: 120, padding: "5px 8px", fontSize: 11 }}>
           <option value="">→ magazine</option>
@@ -243,6 +244,56 @@ export default function AdminQueue() {
     setData((d) => d ? { ...d, articles: d.articles.map((x) => x.id === id ? { ...x, subcategory } : x) } : d);
   };
 
+  // status change: PATCH immediately, update the card IN PLACE so approving
+  // doesn't jump the card or make it disappear from the current view.
+  const onStatus = async (id: string, newStatus: string) => {
+    const r = await fetch(`/api/admin/article/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: newStatus }) });
+    const j = await r.json();
+    if (j.error) { setErr(j.error); return; }
+    setData((d) => d ? { ...d, articles: d.articles.map((x) => x.id === id ? { ...x, status: newStatus } : x) } : d);
+  };
+
+  // Bulk approve / bulk publish
+  const [busy, setBusy] = useState("");
+
+  const bulkApprove = async () => {
+    if (!data || busy) return;
+    const ids = data.articles.filter((a) => a.status === "draft").map((a) => a.id);
+    if (!ids.length) { alert("No draft articles to approve."); return; }
+    setBusy("approving");
+    let ok = 0, fail = 0;
+    for (const id of ids) {
+      try {
+        const r = await fetch(`/api/admin/article/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "approved" }) });
+        const j = await r.json();
+        if (j.error) fail++; else ok++;
+      } catch { fail++; }
+    }
+    setBusy("");
+    load();
+    if (!fail) setErr(`Approved ${ok} articles.`);
+    else setErr(`Approved ${ok}, ${fail} failed.`);
+  };
+
+  const bulkPublish = async () => {
+    if (!data || busy) return;
+    const ids = data.articles.filter((a) => a.status === "approved").map((a) => a.id);
+    if (!ids.length) { alert("No approved articles to publish."); return; }
+    setBusy("publishing");
+    let ok = 0, fail = 0;
+    for (const id of ids) {
+      try {
+        const r = await fetch(`/api/admin/article/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "live" }) });
+        const j = await r.json();
+        if (j.error) fail++; else ok++;
+      } catch { fail++; }
+    }
+    setBusy("");
+    load();
+    if (!fail) setErr(`Published ${ok} articles.`);
+    else setErr(`Published ${ok}, ${fail} failed.`);
+  };
+
   // create a new magazine on demand
   const newMag = async () => {
     const name = prompt("New magazine name:");
@@ -326,7 +377,13 @@ export default function AdminQueue() {
           <option value="live">Live</option>
           <option value="rejected">Rejected</option>
         </select>
-        <span style={{ marginLeft: "auto", fontSize: 12, opacity: 0.7 }}>{data ? `${data.articles.length} shown · ${data.articles.filter((a) => a.socialRepeat).length} for social` : "…"}</span>
+        <span style={{ marginLeft: "auto", fontSize: 12, opacity: 0.7 }}>{data ? `${data.articles.length} shown · ${data.articles.filter((a) => a.socialRepeat).length} for social · ${data.articles.filter((a) => a.status === "draft").length} draft · ${data.articles.filter((a) => a.status === "approved").length} approved` : "…"}</span>
+        {data && data.articles.filter((a) => a.status === "draft").length > 0 && (
+          <button onClick={bulkApprove} disabled={!!busy} style={{ ...btn, color: "#34d399", borderColor: "rgba(52,211,153,.4)", fontWeight: 700 }}>{busy === "approving" ? "⏳ Approving…" : "✓ Approve All"}</button>
+        )}
+        {data && data.articles.filter((a) => a.status === "approved").length > 0 && (
+          <button onClick={bulkPublish} disabled={!!busy} style={{ ...btn, color: "#58a6ff", borderColor: "rgba(88,166,255,.4)", fontWeight: 700 }}>{busy === "publishing" ? "⏳ Publishing…" : "📤 Publish All Approved"}</button>
+        )}
         <button onClick={genWWN} style={{ ...btn, color: "#ff6b9d", borderColor: "rgba(255,107,157,.4)", fontWeight: 700 }} disabled={genLoading}>🐱 {genLoading ? "Generating…" : "Generate WWN Article"}</button>
         <button onClick={newMag} title="Create a new magazine" style={{ ...btn, color: "var(--accent,#ffd700)", borderColor: "rgba(255,215,0,.4)" }}>＋ New Magazine</button>
       </div>
@@ -335,7 +392,7 @@ export default function AdminQueue() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 14 }}>
         {data?.articles.map((a) => (
-          <ArticleCard key={a.id} a={a} subcatsByMag={subcatsByMag} addSubcat={addSubcat} magazines={data.magazines} onAct={act} onMag={onMag} onDel={del} onComment={onComment} onPin={onPin} onSubcat={onSubcat} />
+          <ArticleCard key={a.id} a={a} subcatsByMag={subcatsByMag} addSubcat={addSubcat} magazines={data.magazines} onAct={act} onMag={onMag} onDel={del} onComment={onComment} onPin={onPin} onSubcat={onSubcat} onStatus={onStatus} />
         ))}
       </div>
 

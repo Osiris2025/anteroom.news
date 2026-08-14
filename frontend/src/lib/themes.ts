@@ -487,6 +487,8 @@ export const MAGAZINES: Magazine[] = [
   { id:"oss-report", name:"Open Source Report", short:"OSS Report", tagline:"Community. Code. Drama.", description:"New releases, licensing battles, and dev community pulse.", color:"#dc2626", accent:"#f87171", theme:"terminal", tags:["alert","crosspost","game"] },
   { id:"starfall-weekly", name:"Starfall Weekly", short:"Starfall", tagline:"Reality is just a beta.", description:"Speculative fiction, future tech, space opera, and the far-out world of what comes next.", color:"#0f380f", accent:"#00ff40", theme:"crt", tags:["ticker","alert","crosspost","puzzle"] },
   { id:"vital-sign", name:"Vital Signs", short:"Vital Signs", tagline:"The inner cosmos, decoded.", description:"Medicine, public health, longevity, mental wellness, and the science of being human.", color:"#0b5563", accent:"#2dd4bf", theme:"dashboard", tags:["ticker","alert","puzzle","anecdote"] },
+  { id:"neural-hardware", name:"Neural Hardware", short:"Neural Hardware", tagline:"AI. Cyber. Compute.", description:"Artificial intelligence, cybersecurity, computing trends, and the hardware powering tomorrow's datacenters.", color:"#00cc88", accent:"#00fa9a", theme:"linear", tags:["ticker","alert","crosspost","puzzle"] },
+  { id:"dark-matter", name:"Dark Matter", short:"Dark Matter", tagline:"The universe's deepest mysteries.", description:"Astronomy, dark matter, black holes, theoretical physics, and everything we don't yet understand about the cosmos.", color:"#6b21a8", accent:"#a855f7", theme:"glass", tags:["ticker","puzzle","alert","anecdote"] },
 ];
 export const magazineTheme: Record<string, string> = {
   "weekly-weird-news": "tabloid",
@@ -499,6 +501,8 @@ export const magazineTheme: Record<string, string> = {
   "local-lens": "blog",
   "starfall-weekly": "crt",
   "vital-sign": "dashboard",
+  "neural-hardware": "linear",
+  "dark-matter": "glass",
 };
 
 // Plural alias matching what ThemeContext imports.

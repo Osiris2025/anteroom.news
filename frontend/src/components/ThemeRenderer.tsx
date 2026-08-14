@@ -25,7 +25,11 @@ import MagazineEditorial from "@/components/MagazineEditorial";
  * (never the raw URL slug) for the LiveFeed fetch — DB articles are stored under
  * the canonical id. This lives in the component only; themes.ts is untouched.
  */
-export default function ThemeRenderer({ magazineId, dbMagazine }: { magazineId?: string; dbMagazine?: { id: string; name: string | null; tagline: string | null; description: string | null } | null }) {
+export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
+  magazineId?: string;
+  dbMagazine?: { id: string; name: string | null; tagline: string | null; description: string | null } | null;
+  dbMagazines?: Array<{ id: string; name: string; tagline: string | null; description: string | null }>;
+}) {
   const router = useRouter();
   const { currentTheme, setTheme } = useTheme();
   const shellRef = useRef<HTMLDivElement>(null);
@@ -37,25 +41,42 @@ export default function ThemeRenderer({ magazineId, dbMagazine }: { magazineId?:
       MAGAZINES.find((m) => slugify(m.short) === magazineId)
     : undefined;
 
-  // DB is the source of truth for name/tagline (admin-editable); the static
-  // MAGAZINES entry only supplies accent/theme/fallback text.
+  // Build DB-first lookup maps for tagline/name/description (DB is the source of
+  // truth for customer-facing text; the static MAGAZINES array only supplies
+  // theme/accent/color + fallbacks). dbMagazine covers the scoped single page;
+  // dbMagazines is the full list (homepage showcase + footer).
+  const dbList = dbMagazines && dbMagazines.length
+    ? dbMagazines
+    : (dbMagazine ? [dbMagazine] : []);
+  const dbByName: Record<string, any> = {};
+  const taglines: Record<string, string> = {};
+  const names: Record<string, string> = {};
+  const descs: Record<string, string> = {};
+  for (const d of dbList) {
+    dbByName[d.id] = d;
+    if (d.tagline) taglines[d.id] = d.tagline;
+    if (d.name) names[d.id] = d.name;
+    if (d.description) descs[d.id] = d.description;
+  }
+
+  const dbForMag = dbMagazine || (magazineId ? dbByName[magazineId] : undefined);
   const magazine = magazineId
     ? {
         ...(staticMag || {}),
-        id: dbMagazine?.id || staticMag?.id || magazineId,
-        name: (dbMagazine?.name || staticMag?.name || ""),
-        tagline: (dbMagazine?.tagline || staticMag?.tagline || ""),
+        id: dbForMag?.id || staticMag?.id || magazineId,
+        name: (dbForMag?.name || staticMag?.name || ""),
+        tagline: (dbForMag?.tagline || staticMag?.tagline || ""),
       }
     : undefined;
 
   // Semantic body for the ACTIVE theme (internal header suppressed; navbar owns top nav).
-  // When scoped to a magazine, magScope = magazine name -> template hides the hardcoded
-  // "Explore the magazines" hero + full showcase and renders only that magazine's section.
-  // No hardcoded magazine count, so this scales to any number of magazines.
   const structure = {
     ...currentTheme.structure,
     hideHeader: true,
     magScope: magazine ? magazine.name : "",
+    taglines,
+    names,
+    descs,
   };
   const html = renderTemplate(structure);
 

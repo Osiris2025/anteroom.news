@@ -596,12 +596,18 @@ function dh(a){ return ' data-href="'+hrefFor(a)+'"'; }
 // Magazines as a grid of showcase cards (for main-content positions).
 function renderMagShowcase(st){
   var scopeMag = st && st.magScope; // '';
+  var tags = (st && st.taglines) || {};   // id -> DB tagline (source of truth)
+  var names = (st && st.names) || {};     // id -> DB name
+  var descs = (st && st.descs) || {};     // id -> DB description
   var s = '<div class="magshow"><div class="sec-t"><div class="dot"></div><h2>Magazines</h2></div><div class="cards">';
   MAGAZINES.forEach(function(m){
     if(scopeMag && m.short !== scopeMag && m.name !== scopeMag && m.id !== scopeMag) return;
-    s += '<a class="card mag"' + h(m) + '><div class="k"><span class="magdot" style="background:'+m.accent+'"></span>'+m.short+'</div><h3>'+m.name+'</h3>'
-       + '<p class="magtag">'+m.tagline+'</p>'
-       + '<p class="magdesc">'+(m.description||'')+'</p></a>';
+    var name = names[m.id] || m.name;
+    var tagline = tags[m.id] || m.tagline;
+    var desc = descs[m.id] || m.description || '';
+    s += '<a class="card mag"' + h(m) + '><div class="k"><span class="magdot" style="background:'+m.accent+'"></span>'+(m.short)+'</div><h3>'+name+'</h3>'
+       + '<p class="magtag">'+tagline+'</p>'
+       + '<p class="magdesc">'+desc+'</p></a>';
   });
   s += '</div></div>';
   return s;
@@ -653,7 +659,7 @@ function renderTemplate(st){
       s += '<div class="grid grid-full"><div class="main">';
     }
     if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>' + MAGAZINES.length + ' magazines; AI-analyzed daily.</p></div>'; }
-    if(!scoped){ s += renderMagShowcase(); }
+    if(!scoped){ s += renderMagShowcase(st); }
     // Scoped pages: the real "Top Stories" grid (from published articles) renders above in
     // MagazineTopStories, so the template's static placeholder heading is removed entirely.
     if(!scoped){ s += '<div class="mast-sub"><h2>Top stories</h2></div>'; }
@@ -664,8 +670,8 @@ function renderTemplate(st){
   }
   else if(layout==="sidebar-right"){
     s += '<div class="grid"><div class="main">';
-    if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
-    if(!scoped){ s += renderMagShowcase(); }
+    if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across ' + MAGAZINES.length + ' magazines.</p></div>'; }
+    if(!scoped){ s += renderMagShowcase(st); }
     if(!scoped){ s += '<div class="mast-sub"><h2>Top stories</h2></div>'; }
     s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
@@ -678,8 +684,8 @@ function renderTemplate(st){
   }
   else if(layout==="center"){
     s += '<div class="grid">';
-    if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across 7 magazines.</p></div>'; }
-    if(!scoped){ s += renderMagShowcase(); }
+    if(!scoped){ s += '<div class="mast"><h1>Explore the magazines</h1><p>AI-powered analysis across ' + MAGAZINES.length + ' magazines.</p></div>'; }
+    if(!scoped){ s += renderMagShowcase(st); }
     if(!scoped){ s += '<div class="mast-sub"><h2>Top stories</h2></div>'; }
     s += renderSections(st, st.showStats);
     if(st.showPoll){ s += renderPoll(); }
@@ -688,7 +694,7 @@ function renderTemplate(st){
   else if(layout==="masonry"){
     s += '<div class="grid">';
     // lead block
-    s += '<div class="mast"><h1>Stories that matter</h1><p>AI-powered across 7 magazines.</p></div>';
+    s += '<div class="mast"><h1>Stories that matter</h1><p>AI-powered across ' + MAGAZINES.length + ' magazines.</p></div>';
     ARTICLES.forEach(function(a){
       s += '<div class="card"'+dh(a)+'><div class="k" style="color:'+a.color+'">'+a.k+'</div><h3>'+a.title+'</h3><p>'+a.desc+'</p></div>';
     });

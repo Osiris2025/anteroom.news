@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { eq, desc, and, isNull } from "drizzle-orm";
+import { eq, desc, and, isNull, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { article, magazine, pin } from "@/drizzle/schema";
 
@@ -12,10 +12,16 @@ import { article, magazine, pin } from "@/drizzle/schema";
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const magId = sp.get("magazine") || "all";
+  const offset = parseInt(sp.get("offset") || "0", 10);
+  const limit = Math.min(parseInt(sp.get("limit") || "150", 10), 200);
 
   try {
     const conds: any[] = [eq(article.status, "live")];
     if (magId && magId !== "all") conds.push(eq(article.magazineId, magId));
+
+    // Total count for pagination
+    const countResult = await db.select({ count: sql<number>`count(*)::int` }).from(article).where(and(...conds));
+    const total = countResult[0]?.count || 0;
 
     // Active pins first (any kind, not yet expired), newest pinned first.
     const pins: any[] = await db
@@ -31,7 +37,8 @@ export async function GET(req: NextRequest) {
       .leftJoin(magazine, eq(article.magazineId, magazine.id))
       .where(and(...conds))
       .orderBy(desc(article.publishedAt))
-      .limit(150);
+      .limit(limit)
+      .offset(offset);
     const rows: any[] = await query;
 
     // Ensure pins are active on a live article before allowing them to surface.
@@ -71,7 +78,7 @@ export async function GET(req: NextRequest) {
     const rest = articles.filter((a) => !pinByArticle.has(a.id));
     const ordered = [...pinned, ...rest];
 
-    return Response.json({ articles: ordered });
+    return Response.json({ articles: ordered, total });
   } catch (e: any) {
     return Response.json({ error: e?.message || "Failed to load articles" }, { status: 500 });
   }

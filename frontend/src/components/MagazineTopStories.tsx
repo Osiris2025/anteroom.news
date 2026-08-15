@@ -190,17 +190,14 @@ const totemCss = `
 #${UID} .mz-ed-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
 #${UID} .mz-ed-mark { color: var(--accent, #ffd700); font-size: 11px; }
 #${UID} .mz-ed-h2 { margin: 0; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800; color: inherit; }
-#${UID} .mz-ed-grid { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: auto; gap: 16px; }
-#${UID} .mz-ed-cell { grid-column: span 4; min-width: 0; }
+#${UID} .mz-ed-grid { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: 250px; gap: 16px; }
+#${UID} .mz-ed-cell { grid-column: span 4; min-width: 0; display: flex; flex-direction: column; }
 #${UID} .mz-ed-cell-wide { }
 #${UID} .mz-ed-cell-narrow .mz-ed-title { font-size: 14px; }
 #${UID} .mz-ed-cell-narrow .mz-ed-summary { display: none; }
-#${UID} .mz-ed-cell-tall { justify-content: space-between; }
-#${UID} .mz-ed-cell-tall .mz-ed-thumb img { height: 100%; }
-#${UID} .mz-ed-thumb { margin: -18px -20px 14px; border-radius: 12px 12px 0 0; overflow: hidden; background: var(--card-bg, rgba(127,127,127,.08)); }
-#${UID} .mz-ed-thumb img { display: block; width: 100%; height: 160px; object-fit: cover; }
-#${UID} .mz-ed-cell-wide .mz-ed-thumb img { height: 200px; }
-#${UID} .mz-ed-cell-tall .mz-ed-thumb { flex: 1; margin-bottom: 12px; }
+#${UID} .mz-ed-cell-tall { justify-content: flex-start; }
+#${UID} .mz-ed-thumb { position: relative; flex: 1 1 0; min-height: 0; margin: -18px -20px 10px; border-radius: 12px 12px 0 0; overflow: hidden; background: var(--card-bg, rgba(127,127,127,.08)); }
+#${UID} .mz-ed-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 #${UID} .mz-ed-pin { padding: 2px 8px; border-radius: 999px; border: 1px solid var(--accent, #ffd700); font-size: 9px; letter-spacing: 1px; }
 #${UID} .mz-ed-kicker { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent, #ffd700); font-weight: 800; }
 #${UID} .mz-ed-title { font-size: 17px; font-weight: 800; line-height: 1.28; letter-spacing: -0.01em; }

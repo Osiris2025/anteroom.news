@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import AdminCardTools from "@/components/AdminCardTools";
 
 type LiveArticle = {
@@ -81,8 +82,9 @@ function buildCells(articles: LiveArticle[], count: number, magazine: string): C
 }
 
 export default function MagazineTopStories({ magazine }: { magazine: string }) {
+  const searchParams = useSearchParams();
+  const subcatParam = searchParams.get("subcat") || "";
   const [articles, setArticles] = useState<LiveArticle[]>([]);
-  const [activeSubcat, setActiveSubcat] = useState<string>("");
   const [total, setTotal] = useState(0);
   const [visibleCount, setVisibleCount] = useState(16);
   const [releases, setReleases] = useState<LiveArticle[]>([]);
@@ -103,18 +105,12 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
   }, [magazine]);
 
   useEffect(() => {
-    const q = activeSubcat && activeSubcat !== "all" ? `&subcat=${encodeURIComponent(activeSubcat)}` : "";
+    const q = subcatParam && subcatParam !== "all" ? `&subcat=${encodeURIComponent(subcatParam)}` : "";
     fetch(`/api/articles?magazine=${magazine}&limit=200${q}`)
       .then((r) => r.json())
       .then((j) => { if (!j.error && Array.isArray(j.articles)) { setArticles(j.articles); setTotal(j.total || 0); } })
       .catch(() => {});
-  }, [magazine, activeSubcat]);
-
-  useEffect(() => {
-    const sp = new URLSearchParams(window.location.search);
-    const sc = sp.get("subcat") || "";
-    setActiveSubcat(sc);
-  }, [magazine, window.location.search]);
+  }, [magazine, subcatParam]);
 
   // Software release-version entries (Hermes v0.x.y etc.) — NOT on the front
   // grid; shown newest-first in the dedicated Releases section below.
@@ -123,7 +119,7 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
       .then((r) => r.json())
       .then((j) => { if (!j.error && Array.isArray(j.articles)) setReleases(j.articles); })
       .catch(() => {});
-  }, [magazine, activeSubcat]);
+  }, [magazine]);
 
   const leader = pickLeader(articles);
   const grid = articles.filter((a) => a.id !== leader?.id);

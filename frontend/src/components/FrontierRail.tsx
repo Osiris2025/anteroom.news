@@ -40,29 +40,36 @@ export default function FrontierRail() {
         <span style={{ marginLeft: "auto", fontSize: 10, opacity: .6 }}>{total} live</span>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-        {notices.map((n) => (
-          <a
-            key={n.slug}
-            href={`/ai/${n.slug}`}
-            style={{
-              textDecoration: "none", color: "inherit", display: "flex", gap: 8,
-              alignItems: "center", padding: "8px 6px", borderRadius: 8,
-              borderBottom: "1px solid var(--border, rgba(150,150,150,.08))",
-              transition: "background .12s", minWidth: 0,
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(127,127,127,.08)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
-          >
-            <span style={{ flex: "0 0 8px", width: 8, height: 8, borderRadius: "50%", background: n.color }} />
-            <span style={{ minWidth: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.25 }}>{n.name}</div>
-              <div style={{ fontSize: 11, opacity: .55, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {n.latest?.headline || n.latest?.title || n.desc}
-              </div>
-              {n.count > 1 && <div style={{ fontSize: 9, opacity: .5, marginTop: 2 }}>{n.count} stories →</div>}
-            </span>
-          </a>
-        ))}
+        {notices.map((n) => {
+          const hasStory = !!n.latest;
+          return (
+            <a
+              key={n.slug}
+              href={`/ai/${n.slug}`}
+              style={{
+                textDecoration: "none", color: "inherit", display: "flex", gap: 8,
+                alignItems: "center", padding: "8px 6px", borderRadius: 8,
+                borderBottom: "1px solid var(--border, rgba(150,150,150,.08))",
+                transition: "background .12s", minWidth: 0, opacity: hasStory ? 1 : .55,
+              }}
+              onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(127,127,127,.08)")}
+              onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            >
+              <span style={{ flex: "0 0 8px", width: 8, height: 8, borderRadius: "50%", background: n.color }} />
+              <span style={{ minWidth: 0 }}>
+                <div style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.25 }}>{n.name}</div>
+                {hasStory ? (
+                  <div style={{ fontSize: 11, opacity: .55, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                    {n.latest?.headline || n.latest?.title}
+                  </div>
+                ) : (
+                  <div style={{ fontSize: 11, opacity: .5, fontStyle: "italic" }}>{n.count ? `${n.count} stories` : "awaiting coverage"}</div>
+                )}
+                {n.count > 1 && <div style={{ fontSize: 9, opacity: .5, marginTop: 2 }}>{n.count} stories →</div>}
+              </span>
+            </a>
+          );
+        })}
       </div>
     </aside>
   );

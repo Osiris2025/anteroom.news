@@ -17,6 +17,7 @@ import httpx
 import feedparser
 
 from ..config import StreamConfig
+from .subcategory import classify_article
 
 # ---------------------------------------------------------------------------
 # Junk-deal filter — reject money-saving / coupon / %-off content at ingest.
@@ -457,7 +458,13 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
         # as Releases so they land on the magazine's Releases section, not the
         # front-page grid. Individual release articles (non-version news) are
         # NOT this category and stay on the front page.
-        art["subcategory"] = "Releases" if is_release_title(art.get("title", "")) else art.get("subcategory")
+        if is_release_title(art.get("title", "")):
+            art["subcategory"] = "Releases"
+        elif not art.get("subcategory"):
+            # Otherwise classify into a magazine subcategory (agents, cyber,
+            # models, hardware…) via the deterministic keyword classifier.
+            art["subcategory"] = classify_article(
+                art.get("magazine_id"), art.get("title", ""), art.get("summary", ""))
         try:
             with db_conn.cursor() as cur:
                 cur.execute(

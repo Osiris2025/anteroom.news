@@ -14,6 +14,7 @@ export async function GET(req: NextRequest) {
   const magId = sp.get("magazine") || "all";
   const offset = parseInt(sp.get("offset") || "0", 10);
   const limit = Math.min(parseInt(sp.get("limit") || "150", 10), 200);
+  const subcat = sp.get("subcat") || "";
   // releases=1 → only software-release-version entries (subcategory 'Releases').
   // Default (no param) → EXCLUDE releases from the front grid and show real news.
   const releasesOnly = sp.get("releases") === "1";
@@ -24,6 +25,10 @@ export async function GET(req: NextRequest) {
 
     if (releasesOnly) {
       conds.push(eq(article.subcategory, "Releases"));
+    } else if (subcat && subcat !== "all") {
+      // Browse a specific subcategory (agents, models, cyber…) — includes Releases
+      // only if explicitly chosen.
+      conds.push(eq(article.subcategory, subcat));
     } else {
       // Front page = real news; software version-bump releases are moved to the
       // dedicated Releases section (and filtered out here so they don't dominate).

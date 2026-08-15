@@ -7,6 +7,7 @@ import LiveFeed from "@/components/LiveFeed";
 import MagazineTopStories from "@/components/MagazineTopStories";
 import MagazineEditorial from "@/components/MagazineEditorial";
 import FrontierRail from "@/components/FrontierRail";
+import SubcategoryRail from "@/components/SubcategoryRail";
 
 /**
  * ThemeRenderer
@@ -151,6 +152,7 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
               <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
             </div>
             <div className="nexus-nh-rail">
+              {magazine && <SubcategoryRail magazine={magazine.id} />}
               <FrontierRail />
             </div>
           </div>
@@ -168,6 +170,7 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
           )}
           {/* Editorial composition — only on magazine/stream pages */}
           {magazine && <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />}
+          {magazine && <SubcategoryRail magazine={magazine.id} />}
           <LiveFeed magazine={magazine ? magazine.id : undefined} />
           {magazine && <MagazineTopStories magazine={magazine.id} />}
           <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />

@@ -82,6 +82,7 @@ function buildCells(articles: LiveArticle[], count: number, magazine: string): C
 
 export default function MagazineTopStories({ magazine }: { magazine: string }) {
   const [articles, setArticles] = useState<LiveArticle[]>([]);
+  const [activeSubcat, setActiveSubcat] = useState<string>("");
   const [total, setTotal] = useState(0);
   const [visibleCount, setVisibleCount] = useState(16);
   const [releases, setReleases] = useState<LiveArticle[]>([]);
@@ -102,11 +103,18 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
   }, [magazine]);
 
   useEffect(() => {
-    fetch(`/api/articles?magazine=${magazine}&limit=200`)
+    const q = activeSubcat && activeSubcat !== "all" ? `&subcat=${encodeURIComponent(activeSubcat)}` : "";
+    fetch(`/api/articles?magazine=${magazine}&limit=200${q}`)
       .then((r) => r.json())
       .then((j) => { if (!j.error && Array.isArray(j.articles)) { setArticles(j.articles); setTotal(j.total || 0); } })
       .catch(() => {});
-  }, [magazine]);
+  }, [magazine, activeSubcat]);
+
+  useEffect(() => {
+    const sp = new URLSearchParams(window.location.search);
+    const sc = sp.get("subcat") || "";
+    setActiveSubcat(sc);
+  }, [magazine, window.location.search]);
 
   // Software release-version entries (Hermes v0.x.y etc.) — NOT on the front
   // grid; shown newest-first in the dedicated Releases section below.
@@ -115,7 +123,7 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
       .then((r) => r.json())
       .then((j) => { if (!j.error && Array.isArray(j.articles)) setReleases(j.articles); })
       .catch(() => {});
-  }, [magazine]);
+  }, [magazine, activeSubcat]);
 
   const leader = pickLeader(articles);
   const grid = articles.filter((a) => a.id !== leader?.id);
@@ -275,12 +283,14 @@ const totemCss = `
 #${UID} .mz-ed-moreblock-title { font-size: 13px; font-weight: 700; line-height: 1.3; }
 @media (max-width: 900px) {
   #${UID} .mz-ed-grid { grid-template-columns: repeat(6, 1fr); }
-  /* override explicit col placement on smaller screens */
-  #${UID} .mz-ed-cell, #${UID} .mz-ed-cell-wide, #${UID} .mz-ed-cell-narrow, #${UID} .mz-ed-cell-tall { grid-column: span 3 !important; grid-row: auto !important; }
+  /* override explicit col placement on smaller screens — target the GRID ITEM
+     (.mz-ed-wrap) which carries the inline grid-column-start/end, not just the
+     inner .mz-ed-cell anchor. */
+  #${UID} .mz-ed-wrap, #${UID} .mz-ed-cell, #${UID} .mz-ed-cell-wide, #${UID} .mz-ed-cell-narrow, #${UID} .mz-ed-cell-tall { grid-column: span 3 !important; grid-row: auto !important; }
 }
 @media (max-width: 560px) {
-  #${UID} .mz-ed-grid { grid-template-columns: repeat(1, 1fr); gap: 12px; }
-  #${UID} .mz-ed-cell, #${UID} .mz-ed-cell-wide, #${UID} .mz-ed-cell-narrow, #${UID} .mz-ed-cell-tall { grid-column: span 1 !important; grid-row: auto !important; }
+  #${UID} .mz-ed-grid { grid-template-columns: repeat(1, 1fr); gap: 12px; grid-auto-rows: auto; }
+  #${UID} .mz-ed-wrap, #${UID} .mz-ed-cell, #${UID} .mz-ed-cell-wide, #${UID} .mz-ed-cell-narrow, #${UID} .mz-ed-cell-tall { grid-column: span 1 !important; grid-row: auto !important; }
   #${UID} .mz-ed-cell-wide .mz-ed-title, #${UID} .mz-ed-cell-tall .mz-ed-title { font-size: 19px; }
 }
 /* Admin inline-editor: toolbar revealed on hover of the card (bottom edge) */

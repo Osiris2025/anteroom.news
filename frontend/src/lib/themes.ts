@@ -742,12 +742,14 @@ function renderTemplate(st){
     s += '</div>';
   }
   else if(layout==="map"){
+    var mapStories = (st && st.mapStories && st.mapStories.length) ? st.mapStories : ARTICLES;
     s += '<div class="grid"><div class="list">';
-    ARTICLES.forEach(function(a,i){
+    mapStories.forEach(function(a,i){
       var cols=["#fbbf24","#0af","#a78bfa","#00d4aa","#fbbf24","#0af"];
-      s += '<div class="card"'+dh(a)+'><div class="loc" style="background:'+cols[i%6]+'22;color:'+cols[i%6]+'">&#x1F4CD;</div><div><div class="k" style="color:'+cols[i%6]+'">'+(i===0?"Tuscaloosa, AL":(i===1?"San Francisco, CA":(i===2?"Washington, DC":"Texas")))+'</div><h3>'+a.title+'</h3></div></div>';
+      var loc=(a&&a.subcategory)||(a&&a.mag)||"Pinned";
+      s += '<div class="card"'+(a.href? ' data-href="'+a.href+'"':'')+'><div class="loc" style="background:'+cols[i%6]+'22;color:'+cols[i%6]+'">&#x1F4CD;</div><div><div class="k" style="color:'+cols[i%6]+'">'+loc+'</div><h3>'+(a.title||"")+'</h3></div></div>';
     });
-    s += '</div><div class="mapbox"><div style="text-align:center"><div style="font-size:40px">&#x1F5FA;&#xFE0F;</div><p style="font-size:13px;color:#5a6a8a">Interactive Map</p><p style="font-size:11px;color:#3a4a6a">'+ARTICLES.length+' pinned stories</p></div></div></div>';
+    s += '</div><div class="mapbox"><div style="text-align:center"><div style="font-size:40px">&#x1F5FA;&#xFE0F;</div><p style="font-size:13px;color:#5a6a8a">Interactive Map</p><p style="font-size:11px;color:#3a4a6a">'+mapStories.length+' pinned stories</p></div></div></div>';
     s += '<div class="foot-row"><div class="panel"><a class="btn" href="/support" data-href="/support" style="display:block;text-align:center">Support</a></div><div class="panel"><a class="btn" href="/subscribe" data-href="/subscribe" style="display:block;text-align:center">Subscribe</a></div></div>';
   }
   else if(layout==="split"){

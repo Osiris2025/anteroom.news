@@ -1,5 +1,5 @@
 "use client";
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useTheme } from "@/lib/ThemeContext";
 import { renderTemplate, MAGAZINES } from "@/lib/themes";
@@ -34,6 +34,26 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
   const router = useRouter();
   const { currentTheme, setTheme } = useTheme();
   const shellRef = useRef<HTMLDivElement>(null);
+  // For the News-Map theme: real live articles (magazine-aware) instead of the
+  // hardcoded placeholder ARTICLES. Loaded once; used only when layout === "map".
+  const [mapStories, setMapStories] = useState<any[] | null>(null);
+
+  useEffect(() => {
+    const q = magazine ? `?magazine=${magazine}` : "?offset=0&limit=40";
+    fetch(`/api/articles${q}`)
+      .then((r) => r.json())
+      .then((j) => {
+        if (!j.error && Array.isArray(j.articles)) {
+          setMapStories(j.articles.map((a: any) => ({
+            title: a.headline || a.title,
+            subcategory: a.subcategory || a.magazine?.name || "Pinned",
+            href: `/articles/${a.id}`,
+          })));
+        }
+      })
+      .catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [magazineId]);
 
   const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
   const staticMag = magazineId
@@ -78,6 +98,7 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
     taglines,
     names,
     descs,
+    mapStories: mapStories || undefined,
   };
   const html = renderTemplate(structure);
 

@@ -43,7 +43,11 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
 
   return (
     <>
-      <style>{`@media(min-width:921px){.ai-mp{display:flex;gap:28px;align-items:flex-start}.ai-mp-main{flex:1 1 0;min-width:0}.ai-mp-rail{flex:0 0 280px;width:280px;max-width:100%;position:sticky;top:76px}}`}</style>
+      <style>{`@media(min-width:921px){.ai-mp{display:flex;gap:28px;align-items:flex-start}.ai-mp-main{flex:1 1 0;min-width:0}.ai-mp-rail{flex:0 0 280px;width:280px;max-width:100%;position:sticky;top:76px}}
+        /* Admin tools reveal on card hover (hidden by default) */
+        .ai-subcard:hover .ai-subcard-tools{opacity:1;pointer-events:auto}
+        @media(max-width:760px){.ai-subcard-tools{position:static!important;opacity:1!important;pointer-events:auto!important;margin-top:4px;border-radius:10px;border-top:1px solid rgba(150,150,150,.25)!important}}
+      `}</style>
       <div className="ai-mp">
         <div className="ai-mp-main" style={{ maxWidth: 860, margin: "0 auto", padding: "24px 20px 60px" }}>
           <Link href="/magazines/neural-hardware" style={{ fontSize: 12, opacity: .6, textDecoration: "none", color: "inherit" }}>← Neural Hardware</Link>
@@ -63,11 +67,11 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
               const showTools = isAdmin && !!a.sourceUrl;
               const label = sourceLabel(a.sourceUrl, undefined, a.sourceName);
               return (
-                <div key={a.id} style={{ position: "relative" }}>
+                <div key={a.id} className="ai-subcard" style={{ position: "relative" }}>
                   <a href={`/articles/${a.id}`} style={{
                     display: "flex", gap: 14, textDecoration: "none", color: "inherit",
                     border: "1px solid var(--border,rgba(150,150,150,.16))", borderRadius: 12, padding: 14, transition: "border-color .12s", minWidth: 0,
-                  }}>
+                  }} onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--accent,#ffd700)")} onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--border,rgba(150,150,150,.16))")}>
                     {a.imageUrl ? (
                       <img src={a.imageUrl} alt="" style={{ flex: "0 0 120px", width: 120, height: 76, objectFit: "cover", borderRadius: 8 }} loading="lazy" />
                     ) : (
@@ -88,9 +92,11 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
                     </div>
                   </a>
                   {showTools && (
-                    <div style={{
-                      position: "static", marginTop: 4, opacity: 1, borderRadius: 10,
-                      border: "1px solid rgba(150,150,150,.2)", background: "rgba(10,12,16,.9)", padding: "6px 8px",
+                    <div className="ai-subcard-tools" style={{
+                      position: "absolute", left: 0, right: 0, bottom: 0, borderRadius: 0,
+                      border: "1px solid rgba(150,150,150,.25)", borderTop: "1px solid var(--accent, rgba(255,215,0,.45))",
+                      background: "rgba(10,12,16,.95)", padding: "6px 8px",
+                      opacity: 0, pointerEvents: "none", transition: "opacity .14s ease",
                     }}>
                       <AdminCardTools
                         articleId={a.id}

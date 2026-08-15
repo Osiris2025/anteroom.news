@@ -1,6 +1,6 @@
 "use client";
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import AdminCardTools from "@/components/AdminCardTools";
 
 type LiveArticle = {
@@ -21,6 +21,11 @@ type Cell = {
 };
 
 const UID = "_mztopstories";
+
+// Humanize a subcategory slug: "hardware-datacenters" → "Hardware Datacenters".
+function label(slug: string): string {
+  return slug.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
+}
 
 function pickLeader(arts: LiveArticle[]): LiveArticle | null {
   return arts.find((a) => a.featured === true) || arts[0] || null;
@@ -83,6 +88,7 @@ function buildCells(articles: LiveArticle[], count: number, magazine: string): C
 
 export default function MagazineTopStories({ magazine }: { magazine: string }) {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const subcatParam = searchParams.get("subcat") || "";
   const [articles, setArticles] = useState<LiveArticle[]>([]);
   const [total, setTotal] = useState(0);
@@ -153,8 +159,36 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
       <style>{totemCss}</style>
       <div className="mz-ed-head">
         <span className="mz-ed-mark">▼</span>
-        <h2 className="mz-ed-h2">From the Desk</h2>
+        <h2 className="mz-ed-h2">
+          {subcatParam ? <>“{subcatParam}” stories</> : "From the Desk"}
+        </h2>
       </div>
+
+      {subcatParam && (
+        <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14, flexWrap: "wrap" }}>
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 8,
+            padding: "5px 12px", borderRadius: 999,
+            border: "1px solid var(--accent, rgba(255,215,0,.45))",
+            background: "rgba(255,215,0,.08)", color: "var(--accent, #ffd700)",
+            fontSize: 12, fontWeight: 700,
+          }}>
+            Filtering: {label(subcatParam)} ({total} stories)
+          </span>
+          <button
+            onClick={() => router.push(`/magazines/${magazine}`)}
+            style={{
+              background: "transparent", border: "1px solid rgba(150,150,150,.3)",
+              borderRadius: 999, color: "inherit", padding: "5px 14px",
+              cursor: "pointer", fontSize: 12, fontWeight: 700,
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(127,127,127,.12)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+          >
+            × Clear filter
+          </button>
+        </div>
+      )}
 
       {/* ONE continuous grid — all cells share the same container so the packer's
           explicit grid-row placement stays gap-free from top to bottom (splitting

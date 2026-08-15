@@ -73,6 +73,7 @@ export async function GET(req: NextRequest) {
         title: r.article.title,
         headline: r.article.headline,
         sourceUrl: r.article.sourceUrl,
+        sourceName: r.article.sourceName || null,
         imageUrl: r.article.imageUrl,
         summary: r.article.summary,
         commentary: r.article.commentary,

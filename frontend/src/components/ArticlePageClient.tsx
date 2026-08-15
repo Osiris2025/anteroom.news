@@ -7,6 +7,7 @@ import ArticleReader from "./ArticleReader";
 // magazine default if no explicit choice is stored (ThemeContext handles that).
 type PArticle = {
   id: string; title: string; headline?: string | null; sourceUrl?: string | null;
+  sourceName?: string | null;
   imageUrl?: string | null; efx?: string | null; summary?: string | null; commentary?: string | null;
   subcategory?: string | null; publishedAt?: string | null;
 };

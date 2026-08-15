@@ -7,7 +7,7 @@ import { sourceLabel, hostOf } from "@/lib/sourceUtil";
 
 type NewsItem = {
   id: string; title: string; headline?: string | null; summary: string | null;
-  sourceUrl: string | null; imageUrl?: string | null; publishedAt?: string | null;
+  sourceUrl: string | null; sourceName?: string | null; imageUrl?: string | null; publishedAt?: string | null;
   pinned?: boolean; magazineId?: string | null; subcategory?: string | null;
 };
 type ModelInfo = { slug: string; name: string; vendor: string; color: string; desc: string };
@@ -61,7 +61,7 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {news.map((a) => {
               const showTools = isAdmin && !!a.sourceUrl;
-              const label = sourceLabel(a.sourceUrl);
+              const label = sourceLabel(a.sourceUrl, undefined, a.sourceName);
               return (
                 <div key={a.id} style={{ position: "relative" }}>
                   <a href={`/articles/${a.id}`} style={{

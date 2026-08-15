@@ -31,7 +31,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
       .limit(200);
 
     const news = rows.map((r) => ({
-      id: r.id, title: r.title, headline: r.headline, summary: r.summary,
+      id: r.id, sourceName: r.sourceName || null, title: r.title, headline: r.headline, summary: r.summary,
       sourceUrl: r.sourceUrl, imageUrl: r.imageUrl, publishedAt: r.publishedAt,
       pinned: !!r.pinned && r.pinned.active,
       magazineId: r.magazineId,

@@ -51,6 +51,37 @@ _JUNK_HOSTS = (
 )
 
 
+def _clean_source_name(entry) -> str:
+    """Derive a clean, human-readable publisher name for an article.
+
+    Google News RSS items carry the REAL publisher via entry.source.href (e.g.
+    'https://techcrunch.com'), while the item link is just an opaque redirect.
+    Prefer that; fall back to a title-hint (e.g. trailing ' - TechCrunch').
+    Returns '' when nothing usable is found.
+    """
+    try:
+        src = getattr(entry, "source", None)
+        if src and getattr(src, "href", None):
+            h = src.href.replace("https://", "").replace("http://", "").replace("www.", "").lower()
+            # "techcrunch.com/path" -> "techcrunch.com" -> "TechCrunch"
+            h = h.split("/")[0]
+            if len(h) > 2:
+                base = h.split(".")[0]
+                return base.replace("-", " ").replace("_", " ").strip().title()
+    except Exception:
+        pass
+    # Fallback: title often ends with " - Publisher" (Google News style).
+    try:
+        t = (getattr(entry, "title", "") or "").strip()
+        if " - " in t:
+            tail = t.rsplit(" - ", 1)[1].strip()
+            if 2 <= len(tail) <= 40 and " " not in tail.strip():
+                return tail.title()
+    except Exception:
+        pass
+    return ""
+
+
 def is_release_title(title: str) -> bool:
     """True if a title looks like a software version-bump / release entry (e.g.
     'Hermes Agent v0.20.1', 'huggingface_hub v1.0'). These get subcategory
@@ -255,6 +286,7 @@ def fetch_rss(url: str, timeout: int = 30) -> list[dict]:
 
         articles.append({
             "source_url": link,
+            "source_name": _clean_source_name(entry),
             "title": title,
             "summary": summary,
             "published": published,
@@ -469,20 +501,21 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
             with db_conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO article (id, ingress, source_url, title, summary, status, magazine_id, published_at, image_url, subcategory)
-                    VALUES (%s, %s, %s, %s, %s, 'draft', %s, %s, %s, %s)
+                    INSERT INTO article (id, ingress, source_url, source_name, title, summary, status, magazine_id, published_at, image_url, subcategory)
+                    VALUES (%s, %s, %s, %s, %s, %s, 'draft', %s, %s, %s, %s)
                     ON CONFLICT (source_url) DO NOTHING
                     """,
                     (
                         art["id"],
                         "autonomous",
                         art["source_url"],
+                        art.get("source_name") or None,
                         art["title"],
                         art.get("summary", ""),
                         art.get("magazine_id"),  # may be None for YAML-config sources w/o mag
                         art.get("published"),
                         art.get("image_url"),  # may be None when no image found
-                        art.get("subcategory"),  # 'Releases' for software version bumps
+                        art.get("subcategory"),  # 'Releases' or magazine subcategory
                     ),
                 )
                 if cur.rowcount > 0:

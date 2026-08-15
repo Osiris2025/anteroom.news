@@ -9,6 +9,7 @@ type ReaderArticle = {
   title: string;
   headline?: string | null;
   sourceUrl?: string | null;
+  sourceName?: string | null;
   imageUrl?: string | null;
   efx?: string | null;
   summary?: string | null;
@@ -52,7 +53,7 @@ function palette(themeId: string) {
 
 export default function ArticleReader({ article, magazine, themeId }: { article: ReaderArticle; magazine: ReaderMag; themeId: string }) {
   const C = palette(themeId);
-  const { title, headline, sourceUrl, imageUrl, efx, summary, commentary, subcategory, publishedAt } = article;
+  const { title, headline, sourceUrl, sourceName, imageUrl, efx, summary, commentary, subcategory, publishedAt } = article;
   const magName = magazine?.name || "AI News Nexus";
   const agentName = magazine?.agentName || "The Desk";
   const displayTitle = headline || title;
@@ -119,7 +120,7 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
             📌 Read the real article <span style={{ opacity: 0.7 }}>&#8599;</span>
           </a>
           <span style={{ alignSelf: "center", fontSize: 12, color: C.body, opacity: 0.8 }}>
-            via {sourceLabel(sourceUrl)} <span style={{ opacity: 0.6 }}>· {hostOf(sourceUrl)}</span>
+            via {sourceLabel(sourceUrl, undefined, sourceName)} <span style={{ opacity: 0.6 }}>· {sourceName || hostOf(sourceUrl)}</span>
           </span>
         </div>
       )}

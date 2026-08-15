@@ -122,6 +122,7 @@ export const article = pgTable("article", {
   id: text("id").primaryKey(),
   ingress: text("ingress").notNull(), // "autonomous" | "admin-link" | "collector"
   sourceUrl: text("source_url"),       // original link (evidence)
+  sourceName: text("source_name"),     // clean publisher name, e.g. "TechCrunch" (from Google News source.href)
   imageUrl: text("image_url"),         // og:image hero capture
   title: text("title").notNull(),
   headline: text("headline"),          // admin-optional custom header for pinned/FLASH

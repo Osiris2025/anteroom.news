@@ -30,6 +30,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
         title: a.title,
         headline: a.headline,
         sourceUrl: a.sourceUrl,
+        sourceName: a.sourceName,
         imageUrl: a.imageUrl,
         efx: a.efx,
         summary: a.summary,

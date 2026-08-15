@@ -17,10 +17,11 @@ export function hostOf(url?: string | null): string {
  * Google News RSS item links are long redirects:
  *   https://news.google.com/rss/articles/CBMi...
  * They DO open when clicked, but look awful and aren't recognizable.
- * Given the real publisher (from the feed's source.href) or a fallback, return
- * a clean label like "TechCrunch" / "Hostinger".
+ * Prefer a stored clean sourceName (captured at ingest from the publisher),
+ * then a via-domain, then best-effort from the URL.
  */
-export function sourceLabel(url?: string | null, viaDomain?: string | null): string {
+export function sourceLabel(url?: string | null, viaDomain?: string | null, sourceName?: string | null): string {
+  if (sourceName && sourceName.trim()) return sourceName.trim();
   if (viaDomain) {
     const h = viaDomain.replace(/^https?:\/\//, "").replace(/^www\./, "").toLowerCase();
     if (h.endsWith(".com") || h.endsWith(".co") || h.endsWith(".org") || h.endsWith(".io")) {

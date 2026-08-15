@@ -84,7 +84,8 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
   const [articles, setArticles] = useState<LiveArticle[]>([]);
   const [total, setTotal] = useState(0);
   const [visibleCount, setVisibleCount] = useState(16);
-  // Admin inline-editor pilot on Dark Matter: reveal hover toolbar when logged in.
+  const [releases, setReleases] = useState<LiveArticle[]>([]);
+  // Admin inline-editor hover tools on every magazine; no longer a Dark Matter pilot.
   const [isAdmin, setIsAdmin] = useState(false);
   const [magazines, setMagazines] = useState<{ id: string; name: string }[]>([]);
 
@@ -104,6 +105,15 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
     fetch(`/api/articles?magazine=${magazine}&limit=200`)
       .then((r) => r.json())
       .then((j) => { if (!j.error && Array.isArray(j.articles)) { setArticles(j.articles); setTotal(j.total || 0); } })
+      .catch(() => {});
+  }, [magazine]);
+
+  // Software release-version entries (Hermes v0.x.y etc.) — NOT on the front
+  // grid; shown newest-first in the dedicated Releases section below.
+  useEffect(() => {
+    fetch(`/api/articles?magazine=${magazine}&releases=1&limit=50`)
+      .then((r) => r.json())
+      .then((j) => { if (!j.error && Array.isArray(j.articles)) setReleases(j.articles); })
       .catch(() => {});
   }, [magazine]);
 
@@ -155,6 +165,23 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
               <a key={m.id} href={`/articles/${m.id}`} className="mz-ed-moreblock-card">
                 {m.imageUrl ? <span className="mz-ed-moreblock-thumb"><img src={m.imageUrl} alt="" loading="lazy" /></span> : null}
                 <span className="mz-ed-moreblock-title">{m.headline || m.title}</span>
+              </a>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {releases.length > 0 && (
+        <div className="mz-ed-releases" style={{ marginTop: 20, borderTop: "1px solid rgba(150,150,150,.18)", paddingTop: 16 }}>
+          <div className="mz-ed-moreblock-head"><span className="mz-ed-mark">⟳</span> Releases</div>
+          <div className="mz-ed-releases-list" style={{ display: "grid", gap: 8 }}>
+            {releases.map((r) => (
+              <a key={r.id} href={`/articles/${r.id}`}
+                style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "6px 2px", color: "inherit", textDecoration: "none", fontSize: 13 }}>
+                <span style={{ flex: "0 0 auto", color: "var(--accent, #ffd700)", fontSize: 12, fontFamily: "var(--mono, monospace)" }}>
+                  {(r.publishedAt || "").slice(0, 10)}
+                </span>
+                <span style={{ fontSize: 13, opacity: 0.9 }}>{r.headline || r.title}</span>
               </a>
             ))}
           </div>

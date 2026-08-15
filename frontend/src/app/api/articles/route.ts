@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { eq, desc, and, isNull, sql } from "drizzle-orm";
+import { eq, desc, and, isNull, sql, ne, or } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { article, magazine, pin } from "@/drizzle/schema";
 
@@ -14,10 +14,23 @@ export async function GET(req: NextRequest) {
   const magId = sp.get("magazine") || "all";
   const offset = parseInt(sp.get("offset") || "0", 10);
   const limit = Math.min(parseInt(sp.get("limit") || "150", 10), 200);
+  // releases=1 → only software-release-version entries (subcategory 'Releases').
+  // Default (no param) → EXCLUDE releases from the front grid and show real news.
+  const releasesOnly = sp.get("releases") === "1";
 
   try {
     const conds: any[] = [eq(article.status, "live")];
     if (magId && magId !== "all") conds.push(eq(article.magazineId, magId));
+
+    if (releasesOnly) {
+      conds.push(eq(article.subcategory, "Releases"));
+    } else {
+      // Front page = real news; software version-bump releases are moved to the
+      // dedicated Releases section (and filtered out here so they don't dominate).
+      // NOTE: must also keep NULL-subcategory articles — `<> 'Releases'` alone
+      // would drop them (NULL compared to a value is falsy in SQL).
+      conds.push(or(isNull(article.subcategory), ne(article.subcategory, "Releases")));
+    }
 
     // Total count for pagination
     const countResult = await db.select({ count: sql<number>`count(*)::int` }).from(article).where(and(...conds));
@@ -76,23 +89,11 @@ export async function GET(req: NextRequest) {
       .map((id) => articles.find((a) => a.id === id))
       .filter(Boolean);
     const rest = articles.filter((a) => !pinByArticle.has(a.id));
-    // Source-priority boost for Neural Hardware: surface Hermes Agent (github.com)
-    // and AI model-announcement sources (openai.com, anthropic.com) first so the
-    // most on-topic articles lead. Others keep newest-first order.
-    let ordered: any[] = [];
-    if (magId === "neural-hardware") {
-      const hostOf = (u: string | null) => { try { return (u || "").replace(/^https?:\/\//, "").split("/")[0]; } catch { return ""; } };
-      const priority = (a: any) => {
-        const h = hostOf(a.sourceUrl);
-        if (h === "github.com") return 0;
-        if (h === "openai.com") return 1;
-        if (h === "anthropic.com" || h === "www.anthropic.com") return 2;
-        return 3;
-      };
-      ordered = [...pinned, ...[...rest].sort((a, b) => priority(a) - priority(b))];
-    } else {
-      ordered = [...pinned, ...rest];
-    }
+    // NOTE: removed the old "source-priority boost" that pushed github.com
+    // (Hermes releases) / openai.com / anthropic.com to the top of Neural
+    // Hardware — that made version-bump entries dominate the front page.
+    // Release entries are now moved to the dedicated Releases section instead.
+    const ordered = [...pinned, ...rest];
 
     return Response.json({ articles: ordered, total });
   } catch (e: any) {

@@ -50,6 +50,16 @@ _JUNK_HOSTS = (
 )
 
 
+def is_release_title(title: str) -> bool:
+    """True if a title looks like a software version-bump / release entry (e.g.
+    'Hermes Agent v0.20.1', 'huggingface_hub v1.0'). These get subcategory
+    'Releases' at ingest so they appear on the magazine's Releases section,
+    not the front-page grid. Plain news about a company/model is NOT this."""
+    if not title:
+        return False
+    return bool(re.search(r"(^|[^a-z0-9])v[0-9]+\.[0-9]+(\.[0-9]+)?([^0-9]|$)", title, re.I))
+
+
 def is_junk_deal(article: dict) -> bool:
     """True if an article is clearly money-saving/coupon/% off junk (drop it)."""
     title = str(article.get("title") or "")
@@ -443,12 +453,17 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
         if is_junk_announcement(art):
             logger.info("  JUNK-EVENT SKIP: %s", art.get("title", "?")[:80])
             continue
+        # Auto-tag software version-bump titles (e.g. "Hermes Agent v0.20.1")
+        # as Releases so they land on the magazine's Releases section, not the
+        # front-page grid. Individual release articles (non-version news) are
+        # NOT this category and stay on the front page.
+        art["subcategory"] = "Releases" if is_release_title(art.get("title", "")) else art.get("subcategory")
         try:
             with db_conn.cursor() as cur:
                 cur.execute(
                     """
-                    INSERT INTO article (id, ingress, source_url, title, summary, status, magazine_id, published_at, image_url)
-                    VALUES (%s, %s, %s, %s, %s, 'draft', %s, %s, %s)
+                    INSERT INTO article (id, ingress, source_url, title, summary, status, magazine_id, published_at, image_url, subcategory)
+                    VALUES (%s, %s, %s, %s, %s, 'draft', %s, %s, %s, %s)
                     ON CONFLICT (source_url) DO NOTHING
                     """,
                     (
@@ -460,6 +475,7 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
                         art.get("magazine_id"),  # may be None for YAML-config sources w/o mag
                         art.get("published"),
                         art.get("image_url"),  # may be None when no image found
+                        art.get("subcategory"),  # 'Releases' for software version bumps
                     ),
                 )
                 if cur.rowcount > 0:

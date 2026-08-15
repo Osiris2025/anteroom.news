@@ -25,13 +25,15 @@ export default function FrontierRail() {
 
   return (
     <aside
+      className="nexus-fr"
       style={{
         border: "1px solid var(--border, rgba(150,150,150,.2))",
         borderRadius: 14, padding: "16px 16px 12px",
         background: "var(--card-bg, rgba(255,255,255,.02))",
-        position: "sticky", top: 76, alignSelf: "start",
+        alignSelf: "start",
       }}
     >
+      <style>{`.nexus-fr{position:static;width:100%;z-index:10}.nexus-fr > *{width:100%}@media(min-width:921px){.nexus-fr{position:sticky;top:76px}}`}</style>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--accent,#ffd700)" }} />
         <h3 style={{ margin: 0, fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1.5 }}>AI Frontier</h3>

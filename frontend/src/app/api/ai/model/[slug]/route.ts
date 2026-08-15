@@ -5,7 +5,9 @@ import { article } from "@/drizzle/schema";
 import { FRONTIER_MODELS, matchModels } from "@/lib/ai_frontier";
 
 // GET /api/ai/model/[slug] — the article history (news) for one tracked model.
-// Live articles from Neural Hardware that match the model's keyword/source rules.
+// Live articles FROM ANY MAGAZINE that match the model's keyword/source rules —
+// so e.g. /ai/hermes surfaces every Hermes story we have, not just Neural Hardware
+// release notes.
 export async function GET(req: NextRequest, { params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const model = FRONTIER_MODELS.find((m) => m.slug === slug);
@@ -15,9 +17,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
     const rows: any[] = await db
       .select()
       .from(article)
-      .where(and(eq(article.magazineId, "neural-hardware"), eq(article.status, "live")))
+      .where(and(eq(article.status, "live")))
       .orderBy(desc(article.publishedAt))
-      .limit(400);
+      .limit(500);
 
     // Filter in JS to the matched model (same rule as the notices rail).
     const news = rows
@@ -26,6 +28,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ slug
         id: r.id, title: r.title, headline: r.headline, summary: r.summary,
         sourceUrl: r.sourceUrl, imageUrl: r.imageUrl, publishedAt: r.publishedAt,
         pinned: !!r.pinned && r.pinned.active,
+        magazineId: r.magazineId,
       }));
 
     return Response.json({ model: { ...model }, news });

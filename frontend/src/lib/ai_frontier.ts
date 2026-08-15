@@ -22,7 +22,7 @@ export const FRONTIER_MODELS: FrontierModel[] = [
   { slug: "llama", name: "Llama", vendor: "Meta", keys: ["llama", "meta ai", "meta-llama"], hosts: ["ai.meta.com", "llama.com"], color: "#0866ff", desc: "Meta's open-weights family" },
   { slug: "deepseek", name: "DeepSeek", vendor: "DeepSeek", keys: ["deepseek", "deepseep", "r1", "v3"], hosts: ["deepseek.com"], color: "#4f5bde", desc: "Chinese frontier & reasoning open model" },
   { slug: "qwen", name: "Qwen", vendor: "Alibaba", keys: ["qwen", "alibaba", "tongyi"], hosts: ["qwenlm.github.io", "qwen.ai"], color: "#7b5cff", desc: "Alibaba's open model family" },
-  { slug: "grok", name: "Grok", vendor: "xAI", keys: ["grok", "xai", "x-ai"], hosts: ["x.ai"], color: "#0a0a0a", desc: "xAI's Grok models" },
+  { slug: "grok", name: "Grok / xAI", vendor: "xAI", keys: ["grok", "xai", "x-ai", "grok imagine", "grok bot", "elon musk"], hosts: ["x.ai"], color: "#0a0a0a", desc: "xAI's Grok models" },
   { slug: "mistral", name: "Mistral", vendor: "Mistral AI", keys: ["mistral", "mixtral", "codestral", "maestro"], hosts: ["mistral.ai"], color: "#ff6b35", desc: "French open-model lab" },
   { slug: "bytedance", name: "ByteDance / Doubao", vendor: "ByteDance", keys: ["bytedance", "doubao", "seed-o1", "seed"], hosts: ["bytedance.com"], color: "#00c4cc", desc: "ByteDance's Doubao/Seed models" },
   { slug: "opal", name: "Opal / SoftBank", vendor: "SoftBank", keys: ["opal", "softbank"], hosts: [], color: "#e11d48", desc: "SoftBank Enterprise compute / advanced AI" },

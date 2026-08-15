@@ -1,21 +1,23 @@
 import { NextRequest } from "next/server";
-import { eq, desc, and, sql } from "drizzle-orm";
+import { eq, desc, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { article } from "@/drizzle/schema";
 import { FRONTIER_MODELS, matchModels } from "@/lib/ai_frontier";
 
 // GET /api/ai/notices — for the Neural Hardware "AI Frontier" rail.
-// Returns the freshest LIVE article per tracked model, plus per-model article
-// counts. Pins/featured still float to the top of the result ordering.
+// Returns the freshest LIVE article per tracked model, plus per-model counts.
+// Matches across ALL magazines (AI stories can land in any magazine), so e.g.
+// a Grok story in Startup Signal still appears on the frontier rail.
 export async function GET(_req: NextRequest) {
   try {
-    // Pull recent LIVE articles from Neural Hardware (the everything-AI magazine).
+    // Pull recent LIVE articles from anywhere (the AI frontier aggregates
+    // everything-AI regardless of which magazine a story landed in).
     const rows: any[] = await db
       .select()
       .from(article)
-      .where(and(eq(article.magazineId, "neural-hardware"), eq(article.status, "live")))
+      .where(eq(article.status, "live"))
       .orderBy(desc(article.publishedAt))
-      .limit(400);
+      .limit(600);
 
     // Group by matched model.
     const byModel: Record<string, { latest: any; count: number }> = {};

@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import AdminCardTools from "@/components/AdminCardTools";
 
 type LiveArticle = {
   id: string; title: string; headline?: string | null; summary: string | null;
@@ -83,6 +84,22 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
   const [articles, setArticles] = useState<LiveArticle[]>([]);
   const [total, setTotal] = useState(0);
   const [visibleCount, setVisibleCount] = useState(16);
+  // Admin inline-editor pilot on Dark Matter: reveal hover toolbar when logged in.
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [magazines, setMagazines] = useState<{ id: string; name: string }[]>([]);
+
+  useEffect(() => {
+    // Only the Dark Matter pilot for now; later roll to all magazines.
+    if (magazine !== "dark-matter") return;
+    fetch("/api/admin/session").then((r) => r.json()).then((j) => {
+      setIsAdmin(!!j.isAdmin);
+      if (j.isAdmin) {
+        fetch("/api/magazines").then((r) => r.json()).then((m) => {
+          if (m.magazines) setMagazines(m.magazines.map((x: any) => ({ id: x.id, name: x.name })));
+        }).catch(() => {});
+      }
+    }).catch(() => {});
+  }, [magazine]);
 
   useEffect(() => {
     fetch(`/api/articles?magazine=${magazine}&limit=200`)
@@ -94,6 +111,14 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
   const leader = pickLeader(articles);
   const grid = articles.filter((a) => a.id !== leader?.id);
   const magName = leader?.magazine?.name || magazine;
+
+  // Derive the magazine's subcategory vocabulary from loaded articles (fallback
+  // to a small default set if none are tagged yet).
+  const subcats = useMemo(() => {
+    const s = new Set<string>();
+    for (const a of articles) if (a.subcategory) s.add(a.subcategory);
+    return s.size ? [...s] : ["Features", "Analysis", "Explainers", "Briefs"];
+  }, [articles]);
 
   // Main varied mosaic, then ONE "more in" block (fresh thumbnails, not repeated).
   const cells = buildCells(grid, visibleCount + 1, magazine);
@@ -156,18 +181,33 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
       gridRowEnd: c.tall ? c.r + 3 : c.r + 2,
     };
     const cls = "mz-ed-cell" + (c.w >= 6 ? " mz-ed-cell-wide" : c.w <= 2 ? " mz-ed-cell-narrow" : "") + (c.tall ? " mz-ed-cell-tall" : "");
+    const showTools = isAdmin && magazine === "dark-matter" && c.article;
     return (
-      <a key={c.key} href={`/articles/${c.article.id}`} className={cls} style={{ ...cardLink, ...style }}>
-        {c.article.imageUrl ? (
-          <div className="mz-ed-thumb"><img src={c.article.imageUrl} alt="" loading="lazy" /></div>
-        ) : null}
-        <div className="mz-ed-kicker">
-          {c.article.pinned && c.article.pinKind ? <span className="mz-ed-pin">{c.article.pinKind}</span> : null}
-          <span>{c.article.subcategory || c.article.magazine?.name || "News"}</span>
-        </div>
-        <div className="mz-ed-title">{c.article.headline || c.article.title}</div>
-        {c.article.summary && <div className="mz-ed-summary">{c.article.summary}</div>}
-      </a>
+      <div key={c.key} className="mz-ed-wrap" style={{ position: "relative", ...style }}>
+        <a href={`/articles/${c.article.id}`} className={cls} style={cardLink}>
+          {c.article.imageUrl ? (
+            <div className="mz-ed-thumb"><img src={c.article.imageUrl} alt="" loading="lazy" /></div>
+          ) : null}
+          <div className="mz-ed-kicker">
+            {c.article.pinned && c.article.pinKind ? <span className="mz-ed-pin">{c.article.pinKind}</span> : null}
+            <span>{c.article.subcategory || c.article.magazine?.name || "News"}</span>
+          </div>
+          <div className="mz-ed-title">{c.article.headline || c.article.title}</div>
+          {c.article.summary && <div className="mz-ed-summary">{c.article.summary}</div>}
+        </a>
+        {showTools && (
+          <div className="mz-admin-tools">
+            <AdminCardTools
+              articleId={c.article.id}
+              currentMag={c.article.magazine?.id || magazine}
+              currentSubcat={c.article.subcategory}
+              magazines={magazines}
+              subcats={subcats}
+              onChanged={() => window.location.reload()}
+            />
+          </div>
+        )}
+      </div>
     );
   }
 }
@@ -175,7 +215,7 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
 const cardLink: React.CSSProperties = {
   textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column", padding: "18px 20px",
   border: "1px solid var(--border, rgba(150,150,150,.2))", borderRadius: 12, background: "var(--card-bg, rgba(255,255,255,.02))",
-  transition: "transform .15s ease, border-color .15s ease", minWidth: 0,
+  transition: "transform .15s ease, border-color .15s ease", minWidth: 0, height: "100%", boxSizing: "border-box",
 };
 
 const totemCss = `
@@ -215,4 +255,11 @@ const totemCss = `
   #${UID} .mz-ed-cell, #${UID} .mz-ed-cell-wide, #${UID} .mz-ed-cell-narrow, #${UID} .mz-ed-cell-tall { grid-column: span 1 !important; grid-row: auto !important; }
   #${UID} .mz-ed-cell-wide .mz-ed-title, #${UID} .mz-ed-cell-tall .mz-ed-title { font-size: 19px; }
 }
+/* Admin inline-editor: toolbar revealed on hover of the card (bottom edge) */
+#${UID} .mz-admin-tools { position: absolute; left: 0; right: 0; bottom: 0; transform: translateY(0);
+  background: rgba(10,12,16,.94); border-top: 1px solid rgba(150,150,150,.25); border-radius: 0 0 12px 12px;
+  padding: 6px 8px; opacity: 0; pointer-events: none; transition: opacity .14s ease; z-index: 20;
+  box-shadow: 0 -6px 18px rgba(0,0,0,.35); }
+#${UID} .mz-ed-wrap:hover .mz-admin-tools { opacity: 1; pointer-events: auto; }
+@media (max-width: 760px) { #${UID} .mz-admin-tools { position: static; opacity: 1; pointer-events: auto; margin-top: 4px; border-radius: 10px; border: 1px solid rgba(150,150,150,.2); } }
 `;

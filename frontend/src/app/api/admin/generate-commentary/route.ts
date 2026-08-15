@@ -9,6 +9,45 @@ const ADMIN_ROLES = ["superadmin", "admin"];
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
 const FALLBACK_MODEL = "deepseek/deepseek-v4-flash-0731";
 
+// Strip a trailing AI "thoughts" JSON block off the end of a commentary so the
+// raw JSON never displays to readers. Handles both a ```json ... ``` fenced
+// block and a bare trailing {...} object. Returns the clean text (JSON removed).
+function stripTrailingJson(text: string): string {
+  let t = text;
+  // 1) Fenced JSON block at the very end: ```json { ... } ```
+  const fenced = /```(?:json)?[\s\r\n]*(\{[\s\S]*?\})[\s\r\n]*```\s*$/i;
+  let m = t.match(fenced);
+  if (m) {
+    t = t.slice(0, t.length - m[0].length).replace(/\s+$/, "");
+    return t;
+  }
+  // 2) Bare trailing JSON object (starts on its own line with `{`), keeping
+  //    prose that isn't part of the JSON. Try to capture a balanced object.
+  const lines = t.split("\n");
+  for (let i = lines.length - 1; i > 0; i--) {
+    const s = lines[i].trim();
+    if (s.startsWith("}")) {
+      // walk up to the matching `{`
+      let depth = 0; let start = -1;
+      for (let j = i; j >= 0; j--) {
+        const L = lines[j];
+        depth += (L.match(/\{/g) || []).length;
+        depth -= (L.match(/\}/g) || []).length;
+        if (depth >= 0 && L.includes("{")) { start = j; break; }
+      }
+      if (start >= 0) {
+        const block = lines.slice(start, i + 1).join("\n");
+        // only treat as JSON if it looks like one (starts with braces, has keys)
+        if (/^\s*\{[\s\S]*\"[^"]+\"\s*:/.test(block)) {
+          return lines.slice(0, start).join("\n").replace(/\s+$/, "");
+        }
+      }
+    }
+  }
+  return text;
+}
+
+
 // Guard: admins (incl. superadmin) only.
 async function guard(): Promise<Response | null> {
   try {
@@ -111,6 +150,8 @@ export async function POST(req: NextRequest) {
 
   const commentary = data?.choices?.[0]?.message?.content?.trim();
   if (!commentary) return Response.json({ error: "OpenRouter returned no content" }, { status: 502 });
+  // Drop any trailing ai_thoughts JSON block so raw JSON never shows to readers.
+  const cleanCommentary = stripTrailingJson(commentary).trim();
 
   // Store into article.commentary + ai_thoughts
   const aiThoughts = JSON.stringify({
@@ -121,9 +162,9 @@ export async function POST(req: NextRequest) {
 
   const [updated] = await db
     .update(article)
-    .set({ commentary, aiThoughts })
+    .set({ commentary: cleanCommentary, aiThoughts })
     .where(eq(article.id, articleId))
     .returning();
 
-  return Response.json({ commentary, ai_thoughts: aiThoughts, agent: agentName, article: updated });
+  return Response.json({ commentary: cleanCommentary, ai_thoughts: aiThoughts, agent: agentName, article: updated });
 }

@@ -66,6 +66,38 @@ def is_junk_deal(article: dict) -> bool:
     # URL path markers on consumer/tech sites that don't do real journalism.
     return any(m in url for m in _JUNK_PATH_MARKERS)
 
+
+# ---------------------------------------------------------------------------
+# Announcement / event / press-release filter — keeps out "NASA announces expo",
+# "X hosts conference", "register for the X summit", etc. These are calendar
+# items, not astronomy/tech/science coverage. HIGH-PRECISION: only obvious
+# event/press-announcement markers, never bare words like "event"/"announced".
+# ---------------------------------------------------------------------------
+_EVENT_RE = re.compile(
+    r"\b(announces?|unveils?|to (host|unveil|parate)|opens? (registration|call)|"
+    r"registers? now|todays?e? the .* (expo|airshow|conference|summit|trade\\s?show)|"
+    r"schedule|keynote|panel\\s+discussion|fireside|booth|exhibit)\\b|"
+    r"\bexpo\\b|\bairshow\\b|\bregistrations?\\s+open\b|\bsave\\s+the\\s+date\b|\bmark\\s+your\\s+calendar\b|\bwelcome|live\\s+now\b",
+    re.IGNORECASE,
+)
+
+# URL path markers that almost always indicate a press-release / event announcement.
+_EVENT_PATH_MARKERS = (
+    "/news-release/", "-expo-", "-airshow-", "/conference/", "/summit/",
+    "event.html", "/events/", "-registration-", "/press-release/", "/press-releases/",
+)
+
+
+def is_junk_announcement(article: dict) -> bool:
+    """True if an article is clearly an event / press-announcement (drop it)."""
+    title = str(article.get("title") or "")
+    url = (article.get("source_url") or "").lower()
+    # The strongest signal first: official press-release URLs (e.g. NASA /news-release/).
+    if any(m in url for m in _EVENT_PATH_MARKERS):
+        return True
+    return bool(_EVENT_RE.search(title))
+
+
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
@@ -407,6 +439,9 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
     for art in articles:
         if is_junk_deal(art):
             logger.info("  JUNK-DEAL SKIP: %s", art.get("title", "?")[:80])
+            continue
+        if is_junk_announcement(art):
+            logger.info("  JUNK-EVENT SKIP: %s", art.get("title", "?")[:80])
             continue
         try:
             with db_conn.cursor() as cur:

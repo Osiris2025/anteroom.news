@@ -2,11 +2,13 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import FrontierRail from "@/components/FrontierRail";
+import AdminCardTools from "@/components/AdminCardTools";
+import { sourceLabel, hostOf } from "@/lib/sourceUtil";
 
 type NewsItem = {
   id: string; title: string; headline?: string | null; summary: string | null;
   sourceUrl: string | null; imageUrl?: string | null; publishedAt?: string | null;
-  pinned?: boolean; magazineId?: string | null;
+  pinned?: boolean; magazineId?: string | null; subcategory?: string | null;
 };
 type ModelInfo = { slug: string; name: string; vendor: string; color: string; desc: string };
 
@@ -17,13 +19,27 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
   const [model, setModel] = useState<ModelInfo | null>(null);
   const [news, setNews] = useState<NewsItem[]>([]);
   const [err, setErr] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [magazines, setMagazines] = useState<{ id: string; name: string }[]>([]);
+  const [reloadKey, setReloadKey] = useState(0);
+
+  useEffect(() => {
+    fetch("/api/admin/session").then((r) => r.json()).then((j) => {
+      setIsAdmin(!!j.isAdmin);
+      if (j.isAdmin) {
+        fetch("/api/magazines").then((r) => r.json()).then((m) => {
+          if (m.magazines) setMagazines(m.magazines.map((x: any) => ({ id: x.id, name: x.name })));
+        }).catch(() => {});
+      }
+    }).catch(() => {});
+  }, []);
 
   useEffect(() => {
     fetch(`/api/ai/model/${slug}`)
       .then((r) => r.json())
       .then((j) => { if (!j.error) { setModel(j.model); setNews(j.news || []); } else setErr(j.error); })
       .catch(() => setErr("couldn't load"));
-  }, [slug]);
+  }, [slug, reloadKey]);
 
   return (
     <>
@@ -43,22 +59,54 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
           <div style={{ margin: "18px 0 4px", fontSize: 11, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1.5, opacity: .6 }}>Story history ({news.length})</div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            {news.map((a) => (
-              <a key={a.id} href={`/articles/${a.id}`} style={{
-                display: "flex", gap: 14, textDecoration: "none", color: "inherit",
-                border: "1px solid var(--border,rgba(150,150,150,.16))", borderRadius: 12, padding: 14, transition: "border-color .12s", minWidth: 0,
-              }}>
-                {a.imageUrl && (
-                  <img src={a.imageUrl} alt="" style={{ flex: "0 0 120px", width: 120, height: 76, objectFit: "cover", borderRadius: 8 }} loading="lazy" />
-                )}
-                <div style={{ minWidth: 0 }}>
-                  {a.pinned && <div style={{ fontSize: 9, fontWeight: 700, color: "var(--accent,#ffd700)", letterSpacing: 1 }}>PINNED</div>}
-                  <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.3 }}>{a.headline || a.title}</div>
-                  {a.summary && <div style={{ fontSize: 12.5, opacity: .65, marginTop: 4, lineHeight: 1.45 }}>{a.summary}</div>}
-                  {a.publishedAt && <div style={{ fontSize: 11, opacity: .5, marginTop: 6 }}>{new Date(a.publishedAt).toLocaleString()}</div>}
+            {news.map((a) => {
+              const showTools = isAdmin && !!a.sourceUrl;
+              const label = sourceLabel(a.sourceUrl);
+              return (
+                <div key={a.id} style={{ position: "relative" }}>
+                  <a href={`/articles/${a.id}`} style={{
+                    display: "flex", gap: 14, textDecoration: "none", color: "inherit",
+                    border: "1px solid var(--border,rgba(150,150,150,.16))", borderRadius: 12, padding: 14, transition: "border-color .12s", minWidth: 0,
+                  }}>
+                    {a.imageUrl ? (
+                      <img src={a.imageUrl} alt="" style={{ flex: "0 0 120px", width: 120, height: 76, objectFit: "cover", borderRadius: 8 }} loading="lazy" />
+                    ) : (
+                      // Graceful fallback thumbnail so Google-News-sourced stories
+                      // (which carry no image) aren't blank in the list.
+                      <div style={{ flex: "0 0 120px", width: 120, height: 76, borderRadius: 8, background: "linear-gradient(135deg, " + (model?.color || "#555") + "22, rgba(127,127,127,.12))", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: 22, color: (model?.color || "#888") }}>
+                        {(model?.name || "?").charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div style={{ minWidth: 0 }}>
+                      {a.pinned && <div style={{ fontSize: 9, fontWeight: 700, color: "var(--accent,#ffd700)", letterSpacing: 1 }}>PINNED</div>}
+                      <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.3 }}>{a.headline || a.title}</div>
+                      {a.summary && <div style={{ fontSize: 12.5, opacity: .65, marginTop: 4, lineHeight: 1.45 }}>{a.summary}</div>}
+                      <div style={{ fontSize: 11, opacity: .55, marginTop: 6, display: "flex", gap: 10, flexWrap: "wrap" }}>
+                        {a.sourceUrl && <span>via {label}</span>}
+                        {a.publishedAt && <span>{new Date(a.publishedAt).toLocaleString()}</span>}
+                      </div>
+                    </div>
+                  </a>
+                  {showTools && (
+                    <div style={{
+                      position: "static", marginTop: 4, opacity: 1, borderRadius: 10,
+                      border: "1px solid rgba(150,150,150,.2)", background: "rgba(10,12,16,.9)", padding: "6px 8px",
+                    }}>
+                      <AdminCardTools
+                        articleId={a.id}
+                        currentMag={a.magazineId || "neural-hardware"}
+                        currentSubcat={a.subcategory}
+                        featured={false}
+                        pinned={!!a.pinned}
+                        magazines={magazines}
+                        subcats={[]}
+                        onChanged={() => setReloadKey((k) => k + 1)}
+                      />
+                    </div>
+                  )}
                 </div>
-              </a>
-            ))}
+              );
+            })}
             {!err && model && news.length === 0 && <div style={{ opacity: .55, padding: 20 }}>No published stories tagged to this model yet.</div>}
           </div>
         </div>

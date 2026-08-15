@@ -2,6 +2,7 @@
 import Link from "next/link";
 import ArticleComments from "./ArticleComments";
 import ArticleEfx from "./ArticleEfx";
+import { hostOf, sourceLabel } from "@/lib/sourceUtil";
 
 type ReaderArticle = {
   id: string;
@@ -110,14 +111,16 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
         )}
       </div>
 
-      {/* rain-drop style link-out */}
+      {/* rain-drop style link-out — show the REAL publisher (not a Google redirect) */}
       {sourceUrl && (
-        <div style={{ margin: "20px 0", display: "flex", gap: 10, flexWrap: "wrap" }}>
+        <div style={{ margin: "20px 0", display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
           <a href={sourceUrl} target="_blank" rel="noreferrer"
              style={{ background: C.accent, color: "#000", fontWeight: 800, padding: "12px 20px", borderRadius: 10, textDecoration: "none", fontSize: 14, display: "inline-flex", alignItems: "center", gap: 8 }}>
             📌 Read the real article <span style={{ opacity: 0.7 }}>&#8599;</span>
           </a>
-          <span style={{ alignSelf: "center", fontSize: 12, color: C.body }}>Opens the original source in a new tab.</span>
+          <span style={{ alignSelf: "center", fontSize: 12, color: C.body, opacity: 0.8 }}>
+            via {sourceLabel(sourceUrl)} <span style={{ opacity: 0.6 }}>· {hostOf(sourceUrl)}</span>
+          </span>
         </div>
       )}
 

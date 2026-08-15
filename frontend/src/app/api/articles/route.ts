@@ -76,7 +76,23 @@ export async function GET(req: NextRequest) {
       .map((id) => articles.find((a) => a.id === id))
       .filter(Boolean);
     const rest = articles.filter((a) => !pinByArticle.has(a.id));
-    const ordered = [...pinned, ...rest];
+    // Source-priority boost for Neural Hardware: surface Hermes Agent (github.com)
+    // and AI model-announcement sources (openai.com, anthropic.com) first so the
+    // most on-topic articles lead. Others keep newest-first order.
+    let ordered: any[] = [];
+    if (magId === "neural-hardware") {
+      const hostOf = (u: string | null) => { try { return (u || "").replace(/^https?:\/\//, "").split("/")[0]; } catch { return ""; } };
+      const priority = (a: any) => {
+        const h = hostOf(a.sourceUrl);
+        if (h === "github.com") return 0;
+        if (h === "openai.com") return 1;
+        if (h === "anthropic.com" || h === "www.anthropic.com") return 2;
+        return 3;
+      };
+      ordered = [...pinned, ...[...rest].sort((a, b) => priority(a) - priority(b))];
+    } else {
+      ordered = [...pinned, ...rest];
+    }
 
     return Response.json({ articles: ordered, total });
   } catch (e: any) {

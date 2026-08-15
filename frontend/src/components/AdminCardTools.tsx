@@ -5,6 +5,8 @@ type Props = {
   articleId: string;
   currentMag: string;
   currentSubcat?: string | null;
+  featured?: boolean;
+  pinned?: boolean;
   magazines: { id: string; name: string }[];
   subcats: string[];
   onChanged: () => void; // reload cards after an admin action
@@ -14,7 +16,7 @@ type Props = {
 // card in the regular magazine view (admin only). Mirrors the Dispatch queue's
 // tools: approve/reject/draft, move magazine, move subcategory, regenerate
 // commentary, pin. Reuses the same admin article/generate-commentary endpoints.
-export default function AdminCardTools({ articleId, currentMag, currentSubcat, magazines, subcats, onChanged }: Props) {
+export default function AdminCardTools({ articleId, currentMag, currentSubcat, featured, pinned, magazines, subcats, onChanged }: Props) {
   const [mag, setMag] = useState(currentMag || "");
   const [subcat, setSubcat] = useState(currentSubcat || "");
   const [busy, setBusy] = useState(false);
@@ -41,6 +43,23 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, m
     if (await fn()) { onChanged(); }
   }
 
+  // Pin via the same endpoint the Dispatch queue uses (POST /api/admin/pins).
+  async function pinArticle(): Promise<boolean> {
+    const kind = window.prompt("Pin kind (FLASH / IMPORTANT):", "FLASH");
+    if (!kind) return false;
+    const runFor = window.prompt("Duration (24h / 7d / empty for indefinite):", "24h");
+    if (runFor === null) return false;
+    try {
+      const r = await fetch("/api/admin/pins", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ article_id: articleId, kind, run_for: runFor }),
+      });
+      const j = await r.json();
+      if (!r.ok) { flash("✕ " + (j.error || "failed")); return false; }
+      flash("📌 pinned as " + kind); return true;
+    } catch { flash("✕ network error"); return false; }
+  }
+
   const statusBtn = (label: string, status: string, bg: string, fg: string) => (
     <button onClick={() => act(() => patch({ status }))} disabled={busy}
       style={btn(bg, fg, 10)}>{label}</button>
@@ -52,6 +71,18 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, m
       {statusBtn("↥ Publish", "live", "#0b1f33", "#58a6ff")}
       {statusBtn("✕ Reject", "rejected", "#3a0d0d", "#f57b7b")}
       <button onClick={() => act(() => patch({ status: "draft" }))} disabled={busy} style={btn("#202020", "#ccc", 10)}>↩ Draft</button>
+
+      {/* Star = flagship feature */}
+      <button onClick={() => act(() => patch({ featured: !featured }))} disabled={busy}
+        style={btn(featured ? "#3b2f00" : "#202020", featured ? "#ffd700" : "#ccc", 10)}>
+        {featured ? "★ Starred" : "☆ Star"}
+      </button>
+
+      {/* Pin = FLASH/hero article */}
+      <button onClick={() => act(pinArticle)} disabled={busy}
+        style={btn(pinned ? "#3a0d0d" : "#202020", pinned ? "#ff4444" : "#ccc", 10)}>
+        📌 {pinned ? "Pinned" : "Pin"}
+      </button>
 
       {/* Move magazine */}
       {editMag ? (

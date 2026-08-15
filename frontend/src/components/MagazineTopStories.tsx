@@ -201,6 +201,8 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
               articleId={c.article.id}
               currentMag={c.article.magazine?.id || magazine}
               currentSubcat={c.article.subcategory}
+              featured={c.article.featured === true}
+              pinned={!!c.article.pinned}
               magazines={magazines}
               subcats={subcats}
               onChanged={() => window.location.reload()}

@@ -103,11 +103,6 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
 
   if (grid.length === 0) return null;
 
-  // Place the single "more" block after ~2/3 of the main cells (if enough).
-  const split = Math.min(cells.length, Math.max(6, Math.floor(cells.length * 0.66)));
-  const head = cells.slice(0, split);
-  const tail = cells.slice(split);
-
   const gridCss: React.CSSProperties = {
     display: "grid",
     gridTemplateColumns: "repeat(12, 1fr)",
@@ -123,9 +118,10 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
         <h2 className="mz-ed-h2">From the Desk</h2>
       </div>
 
-      {head.length > 0 && (
-        <div className="mz-ed-grid">{head.map((c, i) => renderCell(c, i))}</div>
-      )}
+      {/* ONE continuous grid — all cells share the same container so the packer's
+          explicit grid-row placement stays gap-free from top to bottom (splitting
+          into two grids earlier is what caused the big void between rows). */}
+      <div className="mz-ed-grid">{cells.map((c, i) => renderCell(c, i))}</div>
 
       {moreItems.length > 0 && (
         <div className="mz-ed-moreblock" style={{ marginTop: 20 }}>
@@ -139,10 +135,6 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
             ))}
           </div>
         </div>
-      )}
-
-      {tail.length > 0 && (
-        <div className="mz-ed-grid" style={{ marginTop: split > 0 ? 20 : 0 }}>{tail.map((c, i) => renderCell(c, split + i))}</div>
       )}
 
       {hasMore && (

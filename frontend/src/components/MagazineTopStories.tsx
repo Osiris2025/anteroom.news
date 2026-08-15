@@ -9,13 +9,13 @@ type LiveArticle = {
   commentary?: string | null;
 };
 
-type GridItem = {
-  type: "card" | "more";
-  article?: LiveArticle;
-  articles?: LiveArticle[];
-  wide?: boolean;
-  className: string;
-  style?: React.CSSProperties;
+type Cell = {
+  key: string;
+  article: LiveArticle;
+  col: number;   // column start (0-11)
+  w: number;     // column span (2/3/4/6)
+  r: number;     // row start
+  tall: boolean; // spans 2 rows
 };
 
 const UID = "_mztopstories";
@@ -24,42 +24,65 @@ function pickLeader(arts: LiveArticle[]): LiveArticle | null {
   return arts.find((a) => a.featured === true) || arts[0] || null;
 }
 
-// Row-complete span plans: every plan sums to exactly 12 columns (no gaps).
-//   A = [6,6]         2 double-wide cards
-//   B = [4,4,4]       3 one-third cards (adds rhythm)
-// We alternate A, B, A, B... so the grid is mostly double-wide with periodic
-// one-third breaks, and NEVER has an empty slot.
-const ROW_PLANS: number[][] = [
-  [6, 6],
-  [4, 4, 4],
-  [6, 6],
-  [4, 4, 4],
-];
-
-function buildItems(articles: LiveArticle[], count: number): GridItem[] {
-  const items: GridItem[] = [];
-  const slice = articles.slice(0, count);
-
-  let ai = 0;
-  let planIdx = 0;
-  while (ai < slice.length) {
-    const plan = ROW_PLANS[planIdx % ROW_PLANS.length];
-    const rowItems = slice.slice(ai, ai + plan.length);
-    rowItems.forEach((a, j) => {
-      const w = plan[j] ?? 4;
-      items.push({ type: "card", article: a, wide: w === 6, className: "mz-ed-card", style: { gridColumnEnd: `span ${w}` } });
-    });
-    ai += plan.length;
-    planIdx++;
+// All compositions of 12 using widths {2,3,4,6} = valid single-row recipes.
+function* comps(n: number, parts: number[]): Generator<number[]> {
+  if (n === 0) { yield []; return; }
+  for (const w of parts) {
+    if (w <= n) for (const rest of comps(n - w, parts)) yield [w, ...rest];
   }
+}
+const SINGLE: number[][] = [...comps(12, [2, 3, 4, 6])].filter((c) => c.length <= 4);
 
-  return items;
+// Deterministic PRNG (mulberry32) so layouts vary by magazine but are stable
+// within a session rather than reshuffling every render.
+function mulberry32(seed: number) {
+  return function () {
+    seed |= 0; seed = (seed + 0x6D2B79F5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+// Build a varied, gap-free grid: mostly double-wide, mixed [6,6]/[3,3,3,3]/
+// [6,3,3]/[2,6,4]/[4,4,4]/... plus occasional double-height cards. Every band
+// spans exactly a full row (12 cols) — placed top-to-bottom, left-to-right —
+// so the grid never leaves an empty slot in the middle.
+function buildCells(articles: LiveArticle[], count: number, magazine: string): Cell[] {
+  const slice = articles.slice(0, count);
+  const rng = mulberry32(magazine.length * 7919 + 13);
+  const cells: Cell[] = [];
+  let i = 0;
+  let row = 0;
+
+  while (i < slice.length) {
+    // ~28% chance of a double-height "tall-left" band: a 6-wide card spanning
+    // 2 rows, mirrored by two stacked cards in the right half.
+    if (i + 3 <= slice.length && rng() < 0.30) {
+      const a = slice[i], b = slice[i + 1], c = slice[i + 2];
+      cells.push({ key: a.id, article: a, col: 0, w: 6, r: row, tall: true });
+      cells.push({ key: b.id, article: b, col: 6, w: 6, r: row, tall: false });
+      cells.push({ key: c.id, article: c, col: 6, w: 6, r: row + 1, tall: false });
+      row += 2; i += 3;
+    } else {
+      const pat = SINGLE[Math.floor(rng() * SINGLE.length)];
+      const cards = Math.min(pat.length, slice.length - i);
+      let col = 0;
+      for (let j = 0; j < cards; j++) {
+        const w = pat[j];
+        cells.push({ key: slice[i + j].id, article: slice[i + j], col, w, r: row, tall: false });
+        col += w;
+      }
+      row += 1; i += cards;
+    }
+  }
+  return cells.filter((c) => c.article);
 }
 
 export default function MagazineTopStories({ magazine }: { magazine: string }) {
   const [articles, setArticles] = useState<LiveArticle[]>([]);
   const [total, setTotal] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(18);
+  const [visibleCount, setVisibleCount] = useState(16);
 
   useEffect(() => {
     fetch(`/api/articles?magazine=${magazine}&limit=200`)
@@ -72,23 +95,25 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
   const grid = articles.filter((a) => a.id !== leader?.id);
   const magName = leader?.magazine?.name || magazine;
 
-  // Main mosaic: fill rows naturally with real article cards (mostly double-wide).
-  const main = buildItems(grid, visibleCount);
-
-  // "More in" — a SINGLE wide, appealing block with thumbnails, placed after the
-  // first N cards. It reflects articles NOT already shown near the top, and is
-  // NOT repeated on every row.
+  // Main varied mosaic, then ONE "more in" block (fresh thumbnails, not repeated).
+  const cells = buildCells(grid, visibleCount + 1, magazine);
   const morePool = articles.slice(visibleCount).length ? articles.slice(visibleCount) : grid.slice(visibleCount);
   const moreItems = morePool.slice(0, 4);
-
   const hasMore = visibleCount < total;
 
   if (grid.length === 0) return null;
 
-  // Split the main grid in two parts: cards up to index 9, then the more-block,
-  // then the rest — so the big full-width "More in" block sits in the middle.
-  const head = main.slice(0, 9);
-  const tail = main.slice(9);
+  // Place the single "more" block after ~2/3 of the main cells (if enough).
+  const split = Math.min(cells.length, Math.max(6, Math.floor(cells.length * 0.66)));
+  const head = cells.slice(0, split);
+  const tail = cells.slice(split);
+
+  const gridCss: React.CSSProperties = {
+    display: "grid",
+    gridTemplateColumns: "repeat(12, 1fr)",
+    gridAutoRows: "auto",
+    gap: 16,
+  };
 
   return (
     <section id={UID} style={{ marginTop: 28 }}>
@@ -99,20 +124,16 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
       </div>
 
       {head.length > 0 && (
-        <div className="mz-ed-grid">{head.map(renderCard)}</div>
+        <div className="mz-ed-grid">{head.map((c, i) => renderCell(c, i))}</div>
       )}
 
       {moreItems.length > 0 && (
         <div className="mz-ed-moreblock" style={{ marginTop: 20 }}>
-          <div className="mz-ed-moreblock-head">
-            <span className="mz-ed-mark">▸</span> More in {magName}
-          </div>
+          <div className="mz-ed-moreblock-head"><span className="mz-ed-mark">▸</span> More in {magName}</div>
           <div className="mz-ed-moreblock-grid">
             {moreItems.map((m) => (
               <a key={m.id} href={`/articles/${m.id}`} className="mz-ed-moreblock-card">
-                {m.imageUrl ? (
-                  <span className="mz-ed-moreblock-thumb"><img src={m.imageUrl} alt="" loading="lazy" /></span>
-                ) : null}
+                {m.imageUrl ? <span className="mz-ed-moreblock-thumb"><img src={m.imageUrl} alt="" loading="lazy" /></span> : null}
                 <span className="mz-ed-moreblock-title">{m.headline || m.title}</span>
               </a>
             ))}
@@ -121,12 +142,12 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
       )}
 
       {tail.length > 0 && (
-        <div className="mz-ed-grid" style={{ marginTop: 20 }}>{tail.map(renderCard)}</div>
+        <div className="mz-ed-grid" style={{ marginTop: split > 0 ? 20 : 0 }}>{tail.map((c, i) => renderCell(c, split + i))}</div>
       )}
 
       {hasMore && (
         <div style={{ marginTop: 18, textAlign: "center" }}>
-          <button onClick={() => setVisibleCount((c) => c + 18)}
+          <button onClick={() => setVisibleCount((c) => c + 16)}
             style={{ background: "transparent", border: "1px solid var(--accent, rgba(255,215,0,.4))", borderRadius: 8, color: "var(--accent, #ffd700)", padding: "8px 24px", cursor: "pointer", fontSize: 13, fontWeight: 700 }}>
             Load more ({visibleCount} / {total})
           </button>
@@ -135,19 +156,25 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
     </section>
   );
 
-  function renderCard(it: GridItem, idx: number) {
-    if (it.type !== "card" || !it.article) return null;
+  function renderCell(c: Cell, idx: number) {
+    const style: React.CSSProperties = {
+      gridColumnStart: c.col + 1,
+      gridColumnEnd: c.col + 1 + c.w,
+      gridRowStart: c.r + 1,
+      gridRowEnd: c.tall ? c.r + 3 : c.r + 2,
+    };
+    const cls = "mz-ed-cell" + (c.w >= 6 ? " mz-ed-cell-wide" : c.w <= 2 ? " mz-ed-cell-narrow" : "") + (c.tall ? " mz-ed-cell-tall" : "");
     return (
-      <a key={it.article.id} href={`/articles/${it.article.id}`} className={it.className} style={{ ...cardLink, ...it.style }}>
-        {it.article.imageUrl ? (
-          <div className="mz-ed-thumb"><img src={it.article.imageUrl} alt="" loading="lazy" /></div>
+      <a key={c.key} href={`/articles/${c.article.id}`} className={cls} style={{ ...cardLink, ...style }}>
+        {c.article.imageUrl ? (
+          <div className="mz-ed-thumb"><img src={c.article.imageUrl} alt="" loading="lazy" /></div>
         ) : null}
         <div className="mz-ed-kicker">
-          {it.article.pinned && it.article.pinKind ? <span className="mz-ed-pin">{it.article.pinKind}</span> : null}
-          <span>{it.article.subcategory || it.article.magazine?.name || "News"}</span>
+          {c.article.pinned && c.article.pinKind ? <span className="mz-ed-pin">{c.article.pinKind}</span> : null}
+          <span>{c.article.subcategory || c.article.magazine?.name || "News"}</span>
         </div>
-        <div className={`mz-ed-title${it.wide ? " wide" : ""}`}>{it.article.headline || it.article.title}</div>
-        {it.article.summary && <div className="mz-ed-summary">{it.article.summary}</div>}
+        <div className="mz-ed-title">{c.article.headline || c.article.title}</div>
+        {c.article.summary && <div className="mz-ed-summary">{c.article.summary}</div>}
       </a>
     );
   }
@@ -163,17 +190,24 @@ const totemCss = `
 #${UID} .mz-ed-head { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
 #${UID} .mz-ed-mark { color: var(--accent, #ffd700); font-size: 11px; }
 #${UID} .mz-ed-h2 { margin: 0; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800; color: inherit; }
-#${UID} .mz-ed-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
-#${UID} .mz-ed-card { grid-column: span 4; min-width: 0; }
-#${UID} .mz-ed-kicker { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent, #ffd700); font-weight: 800; }
+#${UID} .mz-ed-grid { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: auto; gap: 16px; }
+#${UID} .mz-ed-cell { grid-column: span 4; min-width: 0; }
+#${UID} .mz-ed-cell-wide { }
+#${UID} .mz-ed-cell-narrow .mz-ed-title { font-size: 14px; }
+#${UID} .mz-ed-cell-narrow .mz-ed-summary { display: none; }
+#${UID} .mz-ed-cell-tall { justify-content: space-between; }
+#${UID} .mz-ed-cell-tall .mz-ed-thumb img { height: 100%; }
 #${UID} .mz-ed-thumb { margin: -18px -20px 14px; border-radius: 12px 12px 0 0; overflow: hidden; background: var(--card-bg, rgba(127,127,127,.08)); }
-#${UID} .mz-ed-thumb img { display: block; width: 100%; height: 150px; object-fit: cover; }
+#${UID} .mz-ed-thumb img { display: block; width: 100%; height: 160px; object-fit: cover; }
+#${UID} .mz-ed-cell-wide .mz-ed-thumb img { height: 200px; }
+#${UID} .mz-ed-cell-tall .mz-ed-thumb { flex: 1; margin-bottom: 12px; }
 #${UID} .mz-ed-pin { padding: 2px 8px; border-radius: 999px; border: 1px solid var(--accent, #ffd700); font-size: 9px; letter-spacing: 1px; }
+#${UID} .mz-ed-kicker { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent, #ffd700); font-weight: 800; }
 #${UID} .mz-ed-title { font-size: 17px; font-weight: 800; line-height: 1.28; letter-spacing: -0.01em; }
-#${UID} .mz-ed-title.wide { font-size: 22px; }
+#${UID} .mz-ed-cell-wide .mz-ed-title { font-size: 22px; }
 #${UID} .mz-ed-summary { margin-top: 8px; font-size: 13px; line-height: 1.5; opacity: .72; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-
-/* "More in" — one wide, attractive block with thumbnails, not repeated */
+#${UID} .mz-ed-cell:hover { border-color: var(--accent, #ffd700); transform: translateY(-2px); }
+/* "More in" — single wide, attractive thumbnail block, not repeated */
 #${UID} .mz-ed-moreblock { border: 1px solid var(--border, rgba(150,150,150,.2)); border-radius: 14px; padding: 18px 20px; background: linear-gradient(180deg, var(--card-bg, rgba(255,255,255,.03)), transparent); }
 #${UID} .mz-ed-moreblock-head { font-size: 12px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 800; color: var(--accent, #ffd700); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
 #${UID} .mz-ed-moreblock-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
@@ -182,14 +216,14 @@ const totemCss = `
 #${UID} .mz-ed-moreblock-thumb { display: block; width: 100%; height: 96px; border-radius: 8px; overflow: hidden; background: var(--card-bg, rgba(127,127,127,.08)); }
 #${UID} .mz-ed-moreblock-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; }
 #${UID} .mz-ed-moreblock-title { font-size: 13px; font-weight: 700; line-height: 1.3; }
-
 @media (max-width: 900px) {
   #${UID} .mz-ed-grid { grid-template-columns: repeat(6, 1fr); }
-  #${UID} .mz-ed-card { grid-column: span 3 !important; }
+  /* override explicit col placement on smaller screens */
+  #${UID} .mz-ed-cell, #${UID} .mz-ed-cell-wide, #${UID} .mz-ed-cell-narrow, #${UID} .mz-ed-cell-tall { grid-column: span 3 !important; grid-row: auto !important; }
 }
 @media (max-width: 560px) {
   #${UID} .mz-ed-grid { grid-template-columns: repeat(1, 1fr); gap: 12px; }
-  #${UID} .mz-ed-card { grid-column: span 1 !important; }
-  #${UID} .mz-ed-title.wide { font-size: 19px; }
+  #${UID} .mz-ed-cell, #${UID} .mz-ed-cell-wide, #${UID} .mz-ed-cell-narrow, #${UID} .mz-ed-cell-tall { grid-column: span 1 !important; grid-row: auto !important; }
+  #${UID} .mz-ed-cell-wide .mz-ed-title, #${UID} .mz-ed-cell-tall .mz-ed-title { font-size: 19px; }
 }
 `;

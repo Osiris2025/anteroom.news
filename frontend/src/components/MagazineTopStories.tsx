@@ -89,8 +89,7 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
   const [magazines, setMagazines] = useState<{ id: string; name: string }[]>([]);
 
   useEffect(() => {
-    // Only the Dark Matter pilot for now; later roll to all magazines.
-    if (magazine !== "dark-matter") return;
+    // Admin inline-editor hover tools on every magazine; no longer a Dark Matter pilot.
     fetch("/api/admin/session").then((r) => r.json()).then((j) => {
       setIsAdmin(!!j.isAdmin);
       if (j.isAdmin) {
@@ -181,7 +180,7 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
       gridRowEnd: c.tall ? c.r + 3 : c.r + 2,
     };
     const cls = "mz-ed-cell" + (c.w >= 6 ? " mz-ed-cell-wide" : c.w <= 2 ? " mz-ed-cell-narrow" : "") + (c.tall ? " mz-ed-cell-tall" : "");
-    const showTools = isAdmin && magazine === "dark-matter" && c.article;
+    const showTools = isAdmin && !!c.article;
     return (
       <div key={c.key} className="mz-ed-wrap" style={{ position: "relative", ...style }}>
         <a href={`/articles/${c.article.id}`} className={cls} style={cardLink}>

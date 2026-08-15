@@ -6,6 +6,7 @@ import { renderTemplate, MAGAZINES } from "@/lib/themes";
 import LiveFeed from "@/components/LiveFeed";
 import MagazineTopStories from "@/components/MagazineTopStories";
 import MagazineEditorial from "@/components/MagazineEditorial";
+import FrontierRail from "@/components/FrontierRail";
 
 /**
  * ThemeRenderer
@@ -107,20 +108,50 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
 
   return (
     <div>
-      {magazine && (
-        <div style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "6px 0 2px" }}>
-          <span style={{ width: 9, height: 9, borderRadius: "50%", background: magazine.accent, display: "inline-block" }} />
-          <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: "-0.5px" }}>
-            {magazine.name.toUpperCase()}
-          </h1>
-          <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
-        </div>
+      {/* Neural Hardware gets a two-column layout: main editorial content left,
+          "AI Frontier" model rail on the right (this magazine tracks everything-AI). */}
+      {magazine?.id === "neural-hardware" ? (
+        <>
+          <style>{`.nexus-nh-layout{display:flex;gap:28px;align-items:flex-start}.nexus-nh-main{flex:1 1 0;min-width:0}.nexus-nh-rail{flex:0 0 280px;width:280px;max-width:100%}@media(max-width:920px){.nexus-nh-layout{flex-direction:column}.nexus-nh-rail{flex:1 1 auto;width:100%}}`}</style>
+          <div className="nexus-nh-layout">
+            <div className="nexus-nh-main">
+              {magazine && (
+                <div style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "6px 0 2px" }}>
+                  <span style={{ width: 9, height: 9, borderRadius: "50%", background: magazine.accent, display: "inline-block" }} />
+                  <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: "-0.5px" }}>
+                    {magazine.name.toUpperCase()}
+                  </h1>
+                  <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
+                </div>
+              )}
+              {magazine && <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />}
+              <LiveFeed magazine={magazine ? magazine.id : undefined} />
+              {magazine && <MagazineTopStories magazine={magazine.id} />}
+              <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
+            </div>
+            <div className="nexus-nh-rail">
+              <FrontierRail />
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
+          {magazine && (
+            <div style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "6px 0 2px" }}>
+              <span style={{ width: 9, height: 9, borderRadius: "50%", background: magazine.accent, display: "inline-block" }} />
+              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: "-0.5px" }}>
+                {magazine.name.toUpperCase()}
+              </h1>
+              <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
+            </div>
+          )}
+          {/* Editorial composition — only on magazine/stream pages */}
+          {magazine && <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />}
+          <LiveFeed magazine={magazine ? magazine.id : undefined} />
+          {magazine && <MagazineTopStories magazine={magazine.id} />}
+          <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
+        </>
       )}
-      {/* Editorial composition — only on magazine/stream pages */}
-      {magazine && <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />}
-      <LiveFeed magazine={magazine ? magazine.id : undefined} />
-      {magazine && <MagazineTopStories magazine={magazine.id} />}
-      <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
     </div>
   );
 }

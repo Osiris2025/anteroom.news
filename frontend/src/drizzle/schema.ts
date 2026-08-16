@@ -85,6 +85,13 @@ export const magazine = pgTable("magazine", {
   description: text("description"),
   tone: text("tone").notNull().default("neutral"),
   colors: jsonb("colors"),
+  // identity-in-data: these carry the magazine's visual/identity identity so the
+  // frontend can render from data instead of the hardcoded themes.ts MAGAZINES array.
+  realm: text("realm"),
+  theme: text("theme"),
+  accent: text("accent"),
+  accent2: text("accent2"),
+  tags: jsonb("tags"),
   // per-magazine named AI agent (writes on-site commentary for this magazine)
   agentName: text("agent_name"),
   agentModel: text("agent_model").notNull().default("deepseek/deepseek-v4-flash-0731"),

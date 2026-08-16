@@ -146,6 +146,17 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
                     {magazine.name.toUpperCase()}
                   </h1>
                   <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
+                  <button
+                    onClick={() => window.dispatchEvent(new CustomEvent("nexus-explore-open"))}
+                    className="nexus-head-explore"
+                    style={{
+                      marginLeft: "auto", display: "none", alignItems: "center", gap: 6,
+                      background: "transparent", border: "1px solid var(--accent, rgba(255,215,0,.5))",
+                      color: "var(--accent, #ffd700)", borderRadius: 999, padding: "6px 14px",
+                      cursor: "pointer", fontSize: 12, fontWeight: 700,
+                    }}
+                  >⤢ Explore</button>
+                  <style>{`@media(max-width:920px){.nexus-head-explore{display:inline-flex!important}}`}</style>
                 </div>
               )}
               {magazine && <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />}
@@ -169,9 +180,21 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
                 {magazine.name.toUpperCase()}
               </h1>
               <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
+              <button
+                onClick={() => window.dispatchEvent(new CustomEvent("nexus-explore-open"))}
+                className="nexus-head-explore"
+                style={{
+                  marginLeft: "auto", display: "none", alignItems: "center", gap: 6,
+                  background: "transparent", border: "1px solid var(--accent, rgba(255,215,0,.5))",
+                  color: "var(--accent, #ffd700)", borderRadius: 999, padding: "6px 14px",
+                  cursor: "pointer", fontSize: 12, fontWeight: 700,
+                }}
+              >⤢ Explore</button>
             </div>
           )}
+          <style>{`@media(max-width:920px){.nexus-head-explore{display:inline-flex!important}}`}</style>
           {/* Editorial composition — only on magazine/stream pages */}
+          <style>{`@media(max-width:920px){.nexus-head-explore{display:inline-flex!important}.nexus-subcat-rail{display:none!important}}`}</style>
           {magazine && <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />}
           {magazine && <SubcategoryRail magazine={magazine.id} />}
           <LiveFeed magazine={magazine ? magazine.id : undefined} />

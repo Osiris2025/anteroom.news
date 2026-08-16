@@ -8,7 +8,7 @@ type Notice = {
 
 // Right-side "AI Frontier" column for the Neural Hardware magazine. Lists the
 // freshest release per tracked model; each row links to a curated per-model page.
-export default function FrontierRail() {
+export default function FrontierRail({ compact }: { compact?: boolean }) {
   const [notices, setNotices] = useState<Notice[]>([]);
   const [total, setTotal] = useState(0);
   const [err, setErr] = useState("");
@@ -58,14 +58,13 @@ export default function FrontierRail() {
               <span style={{ flex: "0 0 8px", width: 8, height: 8, borderRadius: "50%", background: n.color }} />
               <span style={{ minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 700, lineHeight: 1.25 }}>{n.name}</div>
-                {hasStory ? (
+                {!compact && hasStory ? (
                   <div style={{ fontSize: 11, opacity: .55, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
                     {n.latest?.headline || n.latest?.title}
                   </div>
                 ) : (
-                  <div style={{ fontSize: 11, opacity: .5, fontStyle: "italic" }}>{n.count ? `${n.count} stories` : "awaiting coverage"}</div>
+                  <div style={{ fontSize: 11, opacity: .5 }}>{n.count ? `${n.count} stories` : "awaiting coverage"}</div>
                 )}
-                {n.count > 1 && <div style={{ fontSize: 9, opacity: .5, marginTop: 2 }}>{n.count} stories →</div>}
               </span>
             </a>
           );

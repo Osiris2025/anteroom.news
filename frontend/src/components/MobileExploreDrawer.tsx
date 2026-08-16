@@ -14,6 +14,13 @@ export default function MobileExploreDrawer({ magazine, showFrontier }: { magazi
   const [open, setOpen] = useState(false);
   const [releases, setReleases] = useState<Release[]>([]);
 
+  // Open from elsewhere (e.g. a header "Explore" pill) via a custom event.
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("nexus-explore-open", onOpen);
+    return () => window.removeEventListener("nexus-explore-open", onOpen);
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     fetch(`/api/articles?magazine=${magazine}&releases=1&limit=25`)
@@ -81,7 +88,7 @@ export default function MobileExploreDrawer({ magazine, showFrontier }: { magazi
         {showFrontier && (
           <>
             <div className="nexus-explore-label" style={{ marginTop: 20 }}>AI Frontier</div>
-            <FrontierRail />
+            <FrontierRail compact />
           </>
         )}
         {releases.length > 0 && (

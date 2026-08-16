@@ -17,7 +17,37 @@ import httpx
 import feedparser
 
 from ..config import StreamConfig
-from .subcategory import classify_article
+from .subcategory import classify_article, set_taxonomy_overrides
+
+
+def load_db_taxonomy(db_url: str) -> None:
+    """Load the data-driven magazine_taxonomy table and make it authoritative.
+
+    Magazines WITH rows in the table get their taxonomy from data; magazines
+    without rows keep the built-in Python MAGAZINE_TAXONOMY (safe fallback, so
+    ingest behavior is unchanged until every magazine is seeded).
+    """
+    try:
+        import psycopg2
+        conn = psycopg2.connect(db_url)
+        try:
+            cur = conn.cursor()
+            cur.execute(
+                "SELECT magazine_id, subcategory, position, keywords "
+                "FROM magazine_taxonomy ORDER BY magazine_id, position"
+            )
+            rows = cur.fetchall()
+            cur.close()
+        finally:
+            conn.close()
+        by_mag: dict[str, list[tuple[str, list[str]]]] = {}
+        for mag_id, sub, _pos, kw in rows:
+            kws = list(kw) if kw else []
+            by_mag.setdefault(mag_id, []).append((sub, kws))
+        if by_mag:
+            set_taxonomy_overrides(by_mag)
+    except Exception as e:  # never break ingest on taxonomy hiccup
+        logging.getLogger(__name__).warning("db taxonomy load failed (using static): %s", e)
 
 # ---------------------------------------------------------------------------
 # Junk-deal filter — reject money-saving / coupon / %-off content at ingest.
@@ -611,6 +641,9 @@ def run_discovery(configs: list[StreamConfig], db_url: str) -> dict:
     import psycopg2
 
     logger.info("Starting AI discovery pipeline...")
+    # Load the data-driven taxonomy (magazine_taxonomy) as the authoritative
+    # source for subcategory assignment, falling back to Python if DB has none.
+    load_db_taxonomy(db_url)
 
     all_articles: list[dict] = []
     for cfg in configs:

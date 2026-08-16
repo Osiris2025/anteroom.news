@@ -162,10 +162,12 @@ def classify_article(magazine_id: str | None, title: str | None, summary: str | 
 
     Scans the taxonomy of `magazine_id` in order and returns the FIRST category
     whose any keyword appears in title+summary. Case-insensitive substring match.
+    Uses the data-driven override if present (set via set_taxonomy_overrides);
+    otherwise falls back to the built-in MAGAZINE_TAXONOMY.
     """
     if not magazine_id or not title:
         return None
-    tax = MAGAZINE_TAXONOMY.get(magazine_id)
+    tax = _overrides.get(magazine_id) or MAGAZINE_TAXONOMY.get(magazine_id)
     if not tax:
         return None
     corpus = (title or "").lower()
@@ -176,3 +178,15 @@ def classify_article(magazine_id: str | None, title: str | None, summary: str | 
             if kw in corpus:
                 return slug
     return None
+
+
+# Data-driven taxonomy override support. The magazine_taxonomy table (loaded from
+# the DB by the ingest path) becomes authoritative WHEN PRESENT; the built-in
+# MAGAZINE_TAXONOMY remains the safe fallback so ingest never breaks.
+_overrides: dict[str, list[tuple[str, list[str]]]] = {}
+
+
+def set_taxonomy_overrides(overrides: dict[str, list[tuple[str, list[str]]]]) -> None:
+    """Merge/value a data-driven taxonomy from the DB. Magazines absent from
+    `overrides` keep their built-in (static) taxonomy."""
+    _overrides.update(overrides)

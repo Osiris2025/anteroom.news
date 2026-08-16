@@ -36,7 +36,7 @@ export default function FrontierRail({ compact }: { compact?: boolean }) {
       <style>{`.nexus-fr{position:static;width:100%;z-index:10}.nexus-fr > *{width:100%}@media(min-width:921px){.nexus-fr{position:sticky;top:76px}}`}</style>
       <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 12 }}>
         <span style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--accent,#ffd700)" }} />
-        <h3 style={{ margin: 0, fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1.5 }}>AI Frontier</h3>
+        <h3 style={{ margin: 0, fontSize: 12, fontWeight: 800, textTransform: "uppercase", letterSpacing: 1.5 }}>AI Model Watchlist</h3>
         <span style={{ marginLeft: "auto", fontSize: 10, opacity: .6 }}>{total} live</span>
       </div>
       <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>

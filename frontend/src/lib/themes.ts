@@ -475,20 +475,31 @@ export interface Magazine {
   color: string;
   accent: string;
   theme: string;
+  realm: string; // "Tech" | "Science" | "Health" | "SFF" | "Pulse" | "Mysteries" | "Pop"
   tags: string[]; // e.g. "puzzle","game","anecdote","ticker","alert","crosspost"
 }
 export const MAGAZINES: Magazine[] = [
-  { id:"weekly-weird-news", name:"Weekly Weird News", short:"Weird News", tagline:"The World's Only Reliable News™", description:"Satirical tabloid covering cryptids, UFOs, and the unexplainable.", color:"#8B4513", accent:"#FFD700", theme:"tabloid", tags:["anecdote","puzzle","crosspost","alert"] },
-  { id:"weird-and-wild", name:"New Frontiers in Science", short:"New Frontiers", tagline:"Possible · But Weirdly Unlikely", description:"Antigravity, black holes, free energy, cold fusion, and the far-out science that might — just might — be real.", color:"#302b63", accent:"#667eea", theme:"glass", tags:["puzzle","game","ticker","alert"] },
-  { id:"tech-pulse", name:"Tech Pulse", short:"Tech Pulse", tagline:"Technology. Analyzed.", description:"AI, dev tools, hardware, and the future of tech.", color:"#1e3a5f", accent:"#58a6ff", theme:"linear", tags:["ticker","alert","crosspost","puzzle"] },
-  { id:"poli-split", name:"Political Picture", short:"Political", tagline:"Both Sides, One Feed", description:"Red. Blue. Facts. Balanced political coverage.", color:"#7c3aed", accent:"#a78bfa", theme:"vercel", tags:["alert","ticker","crosspost"] },
-  { id:"climate-watch", name:"Climate Watch", short:"Climate Watch", tagline:"The Planet's Pulse", description:"Climate science, energy transition, environmental policy.", color:"#059669", accent:"#34d399", theme:"dashboard", tags:["ticker","alert","game","anecdote"] },
-  { id:"startup-signal", name:"Startup Signal", short:"Startup", tagline:"Deals, Pivots, Trends", description:"VC funding, pivots, and the next big thing.", color:"#d97706", accent:"#fbbf24", theme:"magazine", tags:["ticker","crosspost","puzzle","alert"] },
-  { id:"oss-report", name:"Open Source Report", short:"OSS Report", tagline:"Community. Code. Drama.", description:"New releases, licensing battles, and dev community pulse.", color:"#dc2626", accent:"#f87171", theme:"terminal", tags:["alert","crosspost","game"] },
-  { id:"starfall-weekly", name:"Starfall Weekly", short:"Starfall", tagline:"Reality is just a beta.", description:"Speculative fiction, future tech, space opera, and the far-out world of what comes next.", color:"#0f380f", accent:"#00ff40", theme:"crt", tags:["ticker","alert","crosspost","puzzle"] },
-  { id:"vital-sign", name:"Vital Signs", short:"Vital Signs", tagline:"The inner cosmos, decoded.", description:"Medicine, public health, longevity, mental wellness, and the science of being human.", color:"#0b5563", accent:"#2dd4bf", theme:"dashboard", tags:["ticker","alert","puzzle","anecdote"] },
-  { id:"neural-hardware", name:"Neural Hardware", short:"Neural Hardware", tagline:"AI. Cyber. Compute.", description:"Artificial intelligence, cybersecurity, computing trends, and the hardware powering tomorrow's datacenters.", color:"#00cc88", accent:"#00fa9a", theme:"linear", tags:["ticker","alert","crosspost","puzzle"] },
-  { id:"dark-matter", name:"Dark Matter", short:"Dark Matter", tagline:"The universe's deepest mysteries.", description:"Astronomy, dark matter, black holes, theoretical physics, and everything we don't yet understand about the cosmos.", color:"#6b21a8", accent:"#a855f7", theme:"glass", tags:["ticker","puzzle","alert","anecdote"] },
+  // TECH
+  { id:"neural-hardware", name:"AI Frontier", short:"AI Frontier", tagline:"AI. Cyber. Compute.", description:"Artificial intelligence, frontier models, cybersecurity, and the hardware powering tomorrow's datacenters.", color:"#00cc88", accent:"#00fa9a", theme:"linear", realm:"Tech", tags:["ticker","alert","crosspost","puzzle"] },
+  { id:"tech-pulse", name:"Tech Pulse", short:"Tech Pulse", tagline:"Technology. Analyzed.", description:"AI, dev tools, hardware, and the future of tech.", color:"#1e3a5f", accent:"#58a6ff", theme:"linear", realm:"Tech", tags:["ticker","alert","crosspost","puzzle"] },
+  { id:"startup-signal", name:"Startup Signal", short:"Startup", tagline:"Deals, Pivots, Trends", description:"VC funding, pivots, and the next big thing.", color:"#d97706", accent:"#fbbf24", theme:"magazine", realm:"Tech", tags:["ticker","crosspost","puzzle","alert"] },
+  { id:"oss-report", name:"Open Source Report", short:"OSS Report", tagline:"Community. Code. Drama.", description:"New releases, licensing battles, and dev community pulse.", color:"#dc2626", accent:"#f87171", theme:"terminal", realm:"Tech", tags:["alert","crosspost","game"] },
+  // SCIENCE — Science Fact vs Science Maybe
+  { id:"weird-and-wild", name:"Science Frontiers", short:"Science Frontiers", tagline:"What we know, tested.", description:"Research, breakthroughs, and verified science at the advancing edge.", color:"#302b63", accent:"#667eea", theme:"glass", realm:"Science", tags:["puzzle","game","ticker","alert"] },
+  { id:"dark-matter", name:"Dark Matter", short:"Dark Matter", tagline:"The universe's deepest mysteries.", description:"The speculative deep-end — black-hole universes, FTL, living-in-the-Matrix.", color:"#6b21a8", accent:"#a855f7", theme:"glass", realm:"Science", tags:["ticker","puzzle","alert","anecdote"] },
+  // HEALTH
+  { id:"vital-sign", name:"Vital Signs", short:"Vital Signs", tagline:"The inner cosmos, decoded.", description:"Supplements, peptides, longevity, and discoveries that may change outcomes.", color:"#0b5563", accent:"#2dd4bf", theme:"dashboard", realm:"Health", tags:["ticker","alert","puzzle","anecdote"] },
+  // SFF
+  { id:"starfall-weekly", name:"The Chart Room", short:"Chart Room", tagline:"Backstage of other worlds.", description:"Science fiction & fantasy — books, movies, gaming. (Starfall = the release column.)", color:"#0f380f", accent:"#00ff40", theme:"crt", realm:"SFF", tags:["ticker","alert","crosspost","puzzle"] },
+  // PULSE
+  { id:"poli-split", name:"Political Picture", short:"Political", tagline:"Both Sides, One Feed", description:"Red. Blue. Facts. Balanced political coverage.", color:"#7c3aed", accent:"#a78bfa", theme:"vercel", realm:"Pulse", tags:["alert","ticker","crosspost"] },
+  { id:"climate-watch", name:"Watch Tower", short:"Watch Tower", tagline:"The planet's sentinel.", description:"Climate science, energy transition, environmental policy.", color:"#059669", accent:"#34d399", theme:"dashboard", realm:"Pulse", tags:["ticker","alert","game","anecdote"] },
+  { id:"just-the-news-thats-fit-to-print", name:"Just the News", short:"Just the News", tagline:"Just the news that fit to print.", description:"Straight reporting, the full spectrum of current events.", color:"#475569", accent:"#94a3b8", theme:"vercel", realm:"Pulse", tags:["alert","ticker"] },
+  // MYSTERIES
+  { id:"weekly-weird-news", name:"Weekly Weird News", short:"Weird News", tagline:"The Weirdest Reliable News™", description:"Cryptids, UFOs, and strange cases — the creepy door.", color:"#8B4513", accent:"#FFD700", theme:"tabloid", realm:"Mysteries", tags:["anecdote","puzzle","crosspost","alert"] },
+  { id:"the-veil", name:"The Veil", short:"The Veil", tagline:"Backstage of the unseen.", description:"Chakras, crystals, auras, energy healing, consciousness — the seeker door.", color:"#4c1d95", accent:"#c084fc", theme:"glass", realm:"Mysteries", tags:["anecdote","puzzle","alert"] },
+  // POP
+  { id:"the-green-room", name:"The Green Room", short:"Green Room", tagline:"Backstage of fame.", description:"Celebrity, culture, music — who's about to step into the spotlight.", color:"#065f46", accent:"#34d399", theme:"magazine", realm:"Pop", tags:["crosspost","anecdote","alert"] },
 ];
 export const magazineTheme: Record<string, string> = {
   "weekly-weird-news": "tabloid",
@@ -503,6 +514,9 @@ export const magazineTheme: Record<string, string> = {
   "vital-sign": "dashboard",
   "neural-hardware": "linear",
   "dark-matter": "glass",
+  "just-the-news-thats-fit-to-print": "vercel",
+  "the-veil": "glass",
+  "the-green-room": "magazine",
 };
 
 // Plural alias matching what ThemeContext imports.
@@ -603,17 +617,25 @@ function renderMagShowcase(st){
   var tags = (st && st.taglines) || {};   // id -> DB tagline (source of truth)
   var names = (st && st.names) || {};     // id -> DB name
   var descs = (st && st.descs) || {};     // id -> DB description
-  var s = '<div class="magshow"><div class="sec-t"><div class="dot"></div><h2>Magazines</h2></div><div class="cards">';
-  MAGAZINES.forEach(function(m){
-    if(scopeMag && m.short !== scopeMag && m.name !== scopeMag && m.id !== scopeMag) return;
-    var name = names[m.id] || m.name;
-    var tagline = tags[m.id] || m.tagline;
-    var desc = descs[m.id] || m.description || '';
-    s += '<a class="card mag"' + h(m) + '><div class="k"><span class="magdot" style="background:'+m.accent+'"></span>'+(m.short)+'</div><h3>'+name+'</h3>'
-       + '<p class="magtag">'+tagline+'</p>'
-       + '<p class="magdesc">'+desc+'</p></a>';
+  var s = '<div class="magshow"><div class="sec-t"><div class="dot"></div><h2>Rooms</h2></div>';
+  // Group magazines under their Realm headings (Anteroom = a house of rooms).
+  var order = ["Tech","Science","Health","SFF","Pulse","Mysteries","Pop"];
+  order.forEach(function(realm){
+    var inRealm = MAGAZINES.filter(function(m){ return (m.realm||"")===realm; });
+    if(!inRealm.length) return;
+    s += '<div class="realm" style="margin-bottom:18px"><div class="realm-h" style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;opacity:.85;margin:4px 0 10px;border-bottom:1px solid rgba(150,150,150,.2);padding-bottom:6px"><span class="realm-dot" style="width:8px;height:8px;border-radius:50%;display:inline-block"></span>'+realm+'</div><div class="cards">';
+    inRealm.forEach(function(m){
+      if(scopeMag && m.short !== scopeMag && m.name !== scopeMag && m.id !== scopeMag) return;
+      var name = names[m.id] || m.name;
+      var tagline = tags[m.id] || m.tagline;
+      var desc = descs[m.id] || m.description || '';
+      s += '<a class="card mag"' + h(m) + '><div class="k"><span class="magdot" style="background:'+m.accent+'"></span>'+(m.short)+'</div><h3>'+name+'</h3>'
+         + '<p class="magtag">'+tagline+'</p>'
+         + '<p class="magdesc">'+desc+'</p></a>';
+    });
+    s += '</div></div>';
   });
-  s += '</div></div>';
+  s += '</div>';
   return s;
 }
 function h(m){ return ' href="/magazines/'+m.id+'" data-href="/magazines/'+m.id+'"'; }
@@ -639,7 +661,7 @@ function renderTemplate(st){
   // Header — the app navbar owns the top nav on the homepage, so hide this
   // internal brand/nav when hideHeader is set (set by the page renderer).
   if(!st.hideHeader){
-    s += '<div class="header"><div class="brand"><i>AI</i> News Nexus</div><div class="nav"><a class="on">Weird</a><a>Tech</a><a>Politics</a><a>Wild</a></div></div>';
+    s += '<div class="header"><div class="brand"><i>Anter</i>oom</div><div class="nav"><a class="on">Weird</a><a>Tech</a><a>Politics</a><a>Wild</a></div></div>';
   }
 
   var layout = st.layout;
@@ -824,10 +846,18 @@ function footerHTML(st){
         '<div><h4>Transparency</h4><p style="font-size:11px;line-height:1.4">All summaries generated by AI. Sources linked. Human editors audit every story.</p></div>'+
       '</div>';
 
-  var left="&copy; 2026 AI News Nexus", right="AI Disclosure · Privacy · Terms", mid="";
+  var left="&copy; 2026 Anteroom", right="AI Disclosure · Privacy · Terms", mid="";
   if(f==="newspaper"){ left="The Daily Edition · Vol. I"; mid="August 8, 2026"; right="Satire protected"; }
   if(f==="terminal"){ left="nexus@home:~$"; mid="SIGNAL OK"; right="_"; }
-  var cookie = '<div class="cookie" id="cookieBar"><span>We use cookies to personalize your news. See our Cookie Policy.</span><span><button class="acc" onclick="this.parentNode.parentNode.remove()">Accept</button> <button onclick="this.parentNode.parentNode.remove()">Decline</button></span></div>';
+  // Cookie-consent bar — persist the choice in localStorage so it does NOT
+  // reappear on every navigation (previously the buttons just removed the DOM
+  // node, so the banner came back each page load). Accepted/declined = remember.
+  var cookie = "";
+  try {
+    if (typeof window !== "undefined" && !window.localStorage.getItem("nexus-cookie")) {
+      cookie = '<div class="cookie" id="cookieBar"><span>We use cookies to personalize your news. See our Cookie Policy.</span><span><button class="acc" onclick="window.localStorage.setItem(\'nexus-cookie\',\'1\');this.parentNode.parentNode.style.display=\'none\'">Accept</button> <button onclick="window.localStorage.setItem(\'nexus-cookie\',\'0\');this.parentNode.parentNode.style.display=\'none\'">Decline</button></span></div>';
+    }
+  } catch (e) { cookie = ""; }
   return maint + '<div class="foot '+f+'"><span>'+left+'</span><span>'+mid+'</span><span>'+right+'</span></div>' + cookie;
 }
 

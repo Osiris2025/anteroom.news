@@ -101,7 +101,7 @@ export default function RightExploreDrawer() {
 
                             {SHOW_FRONTIER[magazine] && (
                               <>
-                                <div className="nexus-explore-nav-label" style={{ marginTop: 22 }}>AI Frontier</div>
+                                <div className="nexus-explore-nav-label" style={{ marginTop: 22 }}>AI Model Watchlist</div>
                                 <FrontierRail compact />
                               </>
                             )}

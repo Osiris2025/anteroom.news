@@ -322,6 +322,8 @@ const totemCss = `
   #${UID} .mz-ed-grid { grid-template-columns: repeat(1, 1fr); gap: 12px; grid-auto-rows: auto; }
   #${UID} .mz-ed-wrap, #${UID} .mz-ed-cell, #${UID} .mz-ed-cell-wide, #${UID} .mz-ed-cell-narrow, #${UID} .mz-ed-cell-tall { grid-column: span 1 !important; grid-row: auto !important; }
   #${UID} .mz-ed-cell-wide .mz-ed-title, #${UID} .mz-ed-cell-tall .mz-ed-title { font-size: 19px; }
+  /* Releases live in the mobile Explore drawer, not the end of the main feed. */
+  #${UID} .mz-ed-releases { display: none; }
 }
 /* Admin inline-editor: toolbar revealed on hover of the card (bottom edge) */
 #${UID} .mz-admin-tools { position: absolute; left: 0; right: 0; bottom: 0; transform: translateY(0);

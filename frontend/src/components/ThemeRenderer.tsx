@@ -8,6 +8,7 @@ import MagazineTopStories from "@/components/MagazineTopStories";
 import MagazineEditorial from "@/components/MagazineEditorial";
 import FrontierRail from "@/components/FrontierRail";
 import SubcategoryRail from "@/components/SubcategoryRail";
+import MobileExploreDrawer from "@/components/MobileExploreDrawer";
 
 /**
  * ThemeRenderer
@@ -134,8 +135,9 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
           "AI Frontier" model rail on the right (this magazine tracks everything-AI). */}
       {magazine?.id === "neural-hardware" ? (
         <>
-          <style>{`.nexus-nh-layout{display:flex;gap:28px;align-items:flex-start}.nexus-nh-main{flex:1 1 0;min-width:0}.nexus-nh-rail{flex:0 0 280px;width:280px;max-width:100%}@media(max-width:920px){.nexus-nh-layout{flex-direction:column}.nexus-nh-rail{flex:1 1 auto;width:100%}}`}</style>
+          <style>{`.nexus-nh-layout{display:flex;gap:28px;align-items:flex-start}.nexus-nh-main{flex:1 1 0;min-width:0}.nexus-nh-rail{flex:0 0 280px;width:280px;max-width:100%}@media(max-width:920px){.nexus-nh-layout{flex-direction:column}.nexus-nh-rail{display:none}}`}</style>
           <div className="nexus-nh-layout">
+            <MobileExploreDrawer magazine={magazine ? magazine.id : ""} showFrontier />
             <div className="nexus-nh-main">
               {magazine && (
                 <div style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "6px 0 2px" }}>
@@ -159,6 +161,7 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
         </>
       ) : (
         <>
+          <MobileExploreDrawer magazine={magazine ? magazine.id : ""} />
           {magazine && (
             <div style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "6px 0 2px" }}>
               <span style={{ width: 9, height: 9, borderRadius: "50%", background: magazine.accent, display: "inline-block" }} />

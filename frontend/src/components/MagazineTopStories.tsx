@@ -341,17 +341,16 @@ const totemCss = `
   box-shadow: 0 -6px 18px rgba(0,0,0,.35); }
 #${UID} .mz-ed-wrap:hover .mz-admin-tools { opacity: 1; pointer-events: auto; }
 #${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { opacity: 1; pointer-events: auto; }
-/* Admin "(A)" toggle — hidden on desktop (hover works); shown on touch where hover isn't available. */
-#${UID} .mz-admin-a-btn { position: absolute; bottom: 8px; right: 10px; z-index: 25; width: 26px; height: 26px;
-  border-radius: 50%; border: 1px solid rgba(150,150,150,.4); background: rgba(10,12,16,.85); color: var(--accent,#ffd700);
-  font-size: 13px; font-weight: 800; line-height: 1; cursor: pointer; align-items: center; justify-content: center; display: flex;
-  padding: 0; opacity: 0; pointer-events: none; transition: opacity .12s ease; }
-#${UID} .mz-ed-wrap:hover .mz-admin-a-btn { opacity: 1; pointer-events: auto; }
+/* Admin "(A)" toggle — touch/tablet only. On desktop the toolbar stays
+   hover-revealed (existing behavior) and the (A) button is not shown. */
+#${UID} .mz-admin-a-btn { display: none; }
 @media (max-width: 760px) {
-  #${UID} .mz-admin-a-btn { opacity: 1; pointer-events: auto; position: static; margin: 8px auto 0; }
+  #${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { opacity: 1; pointer-events: auto; }
+  #${UID} .mz-admin-a-btn { display: flex; position: static; margin: 8px auto 0; width: 26px; height: 26px;
+    border-radius: 50%; border: 1px solid rgba(150,150,150,.5); background: rgba(10,12,16,.9); color: var(--accent,#ffd700);
+    font-size: 13px; font-weight: 800; line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0; }
   /* On mobile the admin toolbar is hidden by default and revealed by the (A) toggle as an overlay. */
   #${UID} .mz-admin-tools { position: absolute; left: 8px; right: 8px; bottom: 40px; opacity: 0; pointer-events: none;
     transform: translateY(0); background: rgba(10,12,16,.97); border: 1px solid rgba(150,150,150,.25); border-radius: 10px; z-index: 24; }
-  #${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { opacity: 1; pointer-events: auto; }
 }
 `;

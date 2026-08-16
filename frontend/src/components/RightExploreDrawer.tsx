@@ -145,9 +145,9 @@ export default function RightExploreDrawer() {
 
       <style>{`
         .nexus-explore-nav-btn{
-          position:fixed;top:14px;right:16px;z-index:120;
+          position:fixed;top:10px;right:14px;z-index:120;
           display:inline-flex;align-items:center;justify-content:center;
-          width:40px;height:40px;border-radius:10px;
+          width:44px;height:44px;border-radius:10px;
           background:rgba(127,127,127,.12);border:1px solid rgba(127,127,127,.4);
           color:inherit;cursor:pointer;
         }

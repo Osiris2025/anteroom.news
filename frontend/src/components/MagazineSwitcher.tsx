@@ -178,9 +178,9 @@ export default function MagazineSwitcher() {
         body.nexus-rail-on nav, body.nexus-rail-on main { max-width: calc(1160px - 24px); margin-left: 0; }
 
         .nexus-switch-btn{
-          position:fixed;top:14px;left:16px;z-index:120;
+          position:fixed;top:10px;left:14px;z-index:120;
           display:inline-flex;align-items:center;justify-content:center;
-          width:40px;height:40px;border-radius:10px;
+          width:44px;height:44px;border-radius:10px;
           background:rgba(127,127,127,.12);border:1px solid rgba(127,127,127,.4);
           color:inherit;cursor:pointer;padding:0;box-shadow:0 2px 10px rgba(0,0,0,.25);
           transition:background .15s, transform .12s;
@@ -239,7 +239,7 @@ export default function MagazineSwitcher() {
         @keyframes nexusSlide{from{transform:translateX(-100%);}to{transform:translateX(0);}}
 
         /* The app navbar is full-width; keep its brand clear of the fixed hamburger. */
-        .nexus-brand-shift{margin-left:44px;}
+        .nexus-brand-shift{margin-left:62px;}
       `}</style>
     </>
   );

@@ -12,13 +12,14 @@ export default function Navbar() {
           <div className="flex items-center gap-1 shrink-0">
             {/* The magazine hamburger is mounted globally in layout.tsx (fixed, top-left);
                 the brand is shifted right to clear it. */}
-            <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white hover:text-tech dark:hover:text-tech-light transition-colors shrink-0" style={{ marginLeft: 44 }}>
-              AI News Nexus
+            <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white hover:text-tech dark:hover:text-tech-light transition-colors shrink-0" style={{ marginLeft: 62 }}>
+              Anteroom
             </Link>
           </div>
-          {/* Search — pre-scoped to the current magazine. Mobile/tablet: shown inside
-              the global drawer instead (see MagazineSwitcher). */}
-          <div className="hidden md:flex items-center flex-1 justify-end">
+          {/* Search + site actions — shown only on lg+ (>=1024px) so they clear the two
+              fixed hamburgers (brand + left ☰ / right ⋮⋮) on tablets/iPad. On
+              narrow screens these already live inside the global magazine drawer. */}
+          <div className="hidden lg:flex items-center flex-1 justify-end" style={{ paddingRight: 56 }}>
             <MagazineSearch />
             <div className="hidden lg:flex items-center">
               <TopNavItems />

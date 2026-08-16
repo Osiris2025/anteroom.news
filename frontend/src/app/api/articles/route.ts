@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { eq, desc, and, isNull, sql, ne, or } from "drizzle-orm";
+import { eq, desc, and, isNull, sql, ne, or, ilike } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { article, magazine, pin } from "@/drizzle/schema";
 
@@ -22,6 +22,11 @@ export async function GET(req: NextRequest) {
   try {
     const conds: any[] = [eq(article.status, "live")];
     if (magId && magId !== "all") conds.push(eq(article.magazineId, magId));
+    const q = (sp.get("q") || "").trim();
+    if (q) {
+      const like = `%${q.replace(/[%_\\]/g, (c: string) => "\\" + c)}%`;
+      conds.push(or(ilike(article.title, like), ilike(article.headline, like), ilike(article.summary, like)));
+    }
 
     if (releasesOnly) {
       conds.push(eq(article.subcategory, "Releases"));

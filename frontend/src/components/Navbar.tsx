@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import TopNavItems from '@/components/TopNavItems';
+import MagazineSearch from '@/components/MagazineSearch';
 
 export default function Navbar() {
   return (
@@ -15,10 +16,13 @@ export default function Navbar() {
               AI News Nexus
             </Link>
           </div>
-          {/* Top-level site actions: visible on desktop; on mobile/tablet they live inside
-              the global magazine drawer instead (see MagazineSwitcher). */}
-          <div className="hidden lg:flex items-center">
-            <TopNavItems />
+          {/* Search — pre-scoped to the current magazine. Mobile/tablet: shown inside
+              the global drawer instead (see MagazineSwitcher). */}
+          <div className="hidden md:flex items-center flex-1 justify-end">
+            <MagazineSearch />
+            <div className="hidden lg:flex items-center">
+              <TopNavItems />
+            </div>
           </div>
         </div>
       </div>

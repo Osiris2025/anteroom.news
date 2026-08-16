@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MAGAZINES } from "@/lib/themes";
 import TopNavItems from "@/components/TopNavItems";
+import MagazineSearch from "@/components/MagazineSearch";
 
 /**
  * Global magazine-switcher — hamburger + left drawer + pinnable rail.
@@ -90,6 +91,7 @@ export default function MagazineSwitcher() {
     <>
       {showTopItems && (
         <div className="nexus-switch-top" style={{ padding: "10px 10px 4px", borderBottom: "1px solid rgba(255,255,255,.1)", marginBottom: 4 }}>
+          <MagazineSearch vertical />
           <TopNavItems vertical />
         </div>
       )}

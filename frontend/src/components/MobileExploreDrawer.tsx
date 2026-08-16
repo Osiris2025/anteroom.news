@@ -87,6 +87,9 @@ export default function MobileExploreDrawer({ magazine, showFrontier }: { magazi
           border: 1px solid rgba(150,150,150,.3); color: inherit; border-radius: 8px;
           width: 32px; height: 32px; font-size: 16px; cursor: pointer; }
         .nexus-explore-drawer .nexus-subcat-rail, .nexus-explore-drawer .nexus-fr { position: static !important; border: 1px solid rgba(150,150,150,.15); }
+        /* Ensure the drawer's Browse chips are never suppressed by the global
+           mobile rule that hides the same class on the inline rail. */
+        .nexus-explore-drawer .nexus-subcat-rail { display: block !important; }
         .nexus-explore-label { font-size: 11px; font-weight: 800; text-transform: uppercase;
           letter-spacing: 1.5px; opacity: .55; margin: 4px 0 10px; }
         .nexus-explore-release { display: flex; align-items: baseline; gap: 8; padding: 7px 2px;

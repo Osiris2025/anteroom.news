@@ -6,7 +6,6 @@ import { renderTemplate, MAGAZINES } from "@/lib/themes";
 import LiveFeed from "@/components/LiveFeed";
 import MagazineTopStories from "@/components/MagazineTopStories";
 import MagazineEditorial from "@/components/MagazineEditorial";
-import MobileExploreDrawer from "@/components/MobileExploreDrawer";
 
 /**
  * ThemeRenderer
@@ -135,7 +134,6 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
           is for articles. */}
       {magazine ? (
         <>
-          <MobileExploreDrawer magazine={magazine.id} showFrontier />
           <div style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "6px 0 2px" }}>
             <span style={{ width: 9, height: 9, borderRadius: "50%", background: magazine.accent, display: "inline-block" }} />
             <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: "-0.5px", fontFamily: "inherit" }}>

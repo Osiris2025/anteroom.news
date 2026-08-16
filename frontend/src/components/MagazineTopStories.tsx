@@ -298,7 +298,7 @@ const totemCss = `
 #${UID} .mz-ed-mark { color: var(--accent, #ffd700); font-size: 11px; }
 #${UID} .mz-ed-h2 { margin: 0; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; font-weight: 800; color: inherit; }
 #${UID} .mz-ed-grid { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: 250px; gap: 16px; }
-#${UID} .mz-ed-cell { grid-column: span 4; min-width: 0; display: flex; flex-direction: column; }
+#${UID} .mz-ed-cell { grid-column: span 4; min-width: 0; display: flex; flex-direction: column; overflow: hidden; }
 #${UID} .mz-ed-cell-wide { }
 #${UID} .mz-ed-cell-narrow .mz-ed-title { font-size: 14px; }
 #${UID} .mz-ed-cell-narrow .mz-ed-summary { display: none; }
@@ -358,10 +358,11 @@ const totemCss = `
   /* Stack card, then the (A) toggle below it on the lower-left. */
   #${UID} .mz-ed-wrap { display: flex; flex-direction: column; }
   #${UID} .mz-ed-cell { flex: 1 1 auto; }
-  #${UID} .mz-admin-a-btn { display: flex; position: relative; align-self: flex-start; margin: 8px 0 0;
-    width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(150,150,150,.5);
-    background: rgba(10,12,16,.9); color: var(--accent,#ffd700); font-size: 13px; font-weight: 800;
-    line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0; }
+  #${UID} .mz-admin-a-btn { display: flex; position: relative; align-self: flex-start; margin: 10px 0 2px;
+    width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--accent, rgba(255,215,0,.7));
+    background: rgba(10,12,16,.95); color: var(--accent,#ffd700); font-size: 15px; font-weight: 800;
+    line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0;
+    z-index: 3; -webkit-tap-highlight-color: transparent; }
   /* On mobile the admin toolbar is hidden by default and revealed by the (A) toggle as an overlay. */
   #${UID} .mz-admin-tools { position: absolute; left: 8px; right: 8px; bottom: 44px; opacity: 0; pointer-events: none;
     transform: translateY(0); background: rgba(10,12,16,.97); border: 1px solid rgba(150,150,150,.25); border-radius: 10px; z-index: 24; }

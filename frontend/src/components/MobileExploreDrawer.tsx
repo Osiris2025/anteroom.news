@@ -13,6 +13,17 @@ type Release = { id: string; title: string; headline?: string | null; publishedA
 export default function MobileExploreDrawer({ magazine, showFrontier }: { magazine: string; showFrontier?: boolean }) {
   const [open, setOpen] = useState(false);
   const [releases, setReleases] = useState<Release[]>([]);
+  const [hasSubcats, setHasSubcats] = useState(false);
+
+  // Only show the Explore control when the magazine actually has subcategories
+  // to browse (otherwise there's nothing to explore).
+  useEffect(() => {
+    if (!magazine) return;
+    fetch(`/api/articles/subcats?magazine=${magazine}`)
+      .then((r) => r.json())
+      .then((j) => { const arr = Array.isArray(j?.subcats) ? j.subcats : []; setHasSubcats(arr.length > 0); })
+      .catch(() => setHasSubcats(false));
+  }, [magazine]);
 
   // Open from elsewhere (e.g. a header "Explore" pill) via a custom event.
   useEffect(() => {
@@ -35,6 +46,9 @@ export default function MobileExploreDrawer({ magazine, showFrontier }: { magazi
     else { document.body.style.overflow = ""; }
     return () => { document.body.style.overflow = ""; };
   }, [open]);
+
+  // Nothing to explore — magazine has no subcategories.
+  if (!magazine || !hasSubcats) return null;
 
   return (
     <>

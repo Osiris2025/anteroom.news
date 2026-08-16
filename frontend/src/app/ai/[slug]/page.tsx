@@ -85,7 +85,6 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
                     <div style={{ minWidth: 0 }}>
                       {a.pinned && <div style={{ fontSize: 9, fontWeight: 700, color: "var(--accent,#ffd700)", letterSpacing: 1 }}>PINNED</div>}
                       <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.3 }}>{a.headline || a.title}</div>
-                      {a.summary && <div style={{ fontSize: 12.5, opacity: .65, marginTop: 4, lineHeight: 1.45 }}>{a.summary}</div>}
                       <div style={{ fontSize: 11, opacity: .55, marginTop: 6, display: "flex", gap: 10, flexWrap: "wrap" }}>
                         {a.sourceUrl && <span>via {label}</span>}
                         {a.publishedAt && <span>{new Date(a.publishedAt).toLocaleString()}</span>}

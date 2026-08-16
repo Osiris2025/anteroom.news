@@ -346,11 +346,15 @@ const totemCss = `
 #${UID} .mz-admin-a-btn { display: none; }
 @media (max-width: 760px) {
   #${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { opacity: 1; pointer-events: auto; }
-  #${UID} .mz-admin-a-btn { display: flex; position: static; margin: 8px auto 0; width: 26px; height: 26px;
-    border-radius: 50%; border: 1px solid rgba(150,150,150,.5); background: rgba(10,12,16,.9); color: var(--accent,#ffd700);
-    font-size: 13px; font-weight: 800; line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0; }
+  /* Stack card, then the (A) toggle below it on the lower-left. */
+  #${UID} .mz-ed-wrap { display: flex; flex-direction: column; }
+  #${UID} .mz-ed-cell { flex: 1 1 auto; }
+  #${UID} .mz-admin-a-btn { display: flex; position: relative; align-self: flex-start; margin: 8px 0 0;
+    width: 26px; height: 26px; border-radius: 50%; border: 1px solid rgba(150,150,150,.5);
+    background: rgba(10,12,16,.9); color: var(--accent,#ffd700); font-size: 13px; font-weight: 800;
+    line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0; }
   /* On mobile the admin toolbar is hidden by default and revealed by the (A) toggle as an overlay. */
-  #${UID} .mz-admin-tools { position: absolute; left: 8px; right: 8px; bottom: 40px; opacity: 0; pointer-events: none;
+  #${UID} .mz-admin-tools { position: absolute; left: 8px; right: 8px; bottom: 44px; opacity: 0; pointer-events: none;
     transform: translateY(0); background: rgba(10,12,16,.97); border: 1px solid rgba(150,150,150,.25); border-radius: 10px; z-index: 24; }
 }
 `;

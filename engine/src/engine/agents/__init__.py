@@ -417,11 +417,13 @@ def run_db_sources(configs: list, db_url: str) -> list[dict]:
             cur.execute(
                 """
                 SELECT s.magazine_id, s.type, s.url, s.name, s.sort, s."limit",
-                       m.name AS magazine_name, m.tone
+                       m.name AS magazine_name, m.tone, s.status, s.tune
                 FROM source s
                 LEFT JOIN magazine m ON m.id = s.magazine_id
                 WHERE s.magazine_id IS NOT NULL
-                ORDER BY s.magazine_id
+                  AND COALESCE(s.status, 'active') <> 'paused'
+                  AND COALESCE(s.status, 'active') <> 'deleted'
+                ORDER BY s.magazine_id, s.tune DESC
                 """
             )
             rows = cur.fetchall()
@@ -433,7 +435,7 @@ def run_db_sources(configs: list, db_url: str) -> list[dict]:
         return []
 
     grouped: dict[str, list] = {}
-    for magazine_id, stype, url, name, sort, limit, mname, mtone in rows:
+    for magazine_id, stype, url, name, sort, limit, mname, mtone, status, tune in rows:
         grouped.setdefault(magazine_id, []).append({
             "type": stype, "url": url, "name": name, "sort": sort, "limit": limit,
         })

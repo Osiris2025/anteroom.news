@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useTheme } from "@/lib/ThemeContext";
+import { DELETION_REASONS } from "@/lib/deletionReasons";
 
 type QArticle = {
   id: string; title: string; sourceUrl: string | null; summary: string | null;
@@ -37,7 +38,7 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
   subcatsByMag: Record<string, string[]>; addSubcat: (magazineId: string | null | undefined, name: string) => void;
   onAct: (id: string, patch: any) => void;
   onMag: (id: string, magazineId: string) => void;
-  onDel: (id: string) => void;
+  onDel: (id: string, reason?: string) => void;
   onComment: (id: string, title: string) => void;
   onPin: (id: string, title: string) => void;
   onSubcat: (id: string, subcategory: string | null) => void;
@@ -48,6 +49,8 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
   const hasCommentary = !!a.commentary && a.commentary.trim().length > 0;
   const [showSubcat, setShowSubcat] = useState(false);
   const [newSubcat, setNewSubcat] = useState("");
+  const [delOpen, setDelOpen] = useState(false);
+  const [delReason, setDelReason] = useState("other");
   const parentMagId = a.magazine?.id || "none";
   const subcats = subcatsByMag[parentMagId] || [];
 
@@ -145,7 +148,17 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
         )}
         <button title="Pin as FLASH/hero article" onClick={() => onPin(a.id, a.title)} style={{ ...btn, color: "#ff4444", borderColor: "rgba(255,68,68,.4)" }}>📌 Pin</button>
         {a.sourceUrl && <a href={a.sourceUrl} target="_blank" rel="noreferrer" style={{ color: "var(--accent,#ffd700)", textDecoration: "none", marginLeft: "auto", fontSize: 11, alignSelf: "center" }}>source ↗</a>}
-        <button title="Delete" onClick={() => onDel(a.id)} style={{ ...btn, color: "#f87171" }}>🗑</button>
+        <button title="Delete (records reason for source stats)" onClick={() => setDelOpen(true)} style={{ ...btn, color: "#f87171" }}>🗑</button>
+        {delOpen && (
+          <div style={{ width: "100%", marginTop: 8, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
+            <select value={delReason} onChange={(e) => setDelReason(e.target.value)} autoFocus
+              style={{ background: "#1c1f24", color: "#eee", border: "1px solid rgba(150,150,150,.3)", borderRadius: 6, padding: "4px 6px", fontSize: 12 }}>
+              {DELETION_REASONS.map((r) => <option key={r.code} value={r.code}>{r.label}</option>)}
+            </select>
+            <button onClick={() => onDel(a.id, delReason)} style={{ ...btn, color: "#fff", background: "#7f1d1d", fontWeight: 700 }}>Confirm delete</button>
+            <button onClick={() => setDelOpen(false)} style={{ ...btn, color: "#aaa" }}>✕</button>
+          </div>
+        )}
       </div>
     </article>
   );
@@ -311,9 +324,9 @@ export default function AdminQueue() {
     load();
   };
 
-  const del = async (id: string) => {
+  async function del(id: string, reason = "other") {
     if (!confirm("Delete this article permanently?")) return;
-    await fetch(`/api/admin/article/${id}`, { method: "DELETE" });
+    await fetch(`/api/admin/article/${id}`, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reason }) });
     load();
   };
 

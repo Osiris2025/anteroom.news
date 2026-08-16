@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { DELETION_REASONS, deletionReasonLabel } from "@/lib/deletionReasons";
 
 type Props = {
   articleId: string;
@@ -23,6 +24,8 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
   const [msg, setMsg] = useState("");
   const [editMag, setEditMag] = useState(false);
   const [editSub, setEditSub] = useState(false);
+  const [delOpen, setDelOpen] = useState(false);
+  const [delReason, setDelReason] = useState("other");
 
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(""), 2200); };
 
@@ -41,6 +44,21 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
 
   async function act(fn: () => Promise<boolean>) {
     if (await fn()) { onChanged(); }
+  }
+
+  async function delArticle(): Promise<boolean> {
+    setBusy(true);
+    try {
+      const r = await fetch(`/api/admin/article/${articleId}`, {
+        method: "DELETE", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reason: delReason }),
+      });
+      const j = await r.json();
+      if (!r.ok) { flash("✕ " + (j.error || "failed")); return false; }
+      flash("🗑 deleted (" + deletionReasonLabel(delReason) + ")");
+      return true;
+    } catch { flash("✕ network error"); return false; }
+    finally { setBusy(false); }
   }
 
   // Pin via the same endpoint the Dispatch queue uses (POST /api/admin/pins).
@@ -71,6 +89,19 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
       {statusBtn("↥ Publish", "live", "#0b1f33", "#58a6ff")}
       {statusBtn("✕ Reject", "rejected", "#3a0d0d", "#f57b7b")}
       <button onClick={() => act(() => patch({ status: "draft" }))} disabled={busy} style={btn("#202020", "#ccc", 10)}>↩ Draft</button>
+
+      {/* Delete — ask WHY (drives troublesome-source stats). */}
+      {!delOpen ? (
+        <button onClick={() => setDelOpen(true)} disabled={busy} style={btn("#3a0d0d", "#f87171", 10)}>🗑 Del</button>
+      ) : (
+        <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
+          <select value={delReason} onChange={(e) => setDelReason(e.target.value)} autoFocus style={sel()}>
+            {DELETION_REASONS.map((r) => <option key={r.code} value={r.code}>{r.label}</option>)}
+          </select>
+          <button onClick={() => act(delArticle)} disabled={busy} style={btn("#7f1d1d", "#fff", 10)}>Confirm</button>
+          <button onClick={() => setDelOpen(false)} disabled={busy} style={btn("#202020", "#aaa", 10)}>✕</button>
+        </span>
+      )}
 
       {/* Star = flagship feature */}
       <button onClick={() => act(() => patch({ featured: !featured }))} disabled={busy}

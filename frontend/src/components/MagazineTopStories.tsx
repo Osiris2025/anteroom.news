@@ -93,7 +93,14 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
   const [articles, setArticles] = useState<LiveArticle[]>([]);
   const [openTools, setOpenTools] = useState<Record<string, boolean>>({});
   const [total, setTotal] = useState(0);
-  const [visibleCount, setVisibleCount] = useState(16);
+  // Persist page depth across browser Back → article → Back so the user's place
+  // (how deep the grid was loaded + scroll) survives a remount.
+  const pageKey = typeof window !== "undefined" ? `mz-page:${magazine}:${subcatParam}` : "";
+  const [visibleCount, setVisibleCount] = useState(() => {
+    if (typeof window === "undefined") return 16;
+    const v = parseInt(window.sessionStorage.getItem(pageKey + ":vc") || "", 10);
+    return Number.isFinite(v) && v > 0 ? v : 16;
+  });
   const [releases, setReleases] = useState<LiveArticle[]>([]);
   // Admin inline-editor hover tools on every magazine; no longer a Dark Matter pilot.
   const [isAdmin, setIsAdmin] = useState(false);
@@ -118,6 +125,35 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
       .then((j) => { if (!j.error && Array.isArray(j.articles)) { setArticles(j.articles); setTotal(j.total || 0); } })
       .catch(() => {});
   }, [magazine, subcatParam]);
+
+  // Persist page depth so browser Back restores it.
+  useEffect(() => {
+    if (!pageKey) return;
+    window.sessionStorage.setItem(pageKey + ":vc", String(visibleCount));
+  }, [visibleCount, pageKey]);
+
+  // Remember scroll position when leaving the page (clicking an article), then
+  // restore it when we remount after coming back.
+  useEffect(() => {
+    if (typeof window === "undefined" || !pageKey) return;
+    const onScroll = () => {
+      window.sessionStorage.setItem(pageKey + ":sy", String(window.scrollY));
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [pageKey]);
+
+  // After articles load, restore the saved scroll (defer a tick so the grid has
+  // laid out at the restored visibleCount).
+  useEffect(() => {
+    if (typeof window === "undefined" || !pageKey) return;
+    if (articles.length === 0) return;
+    const sy = parseInt(window.sessionStorage.getItem(pageKey + ":sy") || "", 10);
+    if (Number.isFinite(sy) && sy > 0) {
+      requestAnimationFrame(() => window.scrollTo(0, sy));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [articles, pageKey]);
 
   // Refresh the grid in place after an admin action (e.g. comment/pin) WITHOUT a
   // full page reload, so the user keeps their scroll position.

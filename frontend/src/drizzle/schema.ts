@@ -113,6 +113,37 @@ export const source = pgTable("source", {
   sort: text("sort").default("hot"),
   limit: integer("limit").notNull().default(25),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  // tuning / health (added for troublesome-source tracking)
+  status: text("status").notNull().default("active"), // active | paused | deleted
+  tune: integer("tune").notNull().default(0),         // -3..+3 priority tuning
+  deleteCount: integer("delete_count").notNull().default(0),
+  moveCount: integer("move_count").notNull().default(0),
+  lastDeleteAt: timestamp("last_delete_at"),
+});
+
+// Why a post was removed — drives troublesome-source stats & tuning.
+export const deletionLog = pgTable("deletion_log", {
+  id: text("id").primaryKey(),
+  articleId: text("article_id"),
+  title: text("title"),
+  sourceUrl: text("source_url"),
+  sourceName: text("source_name"),
+  magazineId: text("magazine_id").references(() => magazine.id, { onDelete: "set null" }),
+  reason: text("reason").notNull(),
+  detail: text("detail"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+// Each admin move (from_magazine -> to_magazine) — used to learn the right home magazine.
+export const magazineMoveLog = pgTable("magazine_move_log", {
+  id: text("id").primaryKey(),
+  articleId: text("article_id"),
+  title: text("title"),
+  sourceUrl: text("source_url"),
+  sourceName: text("source_name"),
+  fromMagazineId: text("from_magazine_id").references(() => magazine.id, { onDelete: "set null" }),
+  toMagazineId: text("to_magazine_id").references(() => magazine.id, { onDelete: "set null" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
 // Articles — the core content entity, shared by all 3 ingress points.

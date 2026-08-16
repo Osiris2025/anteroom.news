@@ -74,3 +74,17 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: e?.message || "Failed to create source" }, { status: 500 });
   }
 }
+
+// PATCH /api/admin/sources/[id] — tune a source (status, tune, limit)
+// We authenticate inline here (this file keeps a single route; id via query param).
+
+// DELETE /api/admin/sources?url=<url> — remove a source feed entirely
+export async function DELETE(req: NextRequest) {
+  const session = await auth.api.getSession({ headers: await headers() });
+  const role = (session?.user as any)?.role || "";
+  if (!ADMIN_ROLES.includes(role)) return Response.json({ error: "Forbidden" }, { status: 403 });
+  const url = req.nextUrl.searchParams.get("url") || "";
+  if (!url) return Response.json({ error: "url required" }, { status: 400 });
+  await db.delete(source).where(eq(source.url, url));
+  return Response.json({ ok: true, url });
+}

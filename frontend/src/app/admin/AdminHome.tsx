@@ -7,8 +7,9 @@ import AdminMagazines from "./AdminMagazines";
 import AdminPins from "./AdminPins";
 import AdminLinkDrop from "./AdminLinkDrop";
 import AdminSources from "./AdminSources";
+import AdminStats from "./AdminStats";
 
-type TabId = "inbox" | "linkdrop" | "users" | "magazines" | "pins" | "sources";
+type TabId = "inbox" | "linkdrop" | "users" | "magazines" | "pins" | "sources" | "stats";
 
 export default function AdminHome() {
   const { currentTheme } = useTheme();
@@ -20,6 +21,7 @@ export default function AdminHome() {
     { id: "users", label: "👤 Users" },
     { id: "magazines", label: "📰 Magazines" },
     { id: "sources", label: "📡 Sources" },
+    { id: "stats", label: "📊 Stats" },
     { id: "pins", label: "📌 Pins" },
   ];
 
@@ -48,7 +50,7 @@ export default function AdminHome() {
           ))}
         </div>
 
-        {tab === "inbox" ? <AdminQueue /> : tab === "linkdrop" ? <AdminLinkDrop /> : tab === "users" ? <AdminUsers /> : tab === "magazines" ? <AdminMagazines /> : tab === "sources" ? <AdminSources /> : <AdminPins />}
+        {tab === "inbox" ? <AdminQueue /> : tab === "linkdrop" ? <AdminLinkDrop /> : tab === "users" ? <AdminUsers /> : tab === "magazines" ? <AdminMagazines /> : tab === "sources" ? <AdminSources /> : tab === "stats" ? <AdminStats /> : <AdminPins />}
       </div>
     </main>
   );

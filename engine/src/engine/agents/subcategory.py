@@ -18,6 +18,44 @@ Add / refine keywords below. Keep slugs kebab-case and single words where possib
 
 MAGAZINE_TAXONOMY: dict[str, list[tuple[str, list[str]]]] = {
     # ------------------------------------------------------------------ #
+    # The Veil — "Backstage of the unseen" (Mysteries realm seeker door)
+    # ------------------------------------------------------------------ #
+    "the-veil": [
+        ("consciousness", [
+            "consciousness", "conscious", "mind-wandering", "self-awareness",
+            "theory of mind", "neural correlate", "awareness", "lucid", "dream",
+            "interoception", "mindfulness", "present moment", "flow state",
+        ]),
+        ("meditation", [
+            "meditation", "meditate", "contemplative", "breathwork", "breathing",
+            "mindful", "vipassana", "samatha", "zazen", "metta", "loving-kindness",
+            "meditative", "inner calm", "focus your busy mind", "grounding",
+        ]),
+        ("energy-healing", [
+            "energy healing", "chakra", "aura", "reiki", "crystal", "crystals",
+            "sound healing", "vibrational", "qi ", "chi ", "prana", "biomagnetic",
+            "healing frequency", "kundalini", "karma", "meridians",
+        ]),
+        ("parapsychology", [
+            "parapsycholog", "psi ", "telepathy", "precognition", "clairvoyance",
+            "esp", "remote viewing", "psychic", "near-death", "ndfe", "mediumship",
+            "psi research", "intuition", "sixth sense",
+        ]),
+        ("buddhism", [
+            "buddhist", "buddhism", "bodhisattva", "dharma", "sangha", "ruche",
+            "tibetan", "zen", "buddha", "sutra", "sabbath grace", "shikantaza",
+        ]),
+        ("wellbeing", [
+            "well-being", "wellbeing", "wellnes", "burnout", "stress", "resilience",
+            "happiness", "flourish", "meaning", "japanese art", "inner", "calm",
+            "healing", "therapy", "emotional", "mental health", "positive",
+        ]),
+        ("brain-science", [
+            "neurosci", "brain", "neural", "neuroplastic", "cortex", "amygdala",
+            "hippocamp", "cognitive", "memory", "aging brain", "prefrontal",
+        ]),
+    ],
+    # ------------------------------------------------------------------ #
     # Neural Hardware — "AI. Cyber. Compute."
     # ------------------------------------------------------------------ #
     "neural-hardware": [

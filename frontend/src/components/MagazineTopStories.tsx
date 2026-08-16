@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import AdminCardTools from "@/components/AdminCardTools";
 
@@ -112,6 +112,16 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
   }, [magazine]);
 
   useEffect(() => {
+    const q = subcatParam && subcatParam !== "all" ? `&subcat=${encodeURIComponent(subcatParam)}` : "";
+    fetch(`/api/articles?magazine=${magazine}&limit=200${q}`)
+      .then((r) => r.json())
+      .then((j) => { if (!j.error && Array.isArray(j.articles)) { setArticles(j.articles); setTotal(j.total || 0); } })
+      .catch(() => {});
+  }, [magazine, subcatParam]);
+
+  // Refresh the grid in place after an admin action (e.g. comment/pin) WITHOUT a
+  // full page reload, so the user keeps their scroll position.
+  const refresh = useCallback(() => {
     const q = subcatParam && subcatParam !== "all" ? `&subcat=${encodeURIComponent(subcatParam)}` : "";
     fetch(`/api/articles?magazine=${magazine}&limit=200${q}`)
       .then((r) => r.json())
@@ -277,7 +287,7 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
                 pinned={!!c.article.pinned}
                 magazines={magazines}
                 subcats={subcats}
-                onChanged={() => window.location.reload()}
+                onChanged={refresh}
               />
             </div>
           </>

@@ -440,6 +440,26 @@ def run_db_sources(configs: list, db_url: str) -> list[dict]:
             "type": stype, "url": url, "name": name, "sort": sort, "limit": limit,
         })
 
+    # MOVE-LEARNING: which magazine (if any) does each source's work most often
+    # get moved TO? If a source reliably lands in a different magazine than the
+    # one it was auto-assigned, reroute future articles there (min 2 moves).
+    learned_mag_by_source: dict[str, str] = {}
+    try:
+        cur.execute("""
+            SELECT source_url, to_magazine_id, COUNT(*) AS n
+            FROM magazine_move_log
+            WHERE to_magazine_id IS NOT NULL
+            GROUP BY source_url, to_magazine_id
+        """)
+        for source_url, to_mag, n in cur.fetchall():
+            if (source_url or "").strip() and n >= 2:
+                # keep the most-frequent target; ties => first wins (dict keeps first)
+                learned_mag_by_source.setdefault(source_url, to_mag)
+    except Exception:
+        logger.warning("Move-learning unavailable (magazine_move_log read failed)", exc_info=False)
+    if learned_mag_by_source:
+        logger.info("  Move-learning: %d source(s) have a learned magazine target", len(learned_mag_by_source))
+
     all_articles: list[dict] = []
     for magazine_id, sources in grouped.items():
         # Reuse an existing config's brand/AI persona if present, else default.
@@ -470,6 +490,13 @@ def run_db_sources(configs: list, db_url: str) -> list[dict]:
         # Tag each discovered article with its magazine id so insert storage assigns it.
         for a in articles:
             a["magazine_id"] = magazine_id
+            # MOVE-LEARNING: if this source's work reliably gets moved to another
+            # magazine (>=2 corroborating moves), start it off there instead.
+            src_url = (a.get("source_url") or "").strip()
+            learned = learned_mag_by_source.get(src_url)
+            if learned and learned != magazine_id:
+                a["magazine_id"] = learned
+                logger.info("    Move-learn: article assigned to %s (was auto %s) via move-history", learned, magazine_id)
         logger.info("  %s (DB sources): found %d articles", magazine_id, len(articles))
         all_articles.extend(articles)
 

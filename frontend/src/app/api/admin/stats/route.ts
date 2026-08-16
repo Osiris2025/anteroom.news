@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
 import { headers } from "next/headers";
-import { sql, desc } from "drizzle-orm";
+import { eq, sql, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { source, deletionLog, magazineMoveLog } from "@/drizzle/schema";
+import { article, source, deletionLog, magazineMoveLog } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
@@ -32,6 +32,14 @@ export async function GET(_req: NextRequest) {
     cnt: sql`count(*)::int`,
   }).from(magazineMoveLog).groupBy(magazineMoveLog.sourceName).orderBy(desc(sql`cnt`));
 
+  // 4) Live published output per source vs. what got removed/moved — the signal
+  //    that tells a healthy source (published a lot, removed a little).
+  const liveBySource = await db.select({
+    sourceName: article.sourceName,
+    live: sql`count(*) filter (where ${article.status} in ('live','approved'))::int`,
+    total: sql`count(*)::int`,
+  }).from(article).groupBy(article.sourceName);
+
   // 4) Source registry with live tune/status signal.
   const sources = await db.select({
     id: source.id, name: source.name, url: source.url, magazineId: source.magazineId,
@@ -43,6 +51,7 @@ export async function GET(_req: NextRequest) {
     delBySource: delBySource.filter((r) => r.sourceName),
     delByReason,
     movesBySource: movesBySource.filter((r) => r.sourceName),
+    liveBySource: liveBySource.filter((r) => r.sourceName),
     sources,
   });
 }

@@ -9,7 +9,6 @@ export const DELETION_REASONS = [
   { code: "low_quality", label: "Low quality / thin / no substance" },
   { code: "misleading", label: "Misleading headline or false claims" },
   { code: "outdated", label: "Outdated / superseded" },
-  { code: "regulatory", label: "Regulatory / legal / sensitive to publish" },
   { code: "broken_source", label: "Broken or unverifiable source link" },
   { code: "other", label: "Other" },
 ] as const;
@@ -21,6 +20,12 @@ export function deletionReasonLabel(code: string): string {
   return hit ? hit.label : code;
 }
 
-// Subset codes that should keep nudging toward a magazine (i.e. NOT deletions
-// that reflect badly on the source itself). Everything else hurts source health.
-export const SOURCE_NEUTRAL_REASONS = new Set<string>(["duplicate", "outdated", "regulatory"]);
+// Deletion reasons that reflect poorly on the SOURCE itself vs circumstances
+// that are not the source's fault (duplicate that arrived from
+// another feed, outdated, or simply didn't fit any magazine). These "minor"
+// reasons still count toward the delete tally but weigh less in source health.
+export const SOURCE_MINOR_DELETION_REASONS: ReadonlySet<string> = new Set<string>([
+  "duplicate",
+  "outdated",
+  "off_topic",
+]);

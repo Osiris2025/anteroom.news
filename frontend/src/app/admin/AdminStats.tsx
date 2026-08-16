@@ -8,8 +8,9 @@ type SourceRow = {
   deleteCount: number; moveCount: number; lastDeleteAt: string | null;
 };
 type Cnt = { sourceName?: string | null; reason?: string | null; cnt: number };
+type LiveCnt = { sourceName?: string | null; live?: number; total?: number };
 type Stats = {
-  delBySource: Cnt[]; delByReason: Cnt[]; movesBySource: Cnt[]; sources: SourceRow[];
+  delBySource: Cnt[]; delByReason: Cnt[]; movesBySource: Cnt[]; liveBySource: LiveCnt[]; sources: SourceRow[];
 };
 
 const card: React.CSSProperties = { background: "#121519", border: "1px solid rgba(150,150,150,.18)", borderRadius: 12, padding: 16 };
@@ -87,16 +88,28 @@ export default function AdminStats() {
         </div>
 
         {/* Sources needing re-home (moves) */}
-        <div style={card}>
-          <h3 style={{ margin: "0 0 10px", fontSize: 15, letterSpacing: 1, textTransform: "uppercase" }}>Posts that needed moving</h3>
-          {data?.movesBySource.length === 0 && <div style={{ opacity: .6, fontSize: 13 }}>No moves yet.</div>}
-          {data?.movesBySource.map((s, i) => (
-            <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderBottom: "1px solid rgba(150,150,150,.1)" }}>
-              <span>{s.sourceName}</span><b style={{ color: "#fbbf24" }}>{s.cnt}</b>
-            </div>
-          ))}
-        </div>
-      </div>
+                <div style={card}>
+                  <h3 style={{ margin: "0 0 10px", fontSize: 15, letterSpacing: 1, textTransform: "uppercase" }}>Posts that needed moving</h3>
+                  {data?.movesBySource.length === 0 && <div style={{ opacity: .6, fontSize: 13 }}>No moves yet.</div>}
+                  {data?.movesBySource.map((s, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderBottom: "1px solid rgba(150,150,150,.1)" }}>
+                      <span>{s.sourceName}</span><b style={{ color: "#fbbf24" }}>{s.cnt}</b>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Published output per source (live) */}
+                <div style={card}>
+                  <h3 style={{ margin: "0 0 10px", fontSize: 15, letterSpacing: 1, textTransform: "uppercase" }}>Published output by source</h3>
+                  {data?.liveBySource.length === 0 && <div style={{ opacity: .6, fontSize: 13 }}>No published articles yet.</div>}
+                  {data?.liveBySource.sort((a, b) => (b.live || 0) - (a.live || 0)).map((s, i) => (
+                    <div key={i} style={{ display: "flex", justifyContent: "space-between", padding: "5px 0", borderBottom: "1px solid rgba(150,150,150,.1)" }}>
+                      <span title={s.sourceName ?? ""} style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "70%" }}>{s.sourceName}</span>
+                      <b style={{ color: "#4ade80" }}>{s.live}</b>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
       {/* Source health registry — tune / pause / delete */}
       <div style={card}>

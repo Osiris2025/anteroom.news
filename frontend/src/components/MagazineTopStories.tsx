@@ -340,7 +340,7 @@ const totemCss = `
   padding: 6px 8px; opacity: 0; pointer-events: none; transition: opacity .14s ease; z-index: 20;
   box-shadow: 0 -6px 18px rgba(0,0,0,.35); }
 #${UID} .mz-ed-wrap:hover .mz-admin-tools { opacity: 1; pointer-events: auto; }
-#${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { opacity: 1; pointer-events: auto; }
+#${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { opacity: 1 !important; pointer-events: auto !important; }
 /* Touch devices (any width): tapping the card body emulates hover — do NOT reveal
    the toolbar from a tap; only the (A) toggle should open it. */
 @media (hover: none) {
@@ -351,7 +351,7 @@ const totemCss = `
    hover-revealed (existing behavior) and the (A) button is not shown. */
 #${UID} .mz-admin-a-btn { display: none; }
 @media (max-width: 760px) {
-  #${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { opacity: 1; pointer-events: auto; }
+  #${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { opacity: 1 !important; pointer-events: auto !important; }
   /* Touch devices emulate hover on tap — make sure tapping the card body does
      NOT reveal the toolbar; only the (A) toggle should open it. */
   #${UID} .mz-ed-wrap:hover .mz-admin-tools { opacity: 0; pointer-events: none; }

@@ -226,6 +226,21 @@ export const product = pgTable("product", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Social publishing accounts — admin-entered, stored for auto-publish (X, Bluesky, LinkedIn...).
+export const socialAccount = pgTable("social_account", {
+  id: text("id").primaryKey(),
+  platform: text("platform").notNull(),
+  handle: text("handle"),
+  displayName: text("display_name"),
+  enabled: boolean("enabled").notNull().default(false),
+  utmSource: text("utm_source"),
+  accountJson: text("account_json").notNull().default("{}"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type SocialAccountRow = typeof socialAccount.$inferSelect;
+
 export type CommentRow = typeof comment.$inferSelect;
 
 export type User = typeof user.$inferSelect;

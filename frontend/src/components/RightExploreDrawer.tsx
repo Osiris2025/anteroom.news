@@ -4,14 +4,14 @@ import SubcategoryRail from "@/components/SubcategoryRail";
 import FrontierRail from "@/components/FrontierRail";
 
 type Release = { id: string; title: string; headline?: string | null; publishedAt?: string | null };
+type CardRef = { cardId: string; position: number; params?: any | null };
 
-// Per-magazine "extra cards" shown in the right Explore drawer. Each magazine
-// gets only the cards assigned to it. Start with AI Frontier -> Neural Hardware;
-// future cards (e.g. research, scoreboards, polls) append here per magazine.
+// Fallback (identity-in-data stage 3): if the data-driven card fetch returns
+// nothing, rely on the legacy SHOW_FRONTIER map so behavior is identical to today.
+// Once all magazines have magazine_card rows, this fallback is retired.
 const SHOW_FRONTIER: Record<string, boolean> = {
   "neural-hardware": true,
 };
-// (Add keys like "tech-pulse": true when a new card is introduced and belongs there.)
 
 // Global right-side "Explore" drawer — the mirror of the left magazine hamburger.
 // The top-LEFT hamburger switches magazines; the top-RIGHT hamburger opens this
@@ -22,6 +22,7 @@ export default function RightExploreDrawer() {
   const [open, setOpen] = useState(false);
   const [magazine, setMagazine] = useState<string>("");
   const [releases, setReleases] = useState<Release[]>([]);
+  const [cards, setCards] = useState<CardRef[]>([]);
 
   // Detect the current magazine from the URL: /magazines/<id>
   useEffect(() => {
@@ -38,6 +39,26 @@ export default function RightExploreDrawer() {
       window.removeEventListener("nexus-route-change", sync);
     };
   }, []);
+
+  // Load the magazine's cards from DATA (magazine_card table). Falls back to the
+  // legacy SHOW_FRONTIER map below if no rows exist (behavior identical to today).
+  useEffect(() => {
+    if (!magazine) { setCards([]); return; }
+    fetch(`/api/cards?magazine=${encodeURIComponent(magazine)}`)
+      .then((r) => r.json())
+      .then((j) => {
+        const arr = Array.isArray(j?.cards) ? j.cards : [];
+        if (arr.length) setCards(arr);
+        else setCards([]); // fallback path retains SHOW_FRONTIER behavior
+      })
+      .catch(() => setCards([]));
+  }, [magazine]);
+
+  // The model-watchlist card renders if present via data OR via legacy fallback.
+  function hasModelCard(): boolean {
+    if (cards.some((c) => c.cardId === "ai_model_watchlist")) return true;
+    return !!SHOW_FRONTIER[magazine];
+  }
 
   // Load releases only when opened (lightweight).
   useEffect(() => {
@@ -99,12 +120,12 @@ export default function RightExploreDrawer() {
               <div className="nexus-explore-nav-label" style={{ marginTop: 22 }}>Browse by topic</div>
                             <SubcategoryRail magazine={magazine} />
 
-                            {SHOW_FRONTIER[magazine] && (
-                              <>
-                                <div className="nexus-explore-nav-label" style={{ marginTop: 22 }}>AI Model Watchlist</div>
-                                <FrontierRail compact />
-                              </>
-                            )}
+                            {hasModelCard() && (
+                                                            <>
+                                                              <div className="nexus-explore-nav-label" style={{ marginTop: 22 }}>AI Model Watchlist</div>
+                                                              <FrontierRail compact />
+                                                            </>
+                                                          )}
 
               {releases.length > 0 && (
                 <>

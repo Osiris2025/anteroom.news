@@ -153,6 +153,19 @@ export const magazineMoveLog = pgTable("magazine_move_log", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Reusable "cards" attached to a magazine — the right Explore drawer content.
+// Card assignment is DATA (which cards a magazine shows), not hardcoded.
+// card_id examples: "ai_model_watchlist", "browse", "releases".
+export const magazineCard = pgTable("magazine_card", {
+  magazineId: text("magazine_id").notNull().references(() => magazine.id, { onDelete: "cascade" }),
+  cardId: text("card_id").notNull(),
+  position: integer("position").notNull().default(0),
+  params: jsonb("params"),
+  enabled: boolean("enabled").notNull().default(true),
+}, (t) => ({
+  pk: primaryKey(t.magazineId, t.cardId),
+}));
+
 // Articles — the core content entity, shared by all 3 ingress points.
 // Lifecycle: draft -> approved (review queue) -> live. Rejected if unsuitable.
 // Ingress source: autonomous / admin-link / collector.

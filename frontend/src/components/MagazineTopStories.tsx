@@ -91,6 +91,7 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
   const router = useRouter();
   const subcatParam = searchParams.get("subcat") || "";
   const [articles, setArticles] = useState<LiveArticle[]>([]);
+  const [openTools, setOpenTools] = useState<Record<string, boolean>>({});
   const [total, setTotal] = useState(0);
   const [visibleCount, setVisibleCount] = useState(16);
   const [releases, setReleases] = useState<LiveArticle[]>([]);
@@ -246,8 +247,9 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
     };
     const cls = "mz-ed-cell" + (c.w >= 6 ? " mz-ed-cell-wide" : c.w <= 2 ? " mz-ed-cell-narrow" : "") + (c.tall ? " mz-ed-cell-tall" : "");
     const showTools = isAdmin && !!c.article;
+    const isOpen = !!openTools[c.key];
     return (
-      <div key={c.key} className="mz-ed-wrap" style={{ position: "relative", ...style }}>
+      <div key={c.key} className={"mz-ed-wrap" + (isOpen ? " mz-admin-open" : "")} style={{ position: "relative", ...style }}>
         <a href={`/articles/${c.article.id}`} className={cls} style={cardLink}>
           {c.article.imageUrl ? (
             <div className="mz-ed-thumb"><img src={c.article.imageUrl} alt="" loading="lazy" /></div>
@@ -260,18 +262,25 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
           {c.article.summary && <div className="mz-ed-summary">{c.article.summary}</div>}
         </a>
         {showTools && (
-          <div className="mz-admin-tools">
-            <AdminCardTools
-              articleId={c.article.id}
-              currentMag={c.article.magazine?.id || magazine}
-              currentSubcat={c.article.subcategory}
-              featured={c.article.featured === true}
-              pinned={!!c.article.pinned}
-              magazines={magazines}
-              subcats={subcats}
-              onChanged={() => window.location.reload()}
-            />
-          </div>
+          <>
+            <button
+              className="mz-admin-a-btn"
+              aria-label="Toggle admin tools"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenTools((o) => ({ ...o, [c.key]: !o[c.key] })); }}
+            >A</button>
+            <div className="mz-admin-tools">
+              <AdminCardTools
+                articleId={c.article.id}
+                currentMag={c.article.magazine?.id || magazine}
+                currentSubcat={c.article.subcategory}
+                featured={c.article.featured === true}
+                pinned={!!c.article.pinned}
+                magazines={magazines}
+                subcats={subcats}
+                onChanged={() => window.location.reload()}
+              />
+            </div>
+          </>
         )}
       </div>
     );
@@ -331,5 +340,18 @@ const totemCss = `
   padding: 6px 8px; opacity: 0; pointer-events: none; transition: opacity .14s ease; z-index: 20;
   box-shadow: 0 -6px 18px rgba(0,0,0,.35); }
 #${UID} .mz-ed-wrap:hover .mz-admin-tools { opacity: 1; pointer-events: auto; }
-@media (max-width: 760px) { #${UID} .mz-admin-tools { position: static; opacity: 1; pointer-events: auto; margin-top: 4px; border-radius: 10px; border: 1px solid rgba(150,150,150,.2); } }
+#${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { opacity: 1; pointer-events: auto; }
+/* Admin "(A)" toggle — hidden on desktop (hover works); shown on touch where hover isn't available. */
+#${UID} .mz-admin-a-btn { position: absolute; bottom: 8px; right: 10px; z-index: 25; width: 26px; height: 26px;
+  border-radius: 50%; border: 1px solid rgba(150,150,150,.4); background: rgba(10,12,16,.85); color: var(--accent,#ffd700);
+  font-size: 13px; font-weight: 800; line-height: 1; cursor: pointer; align-items: center; justify-content: center; display: flex;
+  padding: 0; opacity: 0; pointer-events: none; transition: opacity .12s ease; }
+#${UID} .mz-ed-wrap:hover .mz-admin-a-btn { opacity: 1; pointer-events: auto; }
+@media (max-width: 760px) {
+  #${UID} .mz-admin-a-btn { opacity: 1; pointer-events: auto; position: static; margin: 8px auto 0; }
+  /* On mobile the admin toolbar is hidden by default and revealed by the (A) toggle as an overlay. */
+  #${UID} .mz-admin-tools { position: absolute; left: 8px; right: 8px; bottom: 40px; opacity: 0; pointer-events: none;
+    transform: translateY(0); background: rgba(10,12,16,.97); border: 1px solid rgba(150,150,150,.25); border-radius: 10px; z-index: 24; }
+  #${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { opacity: 1; pointer-events: auto; }
+}
 `;

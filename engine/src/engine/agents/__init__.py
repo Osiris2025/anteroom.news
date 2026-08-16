@@ -242,7 +242,7 @@ def _page_og_image(page_url: str) -> str:
 def fetch_rss(url: str, timeout: int = 30) -> list[dict]:
     """Fetch and parse an RSS feed, returning a list of article dicts."""
     try:
-        feed = feedparser.parse(url)
+        feed = feedparser.parse(url, agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124 Safari/537.36")
     except Exception as exc:
         logger.warning("Failed to parse RSS feed %s: %s", url, exc)
         return []

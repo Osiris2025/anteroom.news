@@ -358,6 +358,10 @@ const totemCss = `
   /* Stack card, then the (A) toggle below it on the lower-left. */
   #${UID} .mz-ed-wrap { display: flex; flex-direction: column; }
   #${UID} .mz-ed-cell { flex: 1 1 auto; }
+  /* On mobile the thumbnail must keep a real height so it shows as an image
+     band, not collapse to a sliver under the text. */
+  #${UID} .mz-ed-thumb { flex: 0 0 170px; min-height: 0; }
+  #${UID} .mz-ed-cell-narrow .mz-ed-thumb { flex-basis: 150px; }
   #${UID} .mz-admin-a-btn { display: flex; position: relative; align-self: flex-start; margin: 10px 0 2px;
     width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--accent, rgba(255,215,0,.7));
     background: rgba(10,12,16,.95); color: var(--accent,#ffd700); font-size: 15px; font-weight: 800;

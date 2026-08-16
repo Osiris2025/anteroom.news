@@ -92,6 +92,52 @@ def is_release_title(title: str) -> bool:
     return bool(re.search(r"(^|[^a-z0-9])v[0-9]+\.[0-9]+(\.[0-9]+)?([^0-9]|$)", title, re.I))
 
 
+
+# WWN-Routing: at ingest, articles ingested toward a soft/spiritual magazine (The Veil)
+# that are really paranormal / cryptid / UFO "creepy" material belong in Weekly Weird News.
+# Deterministic keyword sniff keeps The Veil on-brand and auto-kicks cryptids/ghosts/UFOs
+# over to the Weird door. Notes on false positives (learned):
+#  * Do NOT include "ritual": it is a SUBSTRING of "spiritual" and false-matches Meditation/Aura
+#    content. Keep keywords that are distinctive to paranormal/creepy material only.
+#  * Use unicoded match (strip accents) so "S’ance" and "séance" both match "seance".
+_WEIRD_KEYWORDS = [
+    "ufo", "uap", "area 51", "non-human patient", "extraterrestr", "alien",
+    "ghost", "haunt", "spooky", "supernatural", "paranormal", "apparition",
+    "cryptid", "bigfoot", "sasquatch", "loch ness", "nessie", "mothman", "chupacabra",
+    "skinwalker", "demon", "exorcist", "exorcism", "poltergeist", "seance",
+    "possess", "eerie", "otherworldly", "spectral",
+    "werewolf", "witchcraft", "black magic", "occult", "medium",
+]
+
+import unicodedata as _ud
+
+def _norm(s_: str) -> str:
+    # strip accents so Séance/Seance/etc. all collapse to the same ASCII letters
+    return "".join(
+        c for c in _ud.normalize("NFD", s_) if _ud.category(c) != "Mn"
+    ).lower()
+
+def route_to_weird(article: dict) -> bool:
+    corpus = _norm(" ".join([
+        (article.get("title") or ""),
+        (article.get("summary") or ""),
+        (article.get("source_name") or ""),
+    ]))
+    return any(w in corpus for w in _WEIRD_KEYWORDS)
+
+def apply_weird_route(article: dict) -> None:
+    """Move a paranormal-destined article to Weekly Weird News at ingest, if it was
+    meant for the soft/spiritual/consciousness room (The Veil)."""
+    orig = (article.get("magazine_id") or "")
+    if orig != "the-veil":
+        return  # only auto-route content we pulled for the spiritual/consciousness room
+    if route_to_weird(article):
+        article["magazine_id"] = "weekly-weird-news"
+        sub = classify_article("weekly-weird-news", article.get("title",""), article.get("summary",""))
+        if sub:
+            article["subcategory"] = sub
+
+
 def is_junk_deal(article: dict) -> bool:
     """True if an article is clearly money-saving/coupon/% off junk (drop it)."""
     title = str(article.get("title") or "")
@@ -490,6 +536,8 @@ def run_db_sources(configs: list, db_url: str) -> list[dict]:
         # Tag each discovered article with its magazine id so insert storage assigns it.
         for a in articles:
             a["magazine_id"] = magazine_id
+            # WWN-route: paranormal items pulled for The Veil belong in Weekly Weird News.
+            apply_weird_route(a)
             # MOVE-LEARNING: if this source's work reliably gets moved to another
             # magazine (>=2 corroborating moves), start it off there instead.
             src_url = (a.get("source_url") or "").strip()

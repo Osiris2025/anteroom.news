@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import ArticleComments from "./ArticleComments";
 import ArticleEfx from "./ArticleEfx";
 import { hostOf, sourceLabel } from "@/lib/sourceUtil";
@@ -53,22 +54,38 @@ function palette(themeId: string) {
 
 export default function ArticleReader({ article, magazine, themeId }: { article: ReaderArticle; magazine: ReaderMag; themeId: string }) {
   const C = palette(themeId);
+  const router = useRouter();
   const { title, headline, sourceUrl, sourceName, imageUrl, efx, summary, commentary, subcategory, publishedAt } = article;
   const magName = magazine?.name || "AI News Nexus";
   const agentName = magazine?.agentName || "The Desk";
   const displayTitle = headline || title;
+  // Deeper history than the app root means the reader was reached by navigation
+  // (e.g. from a magazine page or AI model page) — so "Back" should pop history.
+  const backFallback = magazine?.id ? `/magazines/${magazine.id}` : "/";
 
   return (
     <div style={{ maxWidth: 760, margin: "0 auto" }}>
-      {/* back + byline */}
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 12, marginBottom: 14 }}>
-        <Link href="/" style={{ color: C.accent, textDecoration: "none", fontWeight: 700 }}>&larr; All magazines</Link>
-        {publishedAt && <span style={{ color: C.body }}>{new Date(publishedAt).toLocaleDateString()}</span>}
+      {/* sticky Back bar — always visible while reading (esp. on mobile) */}
+      <div style={{
+        position: "sticky", top: 0, zIndex: 30,
+        display: "flex", justifyContent: "space-between", alignItems: "center",
+        fontSize: 12, marginBottom: 14, padding: "10px 0",
+        background: C.box,
+      }}>
+        <button
+          onClick={() => router.back()}
+          style={{
+            background: "transparent", border: "none", cursor: "pointer", color: C.accent,
+            fontWeight: 700, fontFamily: "inherit", fontSize: 13, padding: "6px 10px", borderRadius: 8,
+            display: "inline-flex", alignItems: "center", gap: 6, margin: "-4px -8px",
+          }}
+        >
+          <span style={{ fontSize: 15 }}>&larr;</span> Back
+        </button>
+        <span style={{ color: C.body }}>{publishedAt ? new Date(publishedAt).toLocaleDateString() : ""}</span>
       </div>
-
-      {/* kicker / magazine */}
-      <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 800, color: C.accent, marginBottom: 8 }}>
-        {magName}{subcategory ? ` · ${subcategory}` : ""}
+      <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 800, color: C.accent, marginBottom: 14 }}>
+        <Link href={backFallback} style={{ color: C.accent, textDecoration: "none" }}>{magName}</Link>{subcategory ? ` · ${subcategory}` : ""}
       </div>
 
       {/* headline */}

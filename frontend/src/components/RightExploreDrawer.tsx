@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 import SubcategoryRail from "@/components/SubcategoryRail";
 import FrontierRail from "@/components/FrontierRail";
 
@@ -20,25 +21,23 @@ const SHOW_FRONTIER: Record<string, boolean> = {
 // Both buttons live in the navbar so they never move and are always reachable.
 export default function RightExploreDrawer() {
   const [open, setOpen] = useState(false);
-  const [magazine, setMagazine] = useState<string>("");
   const [releases, setReleases] = useState<Release[]>([]);
   const [cards, setCards] = useState<CardRef[]>([]);
 
-  // Detect the current magazine from the URL: /magazines/<id>
+  const pathname = usePathname();
+
+  // The trigger button now lives in the Navbar (in-flow, Safari-safe). It toggles
+  // us via the 'nexus:toggle-explore' event.
   useEffect(() => {
-    const sync = () => {
-      const m = window.location.pathname.match(/^\/magazines\/([^/]+)/);
-      setMagazine(m ? decodeURIComponent(m[1]) : "");
-    };
-    sync();
-    window.addEventListener("popstate", sync);
-    // generic hook for client navigations
-    window.addEventListener("nexus-route-change", sync);
-    return () => {
-      window.removeEventListener("popstate", sync);
-      window.removeEventListener("nexus-route-change", sync);
-    };
+    const onToggle = () => setOpen((o) => !o);
+    window.addEventListener("nexus:toggle-explore", onToggle);
+    return () => window.removeEventListener("nexus:toggle-explore", onToggle);
   }, []);
+
+  // Detect the current magazine from the URL: /magazines/<id>
+  const magazine = (pathname.match(/^\/magazines\/([^/]+)/) || [])[1]
+    ? decodeURIComponent((pathname.match(/^\/magazines\/([^/]+)/) || [])[1])
+    : "";
 
   // Load the magazine's cards from DATA (magazine_card table). Falls back to the
   // legacy SHOW_FRONTIER map below if no rows exist (behavior identical to today).
@@ -78,32 +77,8 @@ export default function RightExploreDrawer() {
     return () => { document.body.style.overflow = ""; window.removeEventListener("keydown", onKey); };
   }, [open]);
 
-  // Broadcast a route change so the drawer picks up parent navigation.
-  useEffect(() => {
-    if (!magazine) return;
-    const patch = () => window.dispatchEvent(new Event("nexus-route-change"));
-    // minimal: re-check after clicks to links (SPA nav) via popstate + a poll
-    const id = window.setInterval(patch, 800);
-    return () => window.clearInterval(id);
-  }, [magazine]);
-
   return (
     <>
-      {/* Fixed hamburger — top-right, symmetric with the left magazine hamburger. */}
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-label="Open explore panel"
-        aria-expanded={open}
-        className="nexus-explore-nav-btn"
-      >
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-          <circle cx="5" cy="12" r="1.6" />
-          <circle cx="12" cy="12" r="1.6" />
-          <circle cx="19" cy="12" r="1.6" />
-        </svg>
-      </button>
-
       {open && <div className="nexus-explore-nav-backdrop" onClick={() => setOpen(false)} />}
 
       <aside className={`nexus-explore-nav-drawer ${open ? "open" : ""}`} role="dialog" aria-label="Explore">
@@ -145,12 +120,17 @@ export default function RightExploreDrawer() {
 
       <style>{`
         .nexus-explore-nav-btn{
-          position:fixed;top:10px;right:14px;z-index:120;
-          display:inline-flex;align-items:center;justify-content:center;
-          width:44px;height:44px;border-radius:10px;
-          background:rgba(127,127,127,.12);border:1px solid rgba(127,127,127,.4);
-          color:inherit;cursor:pointer;
-        }
+                  position:fixed;top:10px;right:14px;z-index:120;
+                  display:inline-flex;align-items:center;justify-content:center;
+                  width:44px;height:44px;border-radius:10px;
+                  background:rgba(127,127,127,.12);border:1px solid rgba(127,127,127,.4);
+                  color:inherit;cursor:pointer;
+                  /* WebKit hit-test fix: own compositing layer so Safari hit-tests at the
+                     drawn device position (avoids Retina devicePixelRatio corner-only tap). */
+                  transform: translateZ(0);
+                  will-change: transform;
+                  -webkit-transform: translateZ(0);
+                }
         .nexus-explore-nav-btn:hover{background:rgba(127,127,127,.22)}
         .nexus-explore-nav-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.42);z-index:119}
         .nexus-explore-nav-drawer{

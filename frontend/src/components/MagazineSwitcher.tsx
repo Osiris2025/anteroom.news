@@ -28,6 +28,14 @@ export default function MagazineSwitcher() {
   const [pinned, setPinned] = useState(false);
   const [isDesktop, setIsDesktop] = useState(false);
 
+  // The trigger button now lives in the Navbar (in-flow, Safari-safe). It toggles
+  // us via the 'nexus:toggle-magazines' event.
+  useEffect(() => {
+    const onToggle = () => setOpen((o) => !o);
+    window.addEventListener("nexus:toggle-magazines", onToggle);
+    return () => window.removeEventListener("nexus:toggle-magazines", onToggle);
+  }, []);
+
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
     const sync = () => setIsDesktop(mq.matches);
@@ -138,19 +146,6 @@ export default function MagazineSwitcher() {
 
   return (
     <>
-      {/* Fixed hamburger — always on top & clickable (opens right over the navbar). */}
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-label="Open magazine menu"
-        aria-expanded={open}
-        className="nexus-switch-btn"
-      >
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
-          <path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z" />
-        </svg>
-      </button>
-
       {/* Backdrop (overlay mode only) */}
       {!railActive && open && (
         <div className="nexus-switch-backdrop" onClick={closeOverlay} />
@@ -184,6 +179,13 @@ export default function MagazineSwitcher() {
           background:rgba(127,127,127,.12);border:1px solid rgba(127,127,127,.4);
           color:inherit;cursor:pointer;padding:0;box-shadow:0 2px 10px rgba(0,0,0,.25);
           transition:background .15s, transform .12s;
+          /* WebKit hit-test fix: give the fixed hamburger its own compositing
+             layer so Safari hit-tests it at the SAME device position it's drawn at
+             (avoids the iPad/Retina devicePixelRatio offset where only the bottom
+             corner of a fixed button was tappable). */
+          transform: translateZ(0);
+          will-change: transform;
+          -webkit-transform: translateZ(0);
         }
         .nexus-switch-btn:hover{background:rgba(127,127,127,.22);}
         .nexus-switch-btn[aria-expanded="true"]{background:rgba(0,0,0,.55);color:#fff;}

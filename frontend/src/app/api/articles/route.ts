@@ -1,5 +1,5 @@
 import { NextRequest } from "next/server";
-import { eq, desc, and, isNull, sql, ne, or, ilike } from "drizzle-orm";
+import { eq, desc, and, isNull, sql, or, ilike } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { article, magazine, pin } from "@/drizzle/schema";
 
@@ -16,7 +16,8 @@ export async function GET(req: NextRequest) {
   const limit = Math.min(parseInt(sp.get("limit") || "150", 10), 200);
   const subcat = sp.get("subcat") || "";
   // releases=1 → only software-release-version entries (subcategory 'Releases').
-  // Default (no param) → EXCLUDE releases from the front grid and show real news.
+  // Default (no param) → the full live stream, INCLUDING releases as regular items
+  // (ordered by publishedAt alongside everything else).
   const releasesOnly = sp.get("releases") === "1";
 
   try {
@@ -31,15 +32,13 @@ export async function GET(req: NextRequest) {
     if (releasesOnly) {
       conds.push(eq(article.subcategory, "Releases"));
     } else if (subcat && subcat !== "all") {
-      // Browse a specific subcategory (agents, models, cyber…) — includes Releases
-      // only if explicitly chosen.
+      // Browse a specific subcategory (agents, models, cyber…)
       conds.push(eq(article.subcategory, subcat));
     } else {
-      // Front page = real news; software version-bump releases are moved to the
-      // dedicated Releases section (and filtered out here so they don't dominate).
-      // NOTE: must also keep NULL-subcategory articles — `<> 'Releases'` alone
-      // would drop them (NULL compared to a value is falsy in SQL).
-      conds.push(or(isNull(article.subcategory), ne(article.subcategory, "Releases")));
+      // Main stream = every live article for the magazine, INCLUDING software
+      // release-version items. Releases are ordinary news here, ordered by
+      // publishedAt (release date) along with everything else — no dedicated
+      // section, no special filtering.
     }
 
     // Total count for pagination

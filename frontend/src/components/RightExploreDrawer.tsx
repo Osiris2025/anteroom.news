@@ -4,7 +4,6 @@ import { usePathname } from "next/navigation";
 import SubcategoryRail from "@/components/SubcategoryRail";
 import FrontierRail from "@/components/FrontierRail";
 
-type Release = { id: string; title: string; headline?: string | null; publishedAt?: string | null };
 type CardRef = { cardId: string; position: number; params?: any | null };
 
 // Fallback (identity-in-data stage 3): if the data-driven card fetch returns
@@ -21,7 +20,6 @@ const SHOW_FRONTIER: Record<string, boolean> = {
 // Both buttons live in the navbar so they never move and are always reachable.
 export default function RightExploreDrawer() {
   const [open, setOpen] = useState(false);
-  const [releases, setReleases] = useState<Release[]>([]);
   const [cards, setCards] = useState<CardRef[]>([]);
 
   const pathname = usePathname();
@@ -59,15 +57,6 @@ export default function RightExploreDrawer() {
     return !!SHOW_FRONTIER[magazine];
   }
 
-  // Load releases only when opened (lightweight).
-  useEffect(() => {
-    if (!open || !magazine) return;
-    fetch(`/api/articles?magazine=${magazine}&releases=1&limit=25`)
-      .then((r) => r.json())
-      .then((j) => { if (!j.error && Array.isArray(j.articles)) setReleases(j.articles); })
-      .catch(() => {});
-  }, [open, magazine]);
-
   // Lock body scroll while open + close on Escape.
   useEffect(() => {
     if (!open) return;
@@ -101,18 +90,6 @@ export default function RightExploreDrawer() {
                                                               <FrontierRail compact />
                                                             </>
                                                           )}
-
-              {releases.length > 0 && (
-                <>
-                  <div className="nexus-explore-nav-label" style={{ marginTop: 22 }}>Releases</div>
-                  {releases.map((r) => (
-                    <a key={r.id} href={`/articles/${r.id}`} onClick={() => setOpen(false)} className="nexus-explore-nav-release">
-                      <span className="nexus-explore-nav-date">{(r.publishedAt || "").slice(0, 10)}</span>
-                      <span className="nexus-explore-nav-rtext">{r.headline || r.title}</span>
-                    </a>
-                  ))}
-                </>
-              )}
             </>
           )}
         </div>

@@ -5,6 +5,8 @@ import AdminQueue from "./AdminQueue";
 import AdminUsers from "./AdminUsers";
 import AdminMagazines from "./AdminMagazines";
 import AdminPins from "./AdminPins";
+import AdminStalePinAlert from "./AdminStalePinAlert";
+import AdminBatchCommentary from "./AdminBatchCommentary";
 import AdminLinkDrop from "./AdminLinkDrop";
 import AdminSources from "./AdminSources";
 import AdminStats from "./AdminStats";

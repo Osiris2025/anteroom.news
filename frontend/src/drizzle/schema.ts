@@ -250,3 +250,69 @@ export type MagazineRow = typeof magazine.$inferSelect;
 export type CategoryRow = typeof category.$inferSelect;
 export type ProductRow = typeof product.$inferSelect;
 export type SourceRow = typeof source.$inferSelect;
+// Taxonomy table — per-magazine keyword/subcategory definitions
+// Replaces hardcoded Python keyword lists in subcategory.py
+export const taxonomy = pgTable("taxonomy", {
+  id: text("id").primaryKey(),
+  magazineId: text("magazine_id")
+    .notNull()
+    .references(() => magazine.id, { onDelete: "cascade" }),
+  keyword: text("keyword").notNull(),
+  subcategory: text("subcategory"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type Taxonomy = typeof taxonomy.$inferSelect;
+export type NewTaxonomy = typeof taxonomy.$inferInsert;
+// ────────────────────────────────────────────
+// DM tables — E2EE Direct Messages
+// ────────────────────────────────────────────
+export const dmConversation = pgTable("dm_conversation", {
+  id: text("id").primaryKey(),
+  participantA: text("participant_a")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  participantB: text("participant_b")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  participantAPubkey: text("participant_a_pubkey"),
+  participantBPubkey: text("participant_b_pubkey"),
+  participantADisplayNameEnc: text("participant_a_display_name_enc"),
+  participantBDisplayNameEnc: text("participant_b_display_name_enc"),
+  aNonce: text("a_nonce"),
+  bNonce: text("b_nonce"),
+  lastMessageAt: timestamp("last_message_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const dmMessage = pgTable("dm_message", {
+  id: text("id").primaryKey(),
+  conversationId: text("conversation_id")
+    .notNull()
+    .references(() => dmConversation.id, { onDelete: "cascade" }),
+  senderId: text("sender_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  ciphertext: text("ciphertext").notNull(),
+  iv: text("iv").notNull(),
+  ephemeralPubkey: text("ephemeral_pubkey").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const dmKeyShare = pgTable("dm_key_share", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => user.id, { onDelete: "cascade" }),
+  publicKeyPem: text("public_key_pem").notNull(),
+  keyCreatedAt: timestamp("key_created_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type DmConversation = typeof dmConversation.$inferSelect;
+export type NewDmConversation = typeof dmConversation.$inferInsert;
+export type DmMessage = typeof dmMessage.$inferSelect;
+export type NewDmMessage = typeof dmMessage.$inferInsert;
+export type DmKeyShare = typeof dmKeyShare.$inferSelect;
+export type NewDmKeyShare = typeof dmKeyShare.$inferInsert;

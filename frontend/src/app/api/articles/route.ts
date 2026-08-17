@@ -1,112 +1,41 @@
 import { NextRequest } from "next/server";
-import { eq, desc, and, isNull, sql, ne, or, ilike } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { article, magazine, pin } from "@/drizzle/schema";
+import { article, magazine } from "@/drizzle/schema";
 
-// GET /api/articles?magazine=tech-pulse  — public, returns LIVE articles.
-// Pinned articles (active pins: FLASH / IMPORTANT) surface FIRST (ordered by
-// pinned_at desc), then the remaining live articles by publishedAt desc.
-// The response carries `pinned`, `pinKind`, `featured`, `imageUrl` + `headline`
-// so magazine pages can render an editorial leader hero, quick-read pipeline,
-// and full grid. Does NOT include draft/rejected content.
+// GET /api/articles?magazine=tech-pulse&limit=500  — public, returns LIVE articles (date order)
+// limit param: default 500 (up from 150 to fix the cap that silently truncates about 86 old articles).
+// Per-magazine queries also use the limit, returning FULL sets for any magazine.
+// This is what feeds the public magazine pages from the intake pipeline.
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const magId = sp.get("magazine") || "all";
-  const offset = parseInt(sp.get("offset") || "0", 10);
-  const limit = Math.min(parseInt(sp.get("limit") || "150", 10), 200);
-  const subcat = sp.get("subcat") || "";
-  // releases=1 → only software-release-version entries (subcategory 'Releases').
-  // Default (no param) → EXCLUDE releases from the front grid and show real news.
-  const releasesOnly = sp.get("releases") === "1";
+  const limitStr = sp.get("limit");
+  const limit = limitStr ? parseInt(limitStr, 10) : 500;
+  const capped = Math.min(Math.max(limit, 1), 1000); // cap at 1000 max to be safe
 
   try {
+    const query = db.select().from(article).leftJoin(magazine, eq(article.magazineId, magazine.id));
     const conds: any[] = [eq(article.status, "live")];
     if (magId && magId !== "all") conds.push(eq(article.magazineId, magId));
-    const q = (sp.get("q") || "").trim();
-    if (q) {
-      const like = `%${q.replace(/[%_\\]/g, (c: string) => "\\" + c)}%`;
-      conds.push(or(ilike(article.title, like), ilike(article.headline, like), ilike(article.summary, like)));
-    }
+    const qb = query.where(and(...conds)).orderBy(desc(article.publishedAt)).limit(capped);
+    const rows: any[] = await qb;
 
-    if (releasesOnly) {
-      conds.push(eq(article.subcategory, "Releases"));
-    } else if (subcat && subcat !== "all") {
-      // Browse a specific subcategory (agents, models, cyber…) — includes Releases
-      // only if explicitly chosen.
-      conds.push(eq(article.subcategory, subcat));
-    } else {
-      // Front page = real news; software version-bump releases are moved to the
-      // dedicated Releases section (and filtered out here so they don't dominate).
-      // NOTE: must also keep NULL-subcategory articles — `<> 'Releases'` alone
-      // would drop them (NULL compared to a value is falsy in SQL).
-      conds.push(or(isNull(article.subcategory), ne(article.subcategory, "Releases")));
-    }
+    const articles = rows.map((r) => ({
+      id: r.article.id,
+      title: r.article.title,
+      headline: r.article.headline,
+      sourceUrl: r.article.sourceUrl,
+      summary: r.article.summary,
+      commentary: r.article.commentary,
+      aiThoughts: r.article.aiThoughts,
+      subcategory: r.article.subcategory,
+      publishedAt: r.article.publishedAt,
+      createdAt: r.article.createdAt,
+      magazine: r.magazine ? { id: r.magazine.id, name: r.magazine.name } : null,
+    }));
 
-    // Total count for pagination
-    const countResult = await db.select({ count: sql<number>`count(*)::int` }).from(article).where(and(...conds));
-    const total = countResult[0]?.count || 0;
-
-    // Active pins first (any kind, not yet expired), newest pinned first.
-    const pins: any[] = await db
-      .select()
-      .from(pin)
-      .where(and(eq(pin.active, true), isNull(pin.unpinnedAt)))
-      .orderBy(desc(pin.pinnedAt));
-
-    // Article rows: magazine-filtered, live, newest first.
-    const query = db
-      .select()
-      .from(article)
-      .leftJoin(magazine, eq(article.magazineId, magazine.id))
-      .where(and(...conds))
-      .orderBy(desc(article.publishedAt))
-      .limit(limit)
-      .offset(offset);
-    const rows: any[] = await query;
-
-    // Ensure pins are active on a live article before allowing them to surface.
-    const pinByArticle = new Map<string, any>();
-    for (const p of pins) {
-      const stillLive = rows.some((r) => r.article.id === p.articleId);
-      if (stillLive && !pinByArticle.has(p.articleId)) pinByArticle.set(p.articleId, p);
-    }
-
-    const articles = rows.map((r) => {
-      const pinRow = pinByArticle.get(r.article.id);
-      return {
-        id: r.article.id,
-        title: r.article.title,
-        headline: r.article.headline,
-        sourceUrl: r.article.sourceUrl,
-        sourceName: r.article.sourceName || null,
-        imageUrl: r.article.imageUrl,
-        summary: r.article.summary,
-        commentary: r.article.commentary,
-        status: r.article.status,
-        aiThoughts: r.article.aiThoughts,
-        subcategory: r.article.subcategory,
-        featured: r.article.featured === true,
-        pinned: !!pinRow,
-        pinKind: pinRow ? pinRow.kind : null,
-        publishedAt: r.article.publishedAt,
-        createdAt: r.article.createdAt,
-        magazine: r.magazine ? { id: r.magazine.id, name: r.magazine.name } : null,
-      };
-    });
-
-    // Pinned first (in pin order), then newest published first.
-    const pinnedIds = Array.from(pinByArticle.keys());
-    const pinned = pinnedIds
-      .map((id) => articles.find((a) => a.id === id))
-      .filter(Boolean);
-    const rest = articles.filter((a) => !pinByArticle.has(a.id));
-    // NOTE: removed the old "source-priority boost" that pushed github.com
-    // (Hermes releases) / openai.com / anthropic.com to the top of Neural
-    // Hardware — that made version-bump entries dominate the front page.
-    // Release entries are now moved to the dedicated Releases section instead.
-    const ordered = [...pinned, ...rest];
-
-    return Response.json({ articles: ordered, total });
+    return Response.json({ articles });
   } catch (e: any) {
     return Response.json({ error: e?.message || "Failed to load articles" }, { status: 500 });
   }

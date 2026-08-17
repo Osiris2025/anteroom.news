@@ -7,12 +7,33 @@ import { auth } from "@/lib/auth";
 import crypto from "crypto";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
+const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
+const FALLBACK_MODEL = "deepseek/deepseek-v4-flash-0731";
 
-// fetch + extract OpenGraph / meta tags from a URL
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Guard: admins only, returns 403 Response or null. */
+async function guard(): Promise<Response | null> {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    const role = (session?.user as any)?.role || "";
+    if (!ADMIN_ROLES.includes(role)) {
+      return Response.json({ error: "Forbidden — admin only" }, { status: 403 });
+    }
+  } catch {
+    return Response.json({ error: "Forbidden — admin only" }, { status: 403 });
+  }
+  return null;
+}
+
+/** Fetch + extract OpenGraph / meta tags from a URL. */
 async function extractMeta(url: string): Promise<{
   title: string | null;
   description: string | null;
   imageUrl: string | null;
+  textContent: string;
 }> {
   let resp: Response;
   try {
@@ -25,22 +46,20 @@ async function extractMeta(url: string): Promise<{
       },
     });
   } catch {
-    return { title: null, description: null, imageUrl: null };
+    return { title: null, description: null, imageUrl: null, textContent: "" };
   }
-  if (!resp.ok) return { title: null, description: null, imageUrl: null };
+  if (!resp.ok) return { title: null, description: null, imageUrl: null, textContent: "" };
 
   const html = await resp.text().catch(() => "");
-  if (!html) return { title: null, description: null, imageUrl: null };
+  if (!html) return { title: null, description: null, imageUrl: null, textContent: "" };
 
   const og = (prop: string): string | null => {
-    // og:title, og:description, og:image — also twitter:fallbacks
     const re = new RegExp(
       `<meta[^>]+(?:property|name)=["'](?:og:|twitter:)${prop}["'][^>]+content=["']([^"']+)["']`,
       "i"
     );
     const m = html.match(re);
     if (m) return m[1].trim();
-    // reverse attribute order
     const re2 = new RegExp(
       `<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["'](?:og:|twitter:)${prop}["']`,
       "i"
@@ -49,62 +68,156 @@ async function extractMeta(url: string): Promise<{
     return m2 ? m2[1].trim() : null;
   };
 
-  // title fallback chain: og:title -> twitter:title -> <title>
   const title =
-    og("title") ||
-    html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim() ||
-    null;
-
+    og("title") || html.match(/<title[^>]*>([^<]+)<\/title>/i)?.[1]?.trim() || null;
   const description = og("description");
   const imageUrl = og("image");
 
-  return { title, description, imageUrl };
+  // Strip HTML for LLM context — remove scripts, styles, tags
+  const textContent = html
+    .replace(/<script[^>]*>[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[^>]*>[\s\S]*?<\/style>/gi, "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, 8_000); // keep first ~8K chars as LLM context
+
+  return { title, description, imageUrl, textContent };
 }
 
-// POST /api/admin/link-drop — paste a URL, AI interrogates it, creates a draft
-// body: { url, magazineId? }
-export async function POST(req: NextRequest) {
-  let session;
-  try {
-    session = await auth.api.getSession({ headers: await headers() });
-  } catch {}
-  const role = (session?.user as any)?.role || "";
-  if (!ADMIN_ROLES.includes(role)) {
-    return Response.json({ error: "Forbidden — admin only" }, { status: 403 });
+/** Call OpenRouter with the given messages. Returns content or throws. */
+async function callLLM(
+  apiKey: string,
+  system: string,
+  user: string,
+  model = FALLBACK_MODEL,
+  timeoutMs = 60_000
+): Promise<string> {
+  const resp = await fetch(`${OPENROUTER_BASE}/chat/completions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`,
+      "HTTP-Referer": "https://nexus.osiris2025.com",
+      "X-Title": "AI News Nexus",
+    },
+    body: JSON.stringify({
+      model,
+      messages: [
+        { role: "system", content: system },
+        { role: "user", content: user },
+      ],
+    }),
+    signal: AbortSignal.timeout(timeoutMs),
+  });
+
+  if (!resp.ok) {
+    const text = await resp.text().catch(() => "");
+    throw new Error(`OpenRouter ${resp.status}: ${text.slice(0, 300)}`);
   }
 
+  const data: any = await resp.json();
+  const content = data?.choices?.[0]?.message?.content?.trim();
+  if (!content) throw new Error("OpenRouter returned no content");
+  return content;
+}
+
+// ---------------------------------------------------------------------------
+// POST /api/admin/link-drop — paste a URL → AI interrogates → drops as draft
+// ---------------------------------------------------------------------------
+export async function POST(req: NextRequest) {
+  const denied = await guard();
+  if (denied) return denied;
+
+  const apiKey = process.env.OPENROUTER_API_KEY;
+  if (!apiKey) {
+    return Response.json({ error: "OPENROUTER_API_KEY not set" }, { status: 500 });
+  }
+
+  // --- Parse body ---
   let body: any = {};
-  try {
-    body = await req.json();
-  } catch {}
+  try { body = await req.json(); } catch {}
   const rawUrl = (body.url || "").trim();
   if (!rawUrl) {
     return Response.json({ error: "url is required" }, { status: 400 });
   }
-
-  // Basic URL validation
-  let parsed: URL;
   try {
-    parsed = new URL(rawUrl);
+    const parsed = new URL(rawUrl);
     if (!["http:", "https:"].includes(parsed.protocol)) {
-      return Response.json({ error: "Only http/https URLs are supported" }, { status: 400 });
+      return Response.json({ error: "Only http/https URLs supported" }, { status: 400 });
     }
   } catch {
     return Response.json({ error: "Invalid URL" }, { status: 400 });
   }
+  const explicitMagazineId = body.magazineId || null;
 
-  const magazineId = body.magazineId || null;
-
-  // Fetch + extract meta
+  // --- Fetch + extract ---
   const meta = await extractMeta(rawUrl);
   if (!meta.title) {
     return Response.json(
-      { error: "Could not extract a title from that URL — it may be a paywall or non-article page" },
+      { error: "Could not extract a title from that URL — may be a paywall or non-article page" },
       { status: 422 }
     );
   }
 
-  // Generate a short unique id
+  // --- Load magazines for auto-detect ---
+  const magazines: any[] = await db.select().from(magazine);
+  const magList = magazines.map((m: any) => `  - ${m.id}: "${m.name}" — ${m.tagline || ""}`).join("\n");
+  const magNamesForLLM = magazines.map((m: any) => `"${m.name}" (${m.id})`).join(", ");
+
+  // --- AI interrogation: auto-detect magazine + write summary + write commentary ---
+  let detectedMagazineId: string | null = explicitMagazineId;
+  let aiSummary: string | null = null;
+  let aiCommentary: string | null = null;
+  let aiThoughts: any = {};
+
+  const system = [
+    "You are an AI news curator for AI News Nexus. You evaluate article URLs and produce structured output.",
+    "Your job: (1) Assign the article to the most relevant magazine, (2) write a concise summary, (3) write a short editorial commentary/thoughts.",
+    "",
+    `Available magazines:\n${magList}`,
+    "",
+    "Respond with valid JSON ONLY in this exact format (no markdown, no explanation):",
+    JSON.stringify({
+      magazine_id: "the best-matching magazine id from the list above, or null if unclear",
+      summary: "2-3 sentence summary of the article (max 250 chars)",
+      commentary: "2-3 paragraph editorial commentary in a sharp, engaging voice (120-200 words)",
+      suitability_warnings: "any concerns about suitability for publication, or 'none'",
+    }),
+  ].join("\n");
+
+  const user = [
+    `Article URL: ${rawUrl}`,
+    `Title: ${meta.title}`,
+    meta.description ? `Description: ${meta.description}` : "",
+    meta.textContent ? `Page text (first 8K chars):\n${meta.textContent}` : "",
+    "\nAnalyze this article and return JSON.",
+  ].filter(Boolean).join("\n");
+
+  try {
+    const llmResult = await callLLM(apiKey, system, user);
+    const parsed = JSON.parse(llmResult.replace(/```json\s*/gi, "").replace(/```\s*$/g, "").trim());
+
+    // Use explicit magazine if given, otherwise detected
+    if (!explicitMagazineId && parsed.magazine_id) {
+      const valid = magazines.find((m) => m.id === parsed.magazine_id);
+      if (valid) detectedMagazineId = valid.id;
+    }
+    aiSummary = parsed.summary || meta.description || null;
+    aiCommentary = parsed.commentary || null;
+    aiThoughts = {
+      agent: "Link Dropper AI",
+      model: FALLBACK_MODEL,
+      generatedAt: new Date().toISOString(),
+      suitabilityWarnings: parsed.suitability_warnings || null,
+    };
+  } catch (e: any) {
+    // LLM call failed — fall back to meta-only
+    console.warn("Link-dropper LLM failed, falling back to meta extraction:", e.message);
+    aiSummary = meta.description || null;
+  }
+
+  // --- Insert draft ---
   const id = `link-${crypto.randomBytes(6).toString("hex")}`;
 
   try {
@@ -116,19 +229,22 @@ export async function POST(req: NextRequest) {
         sourceUrl: rawUrl,
         imageUrl: meta.imageUrl,
         title: meta.title,
-        summary: meta.description || null,
+        summary: aiSummary,
+        commentary: aiCommentary,
+        aiThoughts: JSON.stringify(aiThoughts),
         status: "draft",
-        magazineId,
-        submittedBy: session?.user?.id || null,
+        magazineId: detectedMagazineId,
+        submittedBy: null,
         submittedAt: new Date(),
       })
       .returning();
 
-    return Response.json({ article: created });
+    return Response.json({
+      article: created,
+      ai_commentary: aiCommentary,
+      detected_magazine_id: detectedMagazineId,
+    });
   } catch (e: any) {
-    return Response.json(
-      { error: e?.message || "Failed to create article" },
-      { status: 500 }
-    );
+    return Response.json({ error: e?.message || "Failed to create article" }, { status: 500 });
   }
 }

@@ -23,7 +23,13 @@ export default function AdminLinkDrop() {
   const [mag, setMag] = useState("auto");
   const [magazines, setMagazines] = useState<{ id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<{ ok: boolean; message: string; article?: any } | null>(null);
+  const [result, setResult] = useState<{
+    ok: boolean;
+    message: string;
+    article?: any;
+    ai_commentary?: string;
+    detected_magazine_id?: string | null;
+  } | null>(null);
   const [err, setErr] = useState("");
 
   // Load magazine list once on mount
@@ -60,6 +66,8 @@ export default function AdminLinkDrop() {
           ok: true,
           message: `✅ "${data.article.title}" dropped as draft`,
           article: data.article,
+          ai_commentary: data.ai_commentary,
+          detected_magazine_id: data.detected_magazine_id,
         });
         setUrl("");
       }
@@ -85,7 +93,7 @@ export default function AdminLinkDrop() {
         <div style={{ fontSize: 14, fontWeight: 700, marginBottom: 4, display: "flex", alignItems: "center", gap: 8 }}>
           <span>🔗 Link Dropper</span>
           <span style={{ fontSize: 11, fontWeight: 400, opacity: 0.6 }}>
-            Paste a URL — AI fetches it and drops as draft
+            Paste a URL — AI interrogates it and drops as draft
           </span>
         </div>
 
@@ -121,7 +129,7 @@ export default function AdminLinkDrop() {
               minWidth: 150,
             }}
           >
-            <option value="auto">↗ Auto-detect magazine</option>
+            <option value="auto">↗ AI Auto-detect</option>
             {magazines.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.name}
@@ -137,7 +145,7 @@ export default function AdminLinkDrop() {
               opacity: loading || !url.trim() ? 0.5 : 1,
             }}
           >
-            {loading ? "⏳ Fetching…" : "⬇ Drop Article"}
+            {loading ? "⏳ AI Interrogating…" : "⬇ Drop Article"}
           </button>
         </div>
 
@@ -155,7 +163,7 @@ export default function AdminLinkDrop() {
             }}
           >
             <span style={{ fontSize: 18 }}>🔍</span>
-            <span>Fetching the URL, extracting metadata, and creating a draft article…</span>
+            <span>Fetching the URL, extracting content, and running AI analysis (magazine detection + summary + commentary)…</span>
           </div>
         )}
 
@@ -190,12 +198,33 @@ export default function AdminLinkDrop() {
               ✅ Draft created!
             </div>
             <div style={{ opacity: 0.8 }}>{result.article?.title}</div>
-            {result.article?.summary && (
-              <div style={{ opacity: 0.6, marginTop: 4, fontSize: 12 }}>
-                {result.article.summary.slice(0, 200)}
-                {result.article.summary.length > 200 ? "…" : ""}
+
+            {result.detected_magazine_id && (
+              <div style={{ marginTop: 6, display: "flex", gap: 8, alignItems: "center" }}>
+                <span style={{ fontSize: 11, background: "rgba(88,166,255,.15)", color: "#58a6ff", padding: "2px 8px", borderRadius: 4 }}>
+                  📂 {magazines.find((m) => m.id === result.detected_magazine_id)?.name || result.detected_magazine_id}
+                </span>
               </div>
             )}
+
+            {result.article?.summary && (
+              <div style={{ opacity: 0.6, marginTop: 6, fontSize: 12 }}>
+                {result.article.summary.slice(0, 300)}
+                {result.article.summary.length > 300 ? "…" : ""}
+              </div>
+            )}
+
+            {result.ai_commentary && (
+              <details style={{ marginTop: 8 }}>
+                <summary style={{ cursor: "pointer", fontSize: 11, opacity: 0.6, userSelect: "none" }}>
+                  📝 AI Commentary ({result.ai_commentary.split(" ").length} words)
+                </summary>
+                <div style={{ marginTop: 6, padding: 10, background: "#0d1b2a", borderRadius: 6, fontSize: 12, lineHeight: 1.5, opacity: 0.8, whiteSpace: "pre-wrap" }}>
+                  {result.ai_commentary}
+                </div>
+              </details>
+            )}
+
             <div style={{ marginTop: 8, display: "flex", gap: 8, alignItems: "center" }}>
               <span style={{ fontSize: 11, opacity: 0.5 }}>
                 ingress: admin-link · id: {result.article?.id}
@@ -203,8 +232,7 @@ export default function AdminLinkDrop() {
             </div>
             <div style={{ marginTop: 8 }}>
               <span style={{ fontSize: 11, opacity: 0.6 }}>
-                💡 Use the Inbox tab to review, approve, and publish this article. Use "Generate Commentary" to have
-                the magazine's AI agent write a take.
+                💡 Use the Inbox tab to review, approve, and publish this article. The magazine and AI-generated content can be edited before publishing.
               </span>
             </div>
           </div>

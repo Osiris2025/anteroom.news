@@ -489,6 +489,9 @@ export const MAGAZINES: Magazine[] = [
   { id:"vital-sign", name:"Vital Signs", short:"Vital Signs", tagline:"The inner cosmos, decoded.", description:"Medicine, public health, longevity, mental wellness, and the science of being human.", color:"#0b5563", accent:"#2dd4bf", theme:"dashboard", tags:["ticker","alert","puzzle","anecdote"] },
   { id:"neural-hardware", name:"Neural Hardware", short:"Neural Hardware", tagline:"AI. Cyber. Compute.", description:"Artificial intelligence, cybersecurity, computing trends, and the hardware powering tomorrow's datacenters.", color:"#00cc88", accent:"#00fa9a", theme:"linear", tags:["ticker","alert","crosspost","puzzle"] },
   { id:"dark-matter", name:"Dark Matter", short:"Dark Matter", tagline:"The universe's deepest mysteries.", description:"Astronomy, dark matter, black holes, theoretical physics, and everything we don't yet understand about the cosmos.", color:"#6b21a8", accent:"#a855f7", theme:"glass", tags:["ticker","puzzle","alert","anecdote"] },
+  { id:"the-veil", name:"The Veil", short:"The Veil", tagline:"Backstage of the unseen.", description:"The hidden world: paranormal, consciousness, and the mysteries that science hasn't cracked.", color:"#7c3aed", accent:"#c084fc", theme:"glass", tags:["anecdote","puzzle","alert"] },
+  { id:"the-green-room", name:"The Green Room", short:"The Green Room", tagline:"Backstage of fame.", description:"The business and culture of entertainment, celebrity, and fame.", color:"#059669", accent:"#34d399", theme:"magazine", tags:["crosspost","anecdote","alert"] },
+  { id:"just-the-news-thats-fit-to-print", name:"Just the News", short:"Just the News", tagline:"Just the News that Fit to Print", description:"Straight news, no spin. The day's most important stories, reported without agenda.", color:"#475569", accent:"#94a3b8", theme:"vercel", tags:["alert","ticker"] },
 ];
 export const magazineTheme: Record<string, string> = {
   "weekly-weird-news": "tabloid",
@@ -503,6 +506,9 @@ export const magazineTheme: Record<string, string> = {
   "vital-sign": "dashboard",
   "neural-hardware": "linear",
   "dark-matter": "glass",
+  "the-veil": "glass",
+  "the-green-room": "magazine",
+  "just-the-news-thats-fit-to-print": "vercel",
 };
 
 // Plural alias matching what ThemeContext imports.

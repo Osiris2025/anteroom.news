@@ -60,6 +60,12 @@ export default function Navbar() {
               Collect
             </Link>
             <Link
+              href="/search"
+              className="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 transition-colors"
+            >
+              Search
+            </Link>
+            <Link
               href="/social-feed"
               className="text-sm font-medium text-purple-600 dark:text-purple-400 hover:text-purple-500 dark:hover:text-purple-300 transition-colors"
             >

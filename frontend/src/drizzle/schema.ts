@@ -177,6 +177,7 @@ export const article = pgTable("article", {
   socialPostedAt: timestamp("social_posted_at"),
   featured: boolean("featured").notNull().default(false), // admin-controlled flagship slot
   efx: text("efx"),          // optional cinematic CSS effect: 'vhs' | 'rain' | 'lightning' | null
+  searchVector: text("search_vector"),          // full-text search index (auto-updated by trigger)
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

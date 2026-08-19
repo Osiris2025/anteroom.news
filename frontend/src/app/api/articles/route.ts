@@ -1,24 +1,40 @@
 import { NextRequest } from "next/server";
-import { eq, desc, and } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
 
-// GET /api/articles?magazine=tech-pulse&limit=500  — public, returns LIVE articles (date order)
-// limit param: default 500 (up from 150 to fix the cap that silently truncates about 86 old articles).
-// Per-magazine queries also use the limit, returning FULL sets for any magazine.
-// This is what feeds the public magazine pages from the intake pipeline.
+// GET /api/articles?magazine=tech-pulse&limit=500&q=search+terms
+// Public, returns LIVE articles (date order or search relevance).
+// ?q= uses Postgres tsvector full-text search on title/summary/commentary.
 export async function GET(req: NextRequest) {
   const sp = req.nextUrl.searchParams;
   const magId = sp.get("magazine") || "all";
   const limitStr = sp.get("limit");
   const limit = limitStr ? parseInt(limitStr, 10) : 500;
-  const capped = Math.min(Math.max(limit, 1), 1000); // cap at 1000 max to be safe
+  const capped = Math.min(Math.max(limit, 1), 1000);
+  const q = (sp.get("q") || "").trim();
 
   try {
     const query = db.select().from(article).leftJoin(magazine, eq(article.magazineId, magazine.id));
     const conds: any[] = [eq(article.status, "live")];
     if (magId && magId !== "all") conds.push(eq(article.magazineId, magId));
-    const qb = query.where(and(...conds)).orderBy(desc(article.publishedAt)).limit(capped);
+
+    // Full-text search via tsvector when ?q= is provided
+    const useSearch = q.length > 0;
+    if (useSearch) {
+      // Sanitize: plainto_tsquery handles punctuation, prevents injection
+      conds.push(sql`search_vector @@ plainto_tsquery('english', ${q})`);
+    }
+
+    const qb = query.where(and(...conds));
+    // When searching, order by relevance; otherwise by date
+    if (useSearch) {
+      qb.orderBy(sql`ts_rank(search_vector, plainto_tsquery('english', ${q})) DESC`);
+    } else {
+      qb.orderBy(desc(article.publishedAt));
+    }
+    qb.limit(capped);
+
     const rows: any[] = await qb;
 
     const articles = rows.map((r) => ({

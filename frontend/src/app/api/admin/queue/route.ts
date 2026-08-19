@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { headers } from "next/headers";
-import { eq, desc, and, ilike, or } from "drizzle-orm";
+import { eq, desc, and, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { article, magazine, source } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
@@ -55,14 +55,9 @@ export async function GET(req: NextRequest) {
     const conds: any[] = [];
     if (magId && magId !== "all") conds.push(eq(article.magazineId, magId));
     if (status && status !== "all") conds.push(eq(article.status, status));
-    // fuzzy search on title (and less so on summary/magazine name)
+    // Full-text search via tsvector when ?q= is provided (title/summary/commentary)
     if (q) {
-      const like = `%${q.replace(/[%_\\]/g, (c: string) => "\\" + c)}%`;
-      conds.push(or(
-        ilike(article.title, like),
-        ilike(article.summary, like),
-        ilike(magazine.name, like),
-      ));
+      conds.push(sql`search_vector @@ plainto_tsquery('english', ${q})`);
     }
 
     const qb = query.where(conds.length ? and(...conds) : undefined).orderBy(desc(article.createdAt)).limit(200);

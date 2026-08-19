@@ -43,6 +43,7 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
   onPin: (id: string, title: string) => void;
   onSubcat: (id: string, subcategory: string | null) => void;
   onStatus: (id: string, newStatus: string) => void;
+  onPublishX: (id: string) => void;
 }) {
   const st = STATUS_TPL[a.status] || { label: a.status, bg: "#222", fg: "#aaa" };
   const [showCommentary, setShowCommentary] = useState(false);

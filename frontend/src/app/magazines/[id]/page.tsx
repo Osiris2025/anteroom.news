@@ -3,6 +3,8 @@ import { magazine as magazineTable } from "@/drizzle/schema";
 import { eq, asc } from "drizzle-orm";
 import ThemeRenderer from "@/components/ThemeRenderer";
 
+const SITE_URL = "https://nexus.osiris2025.com";
+
 /**
  * Magazine page — renders through the SAME theme engine as the homepage.
  * Loads magazine records from the DB (name/tagline/description) so admin edits
@@ -34,5 +36,35 @@ export default async function MagazinePage({ params }: { params: Promise<{ id: s
     dbMag = null;
     dbMagazines = [];
   }
-  return <ThemeRenderer magazineId={id} dbMagazine={dbMag} dbMagazines={dbMagazines} />;
+
+  // JSON-LD BreadcrumbList structured data for SEO
+  const magName = dbMag?.name || id;
+  const breadcrumbLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: SITE_URL,
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: magName,
+        item: `${SITE_URL}/magazines/${id}`,
+      },
+    ],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+      />
+      <ThemeRenderer magazineId={id} dbMagazine={dbMag} dbMagazines={dbMagazines} />
+    </>
+  );
 }

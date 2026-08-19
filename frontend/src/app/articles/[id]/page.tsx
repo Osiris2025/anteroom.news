@@ -21,7 +21,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     .leftJoin(magazine, eq(article.magazineId, magazine.id))
     .where(eq(article.id, id));
   const r = rows[0];
-  if (!r || !r.article) return { title: "Article Not Found \u2014 AI News Nexus" };
+  if (!r || !r.article) return { title: "Article Not Found — AI News Nexus" };
 
   const a = r.article;
   const mag = r.magazine;
@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const canonicalUrl = `${SITE_URL}/articles/${id}`;
 
   return {
-    title: `${title} \u2014 ${mag?.name || "AI News Nexus"}`,
+    title: `${title} — ${mag?.name || "AI News Nexus"}`,
     description,
     alternates: { canonical: canonicalUrl },
     openGraph: {
@@ -66,22 +66,54 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
   const a = r.article;
   const mag = r.magazine;
 
+  // JSON-LD Article structured data for SEO
+  const articleTitle = a.headline || a.title || "";
+  const authorName = mag?.agentName || mag?.name || "AI News Nexus";
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: articleTitle,
+    description: a.summary || "",
+    ...(a.imageUrl ? { image: a.imageUrl } : {}),
+    datePublished: a.publishedAt ? new Date(a.publishedAt).toISOString() : undefined,
+    dateModified: a.publishedAt ? new Date(a.publishedAt).toISOString() : undefined,
+    author: {
+      "@type": "Person",
+      name: authorName,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "AI News Nexus",
+      url: SITE_URL,
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${SITE_URL}/articles/${id}`,
+    },
+  };
+
   return (
-    <ArticlePageClient
-      article={{
-        id: a.id,
-        title: a.title,
-        headline: a.headline,
-        sourceUrl: a.sourceUrl,
-        sourceName: a.sourceName,
-        imageUrl: a.imageUrl,
-        efx: a.efx,
-        summary: a.summary,
-        commentary: a.commentary,
-        subcategory: a.subcategory,
-        publishedAt: a.publishedAt,
-      }}
-      magazine={mag ? { id: mag.id, name: mag.name, agentName: mag.agentName, agentModel: mag.agentModel } : null}
-    />
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <ArticlePageClient
+        article={{
+          id: a.id,
+          title: a.title,
+          headline: a.headline,
+          sourceUrl: a.sourceUrl,
+          sourceName: a.sourceName,
+          imageUrl: a.imageUrl,
+          efx: a.efx,
+          summary: a.summary,
+          commentary: a.commentary,
+          subcategory: a.subcategory,
+          publishedAt: a.publishedAt,
+        }}
+        magazine={mag ? { id: mag.id, name: mag.name, agentName: mag.agentName, agentModel: mag.agentModel } : null}
+      />
+    </>
   );
 }

@@ -4,6 +4,7 @@ AI Discovery Agents — RSS scraping and database ingestion for AI News Nexus.
 
 import hashlib
 import html
+import itertools
 import logging
 import re
 import urllib.request
@@ -581,6 +582,75 @@ def run_db_sources(configs: list, db_url: str) -> list[dict]:
     return all_articles
 
 
+
+
+_STOPWORDS = frozenset({
+    "a", "an", "the", "and", "or", "but", "in", "on", "at", "to", "for",
+    "of", "by", "with", "from", "as", "is", "was", "are", "were", "be",
+    "been", "being", "has", "have", "had", "do", "does", "did", "will",
+    "would", "could", "should", "may", "might", "shall", "can", "its",
+    "it", "this", "that", "these", "those", "not", "no", "nor", "so",
+    "if", "than", "then", "just", "about", "up", "down", "out", "off",
+    "over", "under", "again", "further", "once", "here", "there", "when",
+    "where", "why", "how", "all", "each", "every", "both", "few", "more",
+    "most", "other", "some", "such", "only", "own", "same", "too", "very",
+    "after", "before", "between", "through", "during", "above", "below",
+    "into", "onto", "upon", "new", "one", "two", "get", "says", "report",
+})
+
+
+def _title_words(title: str) -> set:
+    cleaned = re.sub(r"[^a-z0-9\s]", " ", title.lower())
+    words = cleaned.split()
+    return {w for w in words if len(w) > 2 and w not in _STOPWORDS}
+
+
+def _word_jaccard(a: set, b: set) -> float:
+    if not a or not b:
+        return 0.0
+    union = a | b
+    if not union:
+        return 0.0
+    return len(a & b) / len(union)
+
+
+DUPLICATE_THRESHOLD = 0.75
+
+
+def find_near_duplicate(db_conn, title, magazine_id):
+    words = _title_words(title)
+    if not words:
+        return None
+    with db_conn.cursor() as cur:
+        if magazine_id:
+            cur.execute(
+                "SELECT id, title FROM article "
+                "WHERE magazine_id = %s "
+                "AND created_at >= NOW() - INTERVAL '7 days' "
+                "AND source_url IS DISTINCT FROM %s "
+                "ORDER BY created_at DESC LIMIT 100",
+                (magazine_id, "")
+            )
+        else:
+            cur.execute(
+                "SELECT id, title FROM article "
+                "WHERE created_at >= NOW() - INTERVAL '7 days' "
+                "ORDER BY created_at DESC LIMIT 100"
+            )
+        for art_id, existing_title in cur.fetchall():
+            if not existing_title:
+                continue
+            existing_words = _title_words(existing_title)
+            sim = _word_jaccard(words, existing_words)
+            if sim >= DUPLICATE_THRESHOLD:
+                logger.info(
+                    "NEAR-DUP (%.2f): %s ~ %s",
+                    sim, title[:60], existing_title[:60]
+                )
+                return art_id
+    return None
+
+
 def insert_articles(db_conn, articles: list[dict]) -> int:
     """Insert articles into the DB, skipping duplicates by source_url."""
     import psycopg2.extras
@@ -604,6 +674,20 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
             # models, hardware…) via the deterministic keyword classifier.
             art["subcategory"] = classify_article(
                 art.get("magazine_id"), art.get("title", ""), art.get("summary", ""))
+
+        # Near-duplicate check: skip if same story from another outlet
+        nd_id = find_near_duplicate(
+            db_conn,
+            art.get("title", ""),
+            art.get("magazine_id"),
+        )
+        if nd_id:
+            logger.info(
+                "SKIP near-dup: %s (matches %s)",
+                art.get("title", "?")[:80], nd_id[:12]
+            )
+            continue
+
         try:
             with db_conn.cursor() as cur:
                 cur.execute(

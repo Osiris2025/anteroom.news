@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, integer, boolean, jsonb, primaryKey, AnyPgColumn } from "drizzle-orm/pg-core";
+import { sql, pgTable, text, timestamp, integer, boolean, jsonb, primaryKey, AnyPgColumn } from "drizzle-orm/pg-core";
 
 // ---------------------------------------------------------------------------
 // better-auth core tables (users, sessions, accounts, verifications) — DO NOT REMOVE
@@ -382,3 +382,21 @@ export const digestSubscription = pgTable("digest_subscription", {
 
 export type DigestSubscription = typeof digestSubscription.$inferSelect;
 export type NewDigestSubscription = typeof digestSubscription.$inferInsert;
+
+// Notifications — in-app alerts for users (new articles, pin expiring, source spikes, system)
+export const notification = pgTable("notification", {
+  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  type: text("type").notNull(), // new_article | pin_expiring | source_spike | system
+  title: text("title").notNull(),
+  body: text("body"),
+  referenceType: text("reference_type"), // article | magazine | pin
+  referenceId: text("reference_id"),
+  read: boolean("read").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type Notification = typeof notification.$inferSelect;
+export type NewNotification = typeof notification.$inferInsert;

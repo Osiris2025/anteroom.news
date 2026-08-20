@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import ArticleComments from "./ArticleComments";
 import ArticleEfx from "./ArticleEfx";
+import ThreadModal from "./ThreadModal";
 import { hostOf, sourceLabel } from "@/lib/sourceUtil";
 
 type ReaderArticle = {
@@ -68,6 +69,8 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
   const [bookmarked, setBookmarked] = useState(false);
   const [bmId, setBmId] = useState<string | null>(null);
   const [bmLoading, setBmLoading] = useState(false);
+  // Thread modal state
+  const [showThread, setShowThread] = useState(false);
 
   // Check if current article is bookmarked
   const checkBookmark = async () => {
@@ -190,7 +193,7 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
       </div>
 
       {/* Share Quote button — opens quote image in new tab */}
-      <div style={{ marginTop: 20, marginBottom: 20 }}>
+      <div style={{ marginTop: 20, marginBottom: 20, display: "flex", gap: 10, flexWrap: "wrap" }}>
         <button
           onClick={() => window.open(`/api/quote?articleId=${article.id}`, "_blank")}
           style={{
@@ -206,6 +209,22 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
           }}
         >
           💬 Share Quote
+        </button>
+        <button
+          onClick={() => setShowThread(true)}
+          style={{
+            background: "transparent",
+            border: `1px solid ${C.border}`,
+            color: C.ink,
+            fontWeight: 800,
+            padding: "12px 20px",
+            borderRadius: 10,
+            fontSize: 14,
+            cursor: "pointer",
+            fontFamily: "inherit",
+          }}
+        >
+          🧵 Share as Thread
         </button>
       </div>
 
@@ -242,6 +261,11 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
       <div style={{ marginTop: 8 }}>
         <ArticleComments articleId={article.id} palette={C} />
       </div>
+
+      {/* Thread modal */}
+      {showThread && (
+        <ThreadModal articleId={article.id} palette={C} onClose={() => setShowThread(false)} />
+      )}
     </div>
   );
 }

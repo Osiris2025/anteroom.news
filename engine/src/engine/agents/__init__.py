@@ -388,7 +388,11 @@ def fetch_rss(url: str, timeout: int = 30) -> list[dict]:
 def fetch_reddit(subreddit: str, sort: str = "hot", limit: int = 25) -> list[dict]:
     """Fetch posts from a subreddit via the JSON API."""
     url = f"https://www.reddit.com/r/{subreddit}/{sort}.json?limit={limit}"
-    headers = {"User-Agent": "Mozilla/5.0 (compatible; AI-News-Nexus/1.0; +https://nexus.osiris2025.com)"}
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15",
+        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        "Accept-Language": "en-US,en;q=0.9",
+    }
     try:
         resp = httpx.get(url, headers=headers, timeout=30)
         resp.raise_for_status()

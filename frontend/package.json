@@ -18,7 +18,8 @@
     "postgres": "3.4.9",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "twitter-api-v2": "^1.29.1"
+    "twitter-api-v2": "^1.29.1",
+    "@vercel/og": "^0.6.5"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

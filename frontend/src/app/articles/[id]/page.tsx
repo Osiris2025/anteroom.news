@@ -29,6 +29,13 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const description = a.summary || a.commentary || `Read on ${mag?.name || "AI News Nexus"}`;
   const imageUrl = a.imageUrl || "";
   const canonicalUrl = `${SITE_URL}/articles/${id}`;
+  const brandedOgUrl = `${SITE_URL}/api/og?articleId=${encodeURIComponent(id)}`;
+
+  const ogImages = [{ url: brandedOgUrl, width: 1200, height: 630, alt: title }];
+  // Fallback to source image if branded OG fails
+  if (imageUrl) {
+    ogImages.push({ url: imageUrl, width: 1200, height: 630, alt: title });
+  }
 
   return {
     title: `${title} — ${mag?.name || "AI News Nexus"}`,
@@ -40,14 +47,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       url: canonicalUrl,
       siteName: "AI News Nexus",
       type: "article",
-      ...(imageUrl ? { images: [{ url: imageUrl, width: 1200, height: 630, alt: title }] } : {}),
+      images: ogImages,
       ...(mag ? { tags: [mag.name] } : {}),
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      ...(imageUrl ? { images: [imageUrl] } : {}),
+      images: [brandedOgUrl],
     },
   };
 }

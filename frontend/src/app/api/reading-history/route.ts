@@ -2,11 +2,11 @@ import { NextRequest } from "next/server";
 import { headers } from "next/headers";
 import { eq, desc, and } from "drizzle-orm";
 import { randomUUID } from "crypto";
-import { db } from "@/lib/db";�
+import { db } from "@/lib/db";
 import { readingHistory, article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 
-// GET /api/reading-history — list the current user's reading history (newest first).
+// GET /api/reading-history - list the current user's reading history (newest first).
 // Returns the full article + magazine data for each entry.
 export async function GET(_req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -38,7 +38,7 @@ export async function GET(_req: NextRequest) {
   return Response.json({ history: rows });
 }
 
-// POST /api/reading-history — record (or bump) a read for an article.
+// POST /api/reading-history - record (or bump) a read for an article.
 // body: { articleId: string }
 // If already in history, bumps readAt and increments readCount. If not, inserts.
 export async function POST(req: NextRequest) {
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   const uid = session?.user?.id;
   if (!uid) return Response.json({ error: "Sign in required" }, { status: 401 });
 
- let body: any = {};
+  let body: any = {};
   try { body = await req.json(); } catch {}
   const articleId = (body.articleId || "").trim();
   if (!articleId) return Response.json({ error: "articleId required" }, { status: 400 });

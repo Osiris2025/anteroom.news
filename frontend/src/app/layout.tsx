@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/lib/ThemeContext";
 
 export const metadata: Metadata = {
   title: "AI News Nexus",
+  metadataBase: new URL("https://nexus.osiris2025.com"),
   description: "Multi-stream AI-powered news platform",
 };
 

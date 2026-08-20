@@ -19,6 +19,7 @@ interface Notification {
 interface NotifResponse {
   notifications: Notification[];
   total: number;
+  unreadCount: number;
 }
 
 /* ── Time-ago helper ──────────────────────────────────── */
@@ -76,7 +77,7 @@ export default function NotificationBell() {
       if (!res.ok) return;
       const data: NotifResponse = await res.json();
       setNotifications(data.notifications);
-      setUnreadCount(data.notifications.filter((n) => !n.read).length);
+      setUnreadCount(data.unreadCount ?? data.notifications.filter((n) => !n.read).length);
     } catch {
       // network error – ignore
     } finally {

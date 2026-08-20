@@ -25,6 +25,13 @@ export async function GET(_req: NextRequest) {
 
   const total = Number(totalResult?.count ?? 0);
 
+  const [unreadResult] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(notification)
+    .where(and(eq(notification.userId, uid), eq(notification.read, false)));
+
+  const unreadCount = Number(unreadResult?.count ?? 0);
+
   const rows = await db
     .select()
     .from(notification)
@@ -33,7 +40,7 @@ export async function GET(_req: NextRequest) {
     .limit(limit)
     .offset(offset);
 
-  return NextResponse.json({ notifications: rows, total });
+  return NextResponse.json({ notifications: rows, total, unreadCount });
 }
 
 // POST /api/notifications — create a notification (admin/superadmin only, for testing).

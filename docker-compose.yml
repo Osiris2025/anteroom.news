@@ -5,6 +5,7 @@ services:
     volumes:
       - nexus_pgdata:/var/lib/postgresql/data
     environment:
+      PYTHONUNBUFFERED: "1"
       HOSTNAME: "0.0.0.0"
       POSTGRES_DB: nexus
       POSTGRES_USER: nexus
@@ -26,6 +27,7 @@ services:
         condition: service_healthy
     env_file: .env
     environment:
+      PYTHONUNBUFFERED: "1"
       DATABASE_URL: postgresql://nexus:changeme@postgres:5432/nexus
     volumes:
       - ./streams:/app/streams:ro
@@ -45,6 +47,7 @@ services:
       postgres:
         condition: service_healthy
     environment:
+      PYTHONUNBUFFERED: "1"
       HOSTNAME: "0.0.0.0"
       DATABASE_URL: postgresql://nexus:${NEXUS_DB_PASSWORD:-changeme}@postgres:5432/nexus
       AUTH_URL: ${AUTH_URL:-https://nexus.osiris2025.com}

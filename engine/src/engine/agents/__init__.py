@@ -725,6 +725,45 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
                 )
                 if cur.rowcount > 0:
                     inserted += 1
+                    # NOTIFICATION: auto-trigger 'new_article' notifications for
+                    # users who follow this magazine.
+                    mag_id = art.get("magazine_id")
+                    if mag_id:
+                        try:
+                            with db_conn.cursor() as nf_cur:
+                                nf_cur.execute(
+                                    "SELECT user_id FROM user_follow WHERE magazine_id = %s",
+                                    (mag_id,)
+                                )
+                                follower_ids = [r[0] for r in nf_cur.fetchall()]
+                            if follower_ids:
+                                ref_id = art.get("id", "")
+                                title_short = art.get("title", "New article")[:80]
+                                for uid in follower_ids:
+                                    try:
+                                        with db_conn.cursor() as ins_cur:
+                                            ins_cur.execute(
+                                                "INSERT INTO notification "
+                                                "(user_id, type, title, body, reference_type, reference_id, read) "
+                                                "VALUES (%s, 'new_article', %s, %s, 'article', %s, false)",
+                                                (
+                                                    uid,
+                                                    title_short,
+                                                    f"New article in {mag_id}: {title_short}",
+                                                    ref_id,
+                                                )
+                                            )
+                                    except Exception:
+                                        pass  # per-user notif failure is non-fatal
+                                logger.info(
+                                    "  Notifications: %d follower(s) of %s alerted about '%s'",
+                                    len(follower_ids), mag_id, title_short,
+                                )
+                        except Exception as notif_err:
+                            logger.warning(
+                                "  Notification creation failed for %s: %s",
+                                art.get("title", "?"), notif_err,
+                            )
         except Exception as exc:
             logger.warning("DB insert error for %s: %s", art.get("title", "?"), exc)
             db_conn.rollback()

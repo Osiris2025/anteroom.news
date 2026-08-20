@@ -362,3 +362,22 @@ export const userFollow = pgTable("user_follow", {
 export type UserFollow = typeof userFollow.$inferSelect;
 export type NewUserFollow = typeof userFollow.$inferInsert;
 
+
+// Email digest subscriptions (Tier 2 reader accounts — email digest)
+export const digestSubscription = pgTable("digest_subscription", {
+  id: text("id").primaryKey(),
+  email: text("email").notNull().unique(),
+  userId: text("user_id").references(() => user.id, { onDelete: "set null" }),
+  frequency: text("frequency").notNull().default("daily"), // daily | weekly
+  magazines: jsonb("magazines"), // null = all magazines; array of magazine ids
+  verified: boolean("verified").notNull().default(false),
+  verifyToken: text("verify_token"),
+  unsubscribeToken: text("unsubscribe_token"),
+  subscribedAt: timestamp("subscribed_at").notNull().defaultNow(),
+  unsubscribedAt: timestamp("unsubscribed_at"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export type DigestSubscription = typeof digestSubscription.$inferSelect;
+export type NewDigestSubscription = typeof digestSubscription.$inferInsert;

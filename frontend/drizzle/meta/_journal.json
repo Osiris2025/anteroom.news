@@ -8,6 +8,13 @@
       "when": 1786351835537,
       "tag": "0000_confused_banshee",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1787212345000,
+      "tag": "0001_blue_cascade",
+      "breakpoints": true
     }
   ]
 }

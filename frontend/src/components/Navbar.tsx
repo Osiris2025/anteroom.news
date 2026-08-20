@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
 import ThemeSelector from '@/components/ThemeSelector';
+import NotificationBell from '@/components/NotificationBell';
 import { useSession } from '@/lib/auth-client';
 
 const streams = [
@@ -119,6 +120,7 @@ export default function Navbar() {
                 🗞️ Admin
               </Link>
             )}
+            <NotificationBell />
             <ThemeSelector />
             <button
               onClick={toggleDarkMode}

@@ -1,4 +1,5 @@
-import { sql, pgTable, text, timestamp, integer, boolean, jsonb, primaryKey, AnyPgColumn } from "drizzle-orm/pg-core";
+import { pgTable, text, timestamp, integer, boolean, jsonb, primaryKey, AnyPgColumn } from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
 
 // ---------------------------------------------------------------------------
 // better-auth core tables (users, sessions, accounts, verifications) — DO NOT REMOVE

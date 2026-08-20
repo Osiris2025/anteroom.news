@@ -387,7 +387,7 @@ def fetch_rss(url: str, timeout: int = 30) -> list[dict]:
 def fetch_reddit(subreddit: str, sort: str = "hot", limit: int = 25) -> list[dict]:
     """Fetch posts from a subreddit via the JSON API."""
     url = f"https://www.reddit.com/r/{subreddit}/{sort}.json?limit={limit}"
-    headers = {"User-Agent": "AI-News-Nexus/0.1"}
+    headers = {"User-Agent": "Mozilla/5.0 (compatible; AI-News-Nexus/1.0; +https://nexus.osiris2025.com)"}
     try:
         resp = httpx.get(url, headers=headers, timeout=30)
         resp.raise_for_status()

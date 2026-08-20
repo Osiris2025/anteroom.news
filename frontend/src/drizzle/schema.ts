@@ -376,6 +376,7 @@ export const digestSubscription = pgTable("digest_subscription", {
   subscribedAt: timestamp("subscribed_at").notNull().defaultNow(),
   unsubscribedAt: timestamp("unsubscribed_at"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  lastSentAt: timestamp("last_sent_at"),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 

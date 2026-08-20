@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 import ArticleComments from "./ArticleComments";
 import ArticleEfx from "./ArticleEfx";
 import { hostOf, sourceLabel } from "@/lib/sourceUtil";
@@ -63,6 +64,40 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
   // (e.g. from a magazine page or AI model page) — so "Back" should pop history.
   const backFallback = magazine?.id ? `/magazines/${magazine.id}` : "/";
 
+  // Bookmark state
+  const [bookmarked, setBookmarked] = useState(false);
+  const [bmId, setBmId] = useState<string | null>(null);
+  const [bmLoading, setBmLoading] = useState(false);
+
+  // Check if current article is bookmarked
+  const checkBookmark = async () => {
+    try {
+      const r = await fetch("/api/bookmarks");
+      const j = await r.json();
+      if (j.bookmarks) {
+        const found = j.bookmarks.find((b: any) => b.articleId === article.id);
+        if (found) { setBookmarked(true); setBmId(found.id); }
+      }
+    } catch {}
+  };
+  useEffect(() => { checkBookmark(); }, [article.id]);
+
+  // Toggle bookmark
+  const toggleBookmark = async () => {
+    setBmLoading(true);
+    try {
+      const r = await fetch("/api/bookmarks", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ articleId: article.id }),
+      });
+      const j = await r.json();
+      setBookmarked(j.bookmarked);
+      if (j.bookmarked) setBmId(j.id); else setBmId(null);
+    } catch {}
+    setBmLoading(false);
+  };
+
   return (
     <div style={{ maxWidth: 760, margin: "0 auto" }}>
       {/* sticky Back bar — always visible while reading (esp. on mobile) */}
@@ -82,7 +117,22 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
         >
           <span style={{ fontSize: 15 }}>&larr;</span> Back
         </button>
-        <span style={{ color: C.body }}>{publishedAt ? new Date(publishedAt).toLocaleDateString() : ""}</span>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <span style={{ color: C.body }}>{publishedAt ? new Date(publishedAt).toLocaleDateString() : ""}</span>
+          {/* Bookmark toggle */}
+          <button
+            onClick={toggleBookmark}
+            disabled={bmLoading}
+            title={bookmarked ? "Remove bookmark" : "Save for later"}
+            style={{
+              background: "transparent", border: "none", cursor: "pointer",
+              color: bookmarked ? C.accent : C.body, fontSize: 18, padding: "4px",
+              opacity: bmLoading ? 0.5 : 1, lineHeight: 1,
+            }}
+          >
+            {bookmarked ? "\u2605" : "\u2606"}
+          </button>
+        </div>
       </div>
       <div style={{ fontSize: 11, letterSpacing: 2, textTransform: "uppercase", fontWeight: 800, color: C.accent, marginBottom: 14 }}>
         <Link href={backFallback} style={{ color: C.accent, textDecoration: "none" }}>{magName}</Link>{subcategory ? ` · ${subcategory}` : ""}

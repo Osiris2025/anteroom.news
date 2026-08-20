@@ -211,6 +211,18 @@ export const comment = pgTable("comment", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Bookmarks — save articles for later (reader accounts / Tier 2)
+export const bookmark = pgTable("bookmark", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  articleId: text("article_id")
+    .notNull()
+    .references(() => article.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 // Products — SWAG / marketplace catalog (catboy mugs, sweatshirts, digital goods)
 export const product = pgTable("product", {
   id: text("id").primaryKey(),
@@ -317,3 +329,5 @@ export type DmMessage = typeof dmMessage.$inferSelect;
 export type NewDmMessage = typeof dmMessage.$inferInsert;
 export type DmKeyShare = typeof dmKeyShare.$inferSelect;
 export type NewDmKeyShare = typeof dmKeyShare.$inferInsert;
+export type Bookmark = typeof bookmark.$inferSelect;
+export type NewBookmark = typeof bookmark.$inferInsert;

@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import MagazineSwitcher from "@/components/MagazineSwitcher";
 import { ThemeProvider } from "@/lib/ThemeContext";
+import TrackPageView from "@/components/TrackPageView";
 
 export const metadata: Metadata = {
   title: "AI News Nexus",
@@ -20,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <MagazineSwitcher />
           <Navbar />
           <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
+          <TrackPageView />
         </ThemeProvider>
       </body>
     </html>

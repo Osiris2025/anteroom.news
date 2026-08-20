@@ -401,3 +401,23 @@ export const notification = pgTable("notification", {
 
 export type Notification = typeof notification.$inferSelect;
 export type NewNotification = typeof notification.$inferInsert;
+
+// ────────────────────────────────────────────
+// ────────────────────────────────────────────
+// Page views — traffic attribution analytics (Tier 3)
+// ────────────────────────────────────────────
+export const pageView = pgTable("page_view", {
+  id: text("id").primaryKey().default(sql`gen_random_uuid()`),
+  path: text("path").notNull(),
+  referrer: text("referrer"),
+  utmSource: text("utm_source"),
+  utmMedium: text("utm_medium"),
+  utmCampaign: text("utm_campaign"),
+  utmContent: text("utm_content"),
+  userAgent: text("user_agent"),
+  ip: text("ip"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type PageView = typeof pageView.$inferSelect;
+export type NewPageView = typeof pageView.$inferInsert;

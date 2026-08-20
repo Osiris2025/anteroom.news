@@ -386,58 +386,56 @@ def fetch_rss(url: str, timeout: int = 30) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 def fetch_reddit(subreddit: str, sort: str = "hot", limit: int = 25) -> list[dict]:
-    """Fetch posts from a subreddit via the JSON API."""
-    url = f"https://www.reddit.com/r/{subreddit}/{sort}.json?limit={limit}"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 14_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Safari/605.1.15",
-        "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
-        "Accept-Language": "en-US,en;q=0.9",
-    }
+    """Fetch posts from a subreddit via RSS feed (JSON API is blocked by Reddit)."""
+    import feedparser
+
+    url = f"https://www.reddit.com/r/{subreddit}/{sort}/.rss?limit={limit}"
     try:
-        resp = httpx.get(url, headers=headers, timeout=30)
-        resp.raise_for_status()
-        data = resp.json()
+        feed = feedparser.parse(url)
     except Exception as exc:
-        logger.warning("Failed to fetch Reddit r/%s: %s", subreddit, exc)
+        logger.warning("Failed to fetch Reddit r/%s RSS: %s", subreddit, exc)
         return []
 
     articles = []
-    for child in data.get("data", {}).get("children", []):
-        post = child.get("data", {})
-        title = post.get("title", "").strip()
+    for entry in feed.entries[:limit]:
+        title = entry.get("title", "").strip()
         if not title:
             continue
-        # Skip stickied posts
-        if post.get("stickied"):
-            continue
 
-        link = post.get("url", "")
-        permalink = "https://www.reddit.com" + post.get("permalink", "")
-        summary = post.get("selftext", "") or ""
-        if summary:
+        link = entry.get("link", "")
+        summary_text = entry.get("summary", "") or ""
+        if summary_text:
             import re
-            summary = re.sub(r"<[^>]+>", "", summary)[:500]
+            summary_text = re.sub(r"<[^>]+>", "", summary_text)[:500]
 
-        created_utc = post.get("created_utc")
         published = None
-        if created_utc:
-            published = datetime.fromtimestamp(created_utc, tz=timezone.utc)
+        if hasattr(entry, "published_parsed") and entry.published_parsed:
+            from time import mktime
+            published = datetime.fromtimestamp(mktime(entry.published_parsed), tz=timezone.utc)
+
+        # Extract image from feed entry if available
+        image_url = ""
+        if hasattr(entry, "media_content") and entry.media_content:
+            for m in entry.media_content:
+                if m.get("url"):
+                    image_url = m["url"]
+                    break
 
         articles.append({
-            "source_url": link or permalink,
+            "source_url": link,
             "title": title,
-            "summary": summary or f"[Reddit r/{subreddit}]",
+            "summary": summary_text or f"[Reddit r/{subreddit}]",
             "published": published,
-            "image_url": _reddit_image(post),
+            "image_url": image_url,
         })
 
     return articles
 
 
 def _reddit_image(post: dict) -> str:
-    """Best available image for a Reddit post (thumbnail/preview/url)."""
-    if post.get("url", "").endswith((".jpg", ".jpeg", ".png", ".gif", ".webp")):
-        return post["url"]
+    """Best available image for a Reddit post (thumbnail/preview/url)."
+    Kept for backward compatibility with legacy callers."""
+    return post.get("image_url", "")
     thumb = post.get("thumbnail", "")
     if isinstance(thumb, str) and thumb.startswith(("http://", "https://")) and "default" not in thumb:
         return thumb

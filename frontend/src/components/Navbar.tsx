@@ -73,6 +73,12 @@ export default function Navbar() {
               Social
             </Link>
             <Link
+              href="/highlights"
+              className="text-sm font-medium text-yellow-600 dark:text-yellow-400 hover:text-yellow-500 dark:hover:text-yellow-300 transition-colors"
+            >
+              📊 Highlights
+            </Link>
+            <Link
               href="/history"
               className="text-sm font-medium text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 transition-colors"
             >

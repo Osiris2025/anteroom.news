@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { useSession } from '@/lib/auth-client';
 
 /* ── Types ────────────────────────────────────────────── */
@@ -67,6 +68,7 @@ export default function NotificationBell() {
   const [loading, setLoading] = useState(false);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const router = useRouter();
 
   /* Fetch notifications (only when authed) */
   const fetchNotifs = useCallback(async () => {
@@ -199,6 +201,11 @@ export default function NotificationBell() {
                   key={n.id}
                   onClick={() => {
                     if (!n.read) markRead(n.id);
+                    // Navigate to referenced article if applicable
+                    if (n.referenceType === 'article' && n.referenceId) {
+                      setOpen(false);
+                      router.push(`/articles/${n.referenceId}`);
+                    }
                   }}
                   className={`
                     w-full text-left px-4 py-3 border-b border-gray-800 last:border-b-0

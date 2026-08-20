@@ -533,7 +533,7 @@ def run_db_sources(configs: list, db_url: str) -> list[dict]:
                 # keep the most-frequent target; ties => first wins (dict keeps first)
                 learned_mag_by_source.setdefault(source_url, to_mag)
     except Exception:
-        logger.warning("Move-learning unavailable (magazine_move_log read failed)", exc_info=False)
+        logger.warning("Move-learning unavailable (magazine_move_log read failed)", exc_info=True)
     if learned_mag_by_source:
         logger.info("  Move-learning: %d source(s) have a learned magazine target", len(learned_mag_by_source))
 

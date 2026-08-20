@@ -521,16 +521,19 @@ def run_db_sources(configs: list, db_url: str) -> list[dict]:
     # one it was auto-assigned, reroute future articles there (min 2 moves).
     learned_mag_by_source: dict[str, str] = {}
     try:
-        cur.execute("""
-            SELECT source_url, to_magazine_id, COUNT(*) AS n
-            FROM magazine_move_log
-            WHERE to_magazine_id IS NOT NULL
-            GROUP BY source_url, to_magazine_id
-        """)
-        for source_url, to_mag, n in cur.fetchall():
-            if (source_url or "").strip() and n >= 2:
-                # keep the most-frequent target; ties => first wins (dict keeps first)
-                learned_mag_by_source.setdefault(source_url, to_mag)
+        ml_conn = psycopg2.connect(db_url)
+        with ml_conn.cursor() as ml_cur:
+            ml_cur.execute("""
+                SELECT source_url, to_magazine_id, COUNT(*) AS n
+                FROM magazine_move_log
+                WHERE to_magazine_id IS NOT NULL
+                GROUP BY source_url, to_magazine_id
+            """)
+            for source_url, to_mag, n in ml_cur.fetchall():
+                if (source_url or "").strip() and n >= 2:
+                    # keep the most-frequent target; ties => first wins (dict keeps first)
+                    learned_mag_by_source.setdefault(source_url, to_mag)
+        ml_conn.close()
     except Exception:
         logger.warning("Move-learning unavailable (magazine_move_log read failed)", exc_info=True)
     if learned_mag_by_source:

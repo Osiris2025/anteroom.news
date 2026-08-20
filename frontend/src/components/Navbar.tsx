@@ -78,6 +78,12 @@ export default function Navbar() {
               History
             </Link>
             <Link
+              href="/my-feed"
+              className="text-sm font-medium text-teal-600 dark:text-teal-400 hover:text-teal-500 dark:hover:text-teal-300 transition-colors"
+            >
+              My Feed
+            </Link>
+            <Link
               href="/shop"
               className="text-sm font-medium text-pink-600 dark:text-pink-400 hover:text-pink-500 dark:hover:text-pink-300 transition-colors"
             >

@@ -347,3 +347,18 @@ export type NewBookmark = typeof bookmark.$inferInsert;
 
 export type ReadingHistory = typeof readingHistory.$inferSelect;
 export type NewReadingHistory = typeof readingHistory.$inferInsert;
+// User follows — magazine subscriptions for personalized feed (Tier 2 reader accounts)
+export const userFollow = pgTable("user_follow", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  magazineId: text("magazine_id")
+    .notNull()
+    .references(() => magazine.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export type UserFollow = typeof userFollow.$inferSelect;
+export type NewUserFollow = typeof userFollow.$inferInsert;
+

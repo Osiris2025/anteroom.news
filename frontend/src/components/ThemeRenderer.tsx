@@ -9,6 +9,7 @@ import MagazineEditorial from "@/components/MagazineEditorial";
 import FrontierRail from "@/components/FrontierRail";
 import SubcategoryRail from "@/components/SubcategoryRail";
 import MobileExploreDrawer from "@/components/MobileExploreDrawer";
+import FollowButton from "@/components/FollowButton";
 
 /**
  * ThemeRenderer
@@ -146,6 +147,7 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
                     {magazine.name.toUpperCase()}
                   </h1>
                   <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
+                  <FollowButton magazineId={magazine.id} magazineName={magazine.name} />
                 </div>
               )}
               {magazine && <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />}
@@ -169,6 +171,7 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
                 {magazine.name.toUpperCase()}
               </h1>
               <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
+                  <FollowButton magazineId={magazine.id} magazineName={magazine.name} />
             </div>
           )}
           {/* Editorial composition — only on magazine/stream pages */}

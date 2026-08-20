@@ -11,6 +11,7 @@ import { eq, inArray, and, gte, desc, sql } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { digestSubscription, article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
+import { sendEmail } from "@/lib/email";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
 const CRON_SECRET = process.env.CRON_SECRET || "";
@@ -205,9 +206,22 @@ export async function GET(req: NextRequest) {
         frequency,
       });
 
+      // Attempt to send the email via SMTP
+      const subject = `AI News Nexus Digest - ${magazineGroups.length} magazines, ${liveArticles.length} stories`;
+      const emailResult = await sendEmail({ to: sub.email, subject, html });
+
+      if (emailResult.sent) {
+        await db
+          .update(digestSubscription)
+          .set({ lastSentAt: new Date() })
+          .where(eq(digestSubscription.id, sub.id));
+      }
+
       results.push({
         email: sub.email,
         generated: true,
+        sent: emailResult.sent,
+        sendReason: emailResult.reason || null,
         articleCount: liveArticles.length,
         magazineCount: magazineGroups.length,
         htmlPreviewLength: html.length,
@@ -217,7 +231,9 @@ export async function GET(req: NextRequest) {
     return Response.json({
       frequency,
       generated: results.filter((r: any) => r.generated).length,
+      sent: results.filter((r: any) => r.sent).length,
       skipped: results.filter((r: any) => !r.generated).length,
+      smtpConfigured: !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS),
       results,
     });
   } catch (e: any) {

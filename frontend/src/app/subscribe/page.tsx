@@ -5,6 +5,7 @@ import Link from "next/link";
 
 export default function SubscribePage() {
   const [email, setEmail] = useState("");
+  const [frequency, setFrequency] = useState<"daily" | "weekly">("daily");
   const [status, setStatus] = useState("idle");
   const [message, setMessage] = useState("");
 
@@ -17,12 +18,13 @@ export default function SubscribePage() {
       const res = await fetch("/api/subscribe", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), frequency: "daily" }),
+        body: JSON.stringify({ email: email.trim(), frequency }),
       });
       const data = await res.json();
       if (res.ok) {
         setStatus("success");
-        setMessage("You're subscribed! We'll send the best stories to your inbox.");
+        const label = frequency === "weekly" ? "weekly roundup" : "daily digest";
+        setMessage(`You're subscribed to the ${label}! We'll send the best stories to your inbox.`);
       } else {
         setStatus("error");
         setMessage(data.error || "Something went wrong. Try again.");
@@ -49,7 +51,39 @@ export default function SubscribePage() {
             <p className="mb-5" style={{ color: "var(--text-secondary)" }}>
               Get the best of all 14 magazines delivered to your inbox.
             </p>
-            <form onSubmit={handleSubmit} className="space-y-3">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="flex gap-2 p-1 rounded-lg" style={{ background: "var(--bg-primary)" }}>
+                <button
+                  type="button"
+                  onClick={() => setFrequency("daily")}
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    frequency === "daily"
+                      ? "shadow-sm"
+                      : "opacity-60 hover:opacity-90"
+                  }`}
+                  style={{
+                    background: frequency === "daily" ? "var(--accent)" : "transparent",
+                    color: frequency === "daily" ? "#fff" : "var(--text-primary)",
+                  }}
+                >
+                  Daily digest
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setFrequency("weekly")}
+                  className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
+                    frequency === "weekly"
+                      ? "shadow-sm"
+                      : "opacity-60 hover:opacity-90"
+                  }`}
+                  style={{
+                    background: frequency === "weekly" ? "var(--accent)" : "transparent",
+                    color: frequency === "weekly" ? "#fff" : "var(--text-primary)",
+                  }}
+                >
+                  Weekly highlights
+                </button>
+              </div>
               <input
                 type="email"
                 placeholder="your@email.com"

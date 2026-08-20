@@ -2,6 +2,10 @@
 
 import logging
 import os
+import sys
+
+# Configure logging so logger.info() output appears in Docker logs
+logging.basicConfig(level=logging.INFO, stream=sys.stdout, format='%(asctime)s [%(levelname)s] %(message)s')
 
 from ..config import load_all_streams
 from ..agents import run_discovery

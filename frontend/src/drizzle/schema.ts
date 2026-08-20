@@ -223,6 +223,19 @@ export const bookmark = pgTable("bookmark", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
+// Reading history — auto-track when a user reads an article (reader accounts / Tier 2)
+export const readingHistory = pgTable("reading_history", {
+  id: text("id").primaryKey(),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
+  articleId: text("article_id")
+    .notNull()
+    .references(() => article.id, { onDelete: "cascade" }),
+  readAt: timestamp("read_at").notNull().defaultNow(),
+  readCount: integer("read_count").notNull().default(1),
+});
+
 // Products — SWAG / marketplace catalog (catboy mugs, sweatshirts, digital goods)
 export const product = pgTable("product", {
   id: text("id").primaryKey(),
@@ -331,3 +344,6 @@ export type DmKeyShare = typeof dmKeyShare.$inferSelect;
 export type NewDmKeyShare = typeof dmKeyShare.$inferInsert;
 export type Bookmark = typeof bookmark.$inferSelect;
 export type NewBookmark = typeof bookmark.$inferInsert;
+
+export type ReadingHistory = typeof readingHistory.$inferSelect;
+export type NewReadingHistory = typeof readingHistory.$inferInsert;

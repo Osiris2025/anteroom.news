@@ -82,6 +82,16 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
   };
   useEffect(() => { checkBookmark(); }, [article.id]);
 
+  // Reading-history: auto-track when article is viewed
+  useEffect(() => {
+    // Fire-and-forget: record this article as read
+    fetch("/api/reading-history", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ articleId: article.id }),
+    }).catch(() => {});
+  }, [article.id]);
+
   // Toggle bookmark
   const toggleBookmark = async () => {
     setBmLoading(true);

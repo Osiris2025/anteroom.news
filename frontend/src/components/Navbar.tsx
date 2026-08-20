@@ -72,6 +72,12 @@ export default function Navbar() {
               Social
             </Link>
             <Link
+              href="/history"
+              className="text-sm font-medium text-sky-600 dark:text-sky-400 hover:text-sky-500 dark:hover:text-sky-300 transition-colors"
+            >
+              History
+            </Link>
+            <Link
               href="/shop"
               className="text-sm font-medium text-pink-600 dark:text-pink-400 hover:text-pink-500 dark:hover:text-pink-300 transition-colors"
             >

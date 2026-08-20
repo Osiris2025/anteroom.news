@@ -189,6 +189,26 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
         )}
       </div>
 
+      {/* Share Quote button — opens quote image in new tab */}
+      <div style={{ marginTop: 20, marginBottom: 20 }}>
+        <button
+          onClick={() => window.open(`/api/quote?articleId=${article.id}`, "_blank")}
+          style={{
+            background: C.accent,
+            color: "#000",
+            fontWeight: 800,
+            padding: "12px 20px",
+            borderRadius: 10,
+            fontSize: 14,
+            border: "none",
+            cursor: "pointer",
+            fontFamily: "inherit",
+          }}
+        >
+          💬 Share Quote
+        </button>
+      </div>
+
       {/* rain-drop style link-out — show the REAL publisher (not a Google redirect) */}
       {sourceUrl && (
         <div style={{ margin: "20px 0", display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
@@ -196,6 +216,22 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
              style={{ background: C.accent, color: "#000", fontWeight: 800, padding: "12px 20px", borderRadius: 10, textDecoration: "none", fontSize: 14, display: "inline-flex", alignItems: "center", gap: 8 }}>
             📌 Read the real article <span style={{ opacity: 0.7 }}>&#8599;</span>
           </a>
+          <button
+            onClick={() => window.open(`https://x.com/intent/post?text=${encodeURIComponent(displayTitle + " https://nexus.osiris2025.com/articles/" + article.id)}`, "_blank")}
+            style={{
+              background: "transparent",
+              border: `1px solid ${C.border}`,
+              color: C.body,
+              fontWeight: 700,
+              padding: "12px 20px",
+              borderRadius: 10,
+              fontSize: 14,
+              cursor: "pointer",
+              fontFamily: "inherit",
+            }}
+          >
+            ⌗ Share on X
+          </button>
           <span style={{ alignSelf: "center", fontSize: 12, color: C.body, opacity: 0.8 }}>
             via {sourceLabel(sourceUrl, undefined, sourceName)} <span style={{ opacity: 0.6 }}>· {sourceName || hostOf(sourceUrl)}</span>
           </span>

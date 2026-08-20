@@ -474,6 +474,7 @@ def scan_stream_sources(config: StreamConfig) -> list[dict]:
             art_id = str(uuid4())
             article["id"] = art_id
             article["stream_id"] = config.stream_id
+            article["magazine_id"] = config.stream_id
             article["source_name"] = source.name or source.url
             all_articles.append(article)
 

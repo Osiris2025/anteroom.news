@@ -1,0 +1,18 @@
+Output format is unaligned.
+Field separator is ""|"".
+name"|"name"|"slug
+AI Frontier"|""|"
+Dark Matter"|""|"
+Just the News"|""|"
+Open Source Report"|""|"
+Political Picture"|""|"
+Science Frontiers"|""|"
+Startup Signal"|""|"
+Tech Pulse"|""|"
+The Chart Room"|""|"
+The Green Room"|""|"
+The Veil"|""|"
+Vital Signs"|""|"
+Watch Tower"|""|"
+Weekly Weird News"|""|"
+(14 rows)

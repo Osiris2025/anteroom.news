@@ -1,0 +1,70 @@
+Output format is unaligned.
+Field separator is ""|"".
+name"|"coalesce"|"n
+AI Frontier"|"(none)"|"1248
+AI Frontier"|"agents"|"134
+AI Frontier"|"models"|"97
+AI Frontier"|"cybersecurity"|"63
+AI Frontier"|"hardware-datacenters"|"37
+AI Frontier"|"open-source"|"34
+AI Frontier"|"business"|"30
+AI Frontier"|"research"|"29
+AI Frontier"|"Releases"|"11
+AI Frontier"|"policy-safety"|"7
+Dark Matter"|"(none)"|"109
+Dark Matter"|"history-instruments"|"54
+Dark Matter"|"stars"|"45
+Dark Matter"|"black-holes"|"22
+Dark Matter"|"exoplanets"|"14
+Dark Matter"|"cosmic-webs"|"12
+Dark Matter"|"dark-matter-energy"|"11
+Dark Matter"|"Overview"|"5
+Dark Matter"|"gravitational-waves"|"5
+Dark Matter"|"Features"|"1
+Dark Matter"|"parapsychology"|"1
+Just the News"|"(none)"|"315
+Open Source Report"|"(none)"|"153
+Open Source Report"|"Releases"|"1
+Political Picture"|"(none)"|"1669
+Political Picture"|"energy-healing"|"1
+Political Picture"|"Trumpwatch"|"1
+Science Frontiers"|"(none)"|"188
+Science Frontiers"|"Overview"|"5
+Startup Signal"|"(none)"|"380
+Startup Signal"|"Overview"|"2
+Tech Pulse"|"(none)"|"716
+Tech Pulse"|"Overview"|"2
+Tech Pulse"|"policy-safety"|"1
+Tech Pulse"|"cybersecurity"|"1
+Tech Pulse"|"Gaming"|"1
+The Chart Room"|"(none)"|"492
+The Chart Room"|"Overview"|"1
+The Green Room"|"(none)"|"5
+The Veil"|"(none)"|"84
+The Veil"|"consciousness"|"8
+The Veil"|"meditation"|"8
+The Veil"|"parapsychology"|"8
+The Veil"|"buddhism"|"6
+The Veil"|"brain-science"|"5
+The Veil"|"wellbeing"|"1
+The Veil"|"energy-healing"|"1
+Vital Signs"|"(none)"|"140
+Watch Tower"|"(none)"|"217
+Watch Tower"|"Overview"|"7
+Watch Tower"|"It’s Hot"|"1
+Weekly Weird News"|"(none)"|"257
+Weekly Weird News"|"ancient-wonders"|"11
+Weekly Weird News"|"conspiracy-coverup"|"10
+Weekly Weird News"|"true-crime-killers"|"9
+Weekly Weird News"|"war-military"|"6
+Weekly Weird News"|"Overview"|"5
+Weekly Weird News"|"mythology-folklore"|"5
+Weekly Weird News"|"nazi-occult-secrets"|"4
+Weekly Weird News"|"ufo-aliens"|"2
+Weekly Weird News"|"Obscure places"|"2
+Weekly Weird News"|"Obscure Places"|"1
+Weekly Weird News"|"lost-cities-places"|"1
+Weekly Weird News"|"medical-weird"|"1
+Weekly Weird News"|"cults-religion"|"1
+Weekly Weird News"|"haunted-ghosts"|"1
+(66 rows)

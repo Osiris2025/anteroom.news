@@ -1,0 +1,50 @@
+Output format is unaligned.
+Field separator is ""|"".
+name"|"subcategory"|"count
+AI Frontier"|"ai-ml"|"2
+AI Frontier"|"compute"|"3
+AI Frontier"|"cyber"|"2
+Dark Matter"|"astronomy"|"5
+Dark Matter"|"physics"|"2
+Open Source Report"|"community"|"1
+Open Source Report"|"licensing"|"1
+Open Source Report"|"releases"|"1
+Open Source Report"|"security"|"1
+Political Picture"|"elections"|"1
+Political Picture"|"policy"|"1
+Political Picture"|"politics"|"1
+Political Picture"|"world"|"1
+Science Frontiers"|"discoveries"|"2
+Science Frontiers"|"frontier"|"1
+Startup Signal"|"deals"|"2
+Startup Signal"|"funding"|"2
+Tech Pulse"|"ai"|"1
+Tech Pulse"|"dev-tools"|"1
+Tech Pulse"|"infrastructure"|"1
+Tech Pulse"|"startups"|"1
+The Chart Room"|"landfall"|"1
+The Chart Room"|"starfall"|"1
+The Chart Room"|"the-rift"|"2
+The Chart Room"|"the-waystation"|"2
+The Green Room"|"afters"|"1
+The Green Room"|"blind-item"|"1
+The Green Room"|"in-the-green-room"|"1
+The Green Room"|"last-looks"|"1
+The Veil"|"apocrypha"|"1
+The Veil"|"side-altar"|"2
+The Veil"|"the-hedge"|"1
+The Veil"|"the-veil"|"1
+The Veil"|"twelfth-house"|"1
+The Veil"|"void-of-course"|"1
+Vital Signs"|"longevity"|"1
+Vital Signs"|"medicine"|"1
+Vital Signs"|"mental-health"|"1
+Vital Signs"|"nutrition"|"1
+Watch Tower"|"climate"|"1
+Watch Tower"|"energy"|"1
+Watch Tower"|"environment"|"1
+Watch Tower"|"policy"|"1
+Weekly Weird News"|"cryptids"|"1
+Weekly Weird News"|"strange-cases"|"2
+Weekly Weird News"|"ufo"|"1
+(46 rows)

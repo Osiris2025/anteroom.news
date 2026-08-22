@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 DEFAULT_DB_URL = "postgresql://nexus:changeme@postgres:5432/nexus"
 
 
-def run_pipeline(streams_dir: str = "streams", max_summarize: int = 25):
+def run_pipeline(streams_dir: str = "streams", max_summarize: int = 100):
     """Execute the full discovery + summarization pipeline for all enabled streams."""
     configs = load_all_streams(streams_dir)
     print(f"Loaded {len(configs)} stream configs")

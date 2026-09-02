@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { headers } from "next/headers";
-import { eq, sql } from "drizzle-orm";
+import { eq, sql, and } from "drizzle-orm";
 import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
 import { article, deletionLog, magazineMoveLog, source } from "@/drizzle/schema";
@@ -56,10 +56,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         sourceUrl: row.sourceUrl, sourceName: row.sourceName,
         fromMagazineId: row.magazineId, toMagazineId: target,
       });
-      // bump the source's move_count (reflects difficulty picking a home)
-      if (row.sourceUrl) {
+      // bump the source's move_count (reflects difficulty picking a home).
+      // Match by source NAME + magazine (articles store source_url = the article
+      // page, not the feed URL, so matching on url never resolves; name+magazine
+      // is the reliable link since DB-backed articles get source_name = source.name).
+      if (row.sourceName && row.magazineId) {
         await db.update(source).set({ moveCount: sql`${source.moveCount} + 1` })
-          .where(eq(source.url, row.sourceUrl));
+          .where(and(eq(source.name, row.sourceName), eq(source.magazineId, row.magazineId)));
       }
     }
     upd.magazineId = target;
@@ -101,11 +104,12 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       magazineId: row.magazineId, reason, detail: body.detail || null,
     });
     // Bump the source's delete_count / last_delete_at.
-    if (row.sourceUrl) {
+    // Match by source NAME + magazine (same rationale as moves — see PATCH above).
+    if (row.sourceName && row.magazineId) {
       await db.update(source).set({
         deleteCount: sql`${source.deleteCount} + 1`,
         lastDeleteAt: new Date(),
-      }).where(eq(source.url, row.sourceUrl));
+      }).where(and(eq(source.name, row.sourceName), eq(source.magazineId, row.magazineId)));
     }
   }
   await db.delete(article).where(eq(article.id, id));

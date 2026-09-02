@@ -665,7 +665,117 @@ def find_near_duplicate(db_conn, title, magazine_id):
     return None
 
 
-def insert_articles(db_conn, articles: list[dict]) -> int:
+
+DEFAULT_PUBLISH_SETTINGS = {
+    "auto_publish_enabled": "0",
+    "auto_publish_until": "",
+    "max_delete_count": "2",
+    "max_move_count": "2",
+    "min_tune_autopublish": "0",
+    "min_tune_approve": "-3",
+}
+
+
+def _setting_int(settings, key, default):
+    try:
+        return int(settings.get(key, str(default)))
+    except (TypeError, ValueError):
+        return default
+
+
+def load_publishing_settings(db_conn) -> dict:
+    """Load global pipeline publishing settings + a per-source health/override map."""
+    settings = dict(DEFAULT_PUBLISH_SETTINGS)
+    try:
+        cur = db_conn.cursor()
+        cur.execute("SELECT key, value FROM pipeline_setting")
+        for k, v in cur.fetchall():
+            if k and v is not None:
+                settings[k] = v
+        cur.close()
+    except Exception as e:
+        logger.warning("pipeline_setting read failed (using defaults): %s", e)
+
+    enabled = settings.get("auto_publish_enabled", "0").strip().lower() in ("1", "true", "yes", "on")
+    until = (settings.get("auto_publish_until") or "").strip()
+    if enabled and until:
+        try:
+            from datetime import datetime as _dt, timezone as _tz
+            limit = _dt.fromisoformat(until.replace("Z", "+00:00"))
+            if limit.tzinfo is None:
+                limit = limit.replace(tzinfo=_tz.utc)
+            if _dt.now(limit.tzinfo) >= limit:
+                enabled = False
+        except Exception as e:
+            logger.warning("auto_publish_until parse failed; treating as disabled: %s", e)
+            enabled = False
+
+    source_map = {}
+    try:
+        cur = db_conn.cursor()
+        cur.execute(
+            "SELECT name, magazine_id, tune, delete_count, move_count, auto_publish FROM source"
+        )
+        for name, mag, tune, dc, mc, ovr in cur.fetchall():
+            if not name:
+                continue
+            source_map[(name, mag)] = {
+                "tune": int(tune or 0),
+                "delete_count": int(dc or 0),
+                "move_count": int(mc or 0),
+                "override": ovr,
+            }
+        cur.close()
+    except Exception as e:
+        logger.warning("source health map build failed: %s", e)
+
+    return {
+        "enabled": enabled,
+        "until": until,
+        "thresholds": {
+            "max_delete_count": _setting_int(settings, "max_delete_count", 2),
+            "max_move_count": _setting_int(settings, "max_move_count", 2),
+            "min_tune_autopublish": _setting_int(settings, "min_tune_autopublish", 0),
+            "min_tune_approve": _setting_int(settings, "min_tune_approve", -3),
+        },
+        "sources": source_map,
+    }
+
+
+def decide_tier(settings: dict, art: dict) -> str:
+    """Decide insert status: 'live' (auto-publish) | 'approved' (queue) | 'draft'."""
+    enabled = settings.get("enabled", False)
+    src = settings.get("sources", {}).get((art.get("source_name"), art.get("magazine_id")))
+    if src:
+        override = (src.get("override") or "").strip()
+        # Per-source override honored ONLY when global autopublish is ON.
+        if enabled and override in ("live", "approved", "draft"):
+            return override
+
+    th = settings.get("thresholds", {})
+
+    if not enabled:
+        # Kill-switch OFF (default): stay fully backward-compatible — everything
+        # lands as 'draft' (human review), exactly as before autopublish existed.
+        # Nothing auto-publishes and nothing is auto-approved until the switch is
+        # flipped ON explicitly.
+        return "draft"
+
+    if src is not None:
+        dc = src.get("delete_count", 0)
+        mc = src.get("move_count", 0)
+        tune = src.get("tune", 0)
+        if dc > th.get("max_delete_count", 2) or mc > th.get("max_move_count", 2):
+            return "approved"
+        if tune >= th.get("min_tune_autopublish", 0):
+            return "live"
+        if tune >= th.get("min_tune_approve", -3):
+            return "approved"
+        return "draft"
+    return "approved"
+
+
+def insert_articles(db_conn, articles: list[dict], publish_settings: dict | None = None) -> int:
     """Insert articles into the DB, skipping duplicates by source_url."""
     import psycopg2.extras
 
@@ -702,12 +812,15 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
             )
             continue
 
+        # SAFEGUARD: decide publish status via the data-driven two-tier logic
+        # (live = auto-publish, approved = review queue, draft = human only).
+        art["status"] = decide_tier(publish_settings or {}, art)
         try:
             with db_conn.cursor() as cur:
                 cur.execute(
                     """
                     INSERT INTO article (id, ingress, source_url, source_name, title, summary, status, magazine_id, published_at, image_url, subcategory)
-                    VALUES (%s, %s, %s, %s, %s, %s, 'draft', %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
                     ON CONFLICT (source_url) DO NOTHING
                     """,
                     (
@@ -717,6 +830,7 @@ def insert_articles(db_conn, articles: list[dict]) -> int:
                         art.get("source_name") or None,
                         art["title"],
                         art.get("summary", ""),
+                        art.get("status", "draft"),  # live | approved | draft (two-tier)
                         art.get("magazine_id"),  # may be None for YAML-config sources w/o mag
                         art.get("published"),
                         art.get("image_url"),  # may be None when no image found
@@ -807,7 +921,8 @@ def run_discovery(configs: list[StreamConfig], db_url: str) -> dict:
 
     conn = psycopg2.connect(db_url)
     try:
-        inserted = insert_articles(conn, unique)
+        publish_settings = load_publishing_settings(conn)
+        inserted = insert_articles(conn, unique, publish_settings)
     finally:
         conn.close()
 

@@ -120,6 +120,19 @@ export const source = pgTable("source", {
   deleteCount: integer("delete_count").notNull().default(0),
   moveCount: integer("move_count").notNull().default(0),
   lastDeleteAt: timestamp("last_delete_at"),
+  // Two-tier auto-publish override: 'auto' (follow global+tier), 'queue'
+  // (force to review queue), 'draft' (force human review). NULL = auto.
+  auto_publish: text("auto_publish"),
+});
+
+// Global pipeline publishing settings — data-driven kill-switch & thresholds.
+// key: 'auto_publish_enabled' | 'auto_publish_until' | 'max_delete_count' |
+//      'max_move_count' | 'min_tune_autopublish' | 'min_tune_approve'
+export const pipelineSetting = pgTable("pipeline_setting", {
+  key: text("key").primaryKey(),
+  value: text("value"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // Why a post was removed — drives troublesome-source stats & tuning.

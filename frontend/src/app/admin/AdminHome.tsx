@@ -12,8 +12,9 @@ import AdminSources from "./AdminSources";
 import AdminStats from "./AdminStats";
 import AdminSocial from "./AdminSocial";
 import AdminTraffic from "./AdminTraffic";
+import AdminPublishing from "./AdminPublishing";
 
-type TabId = "inbox" | "linkdrop" | "users" | "magazines" | "pins" | "sources" | "stats" | "social" | "traffic";
+type TabId = "inbox" | "linkdrop" | "users" | "magazines" | "pins" | "sources" | "stats" | "social" | "traffic" | "publishing";
 
 export default function AdminHome() {
   const { currentTheme } = useTheme();
@@ -25,6 +26,7 @@ export default function AdminHome() {
     { id: "users", label: "👤 Users" },
     { id: "magazines", label: "📰 Magazines" },
     { id: "sources", label: "📡 Sources" },
+    { id: "publishing", label: "⚙️ Publishing" },
     { id: "stats", label: "📊 Stats" },
     { id: "traffic", label: "🚦 Traffic" },
     { id: "social", label: "🌐 Social" },
@@ -42,7 +44,7 @@ export default function AdminHome() {
         </header>
 
         {/* Tabs */}
-        <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
+        <div style={{ display: "flex", gap: 8, marginBottom: 18, flexWrap: "wrap" }}>
           {tabs.map((t) => (
             <button
               key={t.id}
@@ -56,7 +58,16 @@ export default function AdminHome() {
           ))}
         </div>
 
-        {tab === "inbox" ? <AdminQueue /> : tab === "linkdrop" ? <AdminLinkDrop /> : tab === "users" ? <AdminUsers /> : tab === "magazines" ? <AdminMagazines /> : tab === "sources" ? <AdminSources /> : tab === "stats" ? <AdminStats /> : tab === "traffic" ? <AdminTraffic /> : tab === "social" ? <AdminSocial /> : <AdminPins />}
+        {tab === "inbox" ? <AdminQueue />
+          : tab === "linkdrop" ? <AdminLinkDrop />
+          : tab === "users" ? <AdminUsers />
+          : tab === "magazines" ? <AdminMagazines />
+          : tab === "sources" ? <AdminSources />
+          : tab === "publishing" ? <AdminPublishing />
+          : tab === "stats" ? <AdminStats />
+          : tab === "traffic" ? <AdminTraffic />
+          : tab === "social" ? <AdminSocial />
+          : <AdminPins />}
       </div>
     </main>
   );

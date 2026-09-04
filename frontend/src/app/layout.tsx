@@ -5,6 +5,7 @@ import MagazineSwitcher from "@/components/MagazineSwitcher";
 import RightExploreDrawer from "@/components/RightExploreDrawer";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import TrackPageView from "@/components/TrackPageView";
+import { AdminProvider } from "@/components/AdminProvider";
 
 export const metadata: Metadata = {
   title: "Anteroom",
@@ -17,16 +18,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen">
         <ThemeProvider>
-          {/* Navbar first, then the two fixed hamburgers AFTER it in the DOM so
-              Safari paints/their compositing layer above the sticky navbar — the
-              buttons keep a fixed on-screen position but reliably receive taps.
-              (Both hamburgers are `position:fixed`; reordering changes only
-              stacking order on Safari/WebKit, not their visual placement.) */}
-          <Navbar />
-          <MagazineSwitcher />
-          <RightExploreDrawer />
-          <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
-          <TrackPageView />
+          <AdminProvider>
+            <Navbar />
+            <MagazineSwitcher />
+            <RightExploreDrawer />
+            <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
+            <TrackPageView />
+          </AdminProvider>
         </ThemeProvider>
       </body>
     </html>

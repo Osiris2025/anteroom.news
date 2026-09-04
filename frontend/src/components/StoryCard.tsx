@@ -31,14 +31,14 @@ export default function StoryCard({ article, onChanged }: { article: StoryArticl
   return (
     <>
       <style>{`
-#${UID} .sc-hover { display: none; }
-#${UID} .sc-wrap:hover .sc-hover { display: block; }
-#${UID} .sc-wrap.sc-open .sc-hover { display: block !important; }
-#${UID} .sc-a { display: none; }
+.sc-wrap .sc-hover { display: none; }
+.sc-wrap:hover .sc-hover { display: block; }
+.sc-wrap.sc-open .sc-hover { display: block !important; }
+.sc-wrap .sc-a { display: none; }
 @media (pointer: coarse) {
-  #${UID} .sc-wrap:hover .sc-hover { display: none; }
-  #${UID} .sc-a { display: flex; }
-  #${UID} .sc-wrap.sc-open .sc-hover { display: block !important; }
+  .sc-wrap:hover .sc-hover { display: none; }
+  .sc-wrap .sc-a { display: flex; }
+  .sc-wrap.sc-open .sc-hover { display: block !important; }
 }
 `}</style>
       <span className={`sc-wrap${open ? " sc-open" : ""}`} style={{ display: "block", position: "relative", minWidth: 0 }}>

@@ -176,6 +176,7 @@ export default function AdminQueue() {
   const [mag, setMag] = useState("all");
   const [status, setStatus] = useState("all");
   const [q, setQ] = useState("");
+  const [counts, setCounts] = useState<{ approve: number; publish: number } | null>(null);
   const [err, setErr] = useState("");
   const [genLoading, setGenLoading] = useState(false);
   // Growing list of subcategories, KEYED BY PARENT MAGAZINE so an article only
@@ -229,6 +230,10 @@ export default function AdminQueue() {
       .then((r) => r.json())
       .then((j) => { if (j.error) setErr(j.error); else setData(j); })
       .catch((e) => setErr(e.message));
+    fetch(`/api/admin/queue/bulk?${params.toString()}`)
+      .then((r) => r.json())
+      .then((j) => { if (!j.error) setCounts(j); })
+      .catch(() => {});
   };
   useEffect(load, [mag, status, q]);
 
@@ -283,43 +288,29 @@ export default function AdminQueue() {
   // Bulk approve / bulk publish
   const [busy, setBusy] = useState("");
 
-  const bulkApprove = async () => {
-    if (!data || busy) return;
-    const ids = data.articles.filter((a) => a.status === "draft").map((a) => a.id);
-    if (!ids.length) { alert("No draft articles to approve."); return; }
-    setBusy("approving");
-    let ok = 0, fail = 0;
-    for (const id of ids) {
-      try {
-        const r = await fetch(`/api/admin/article/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "approved" }) });
-        const j = await r.json();
-        if (j.error) fail++; else ok++;
-      } catch { fail++; }
-    }
+  const scopeLabel = () => {
+    const m = mag === "all" ? "ALL magazines" : (data?.magazines.find((x) => x.id === mag)?.name || mag);
+    const st = status === "all" ? "" : ` (status filter: ${status})`;
+    const qq = q.trim() ? ` matching "${q.trim()}"` : "";
+    return `${m}${st}${qq}`;
+  };
+  const runBulk = async (action: "approve" | "publish") => {
+    if (busy) return;
+    const n = counts ? counts[action] : 0;
+    const verb = action === "approve" ? "Approve" : "Publish";
+    if (!n) { alert(`Nothing to ${verb.toLowerCase()} in ${scopeLabel()}.`); return; }
+    if (!confirm(`${verb} ${n.toLocaleString()} article${n === 1 ? "" : "s"} in ${scopeLabel()}?`)) return;
+    setBusy(action === "approve" ? "approving" : "publishing");
+    try {
+      const r = await fetch("/api/admin/queue/bulk", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action, magazine: mag, status, q: q.trim() }) });
+      const j = await r.json();
+      if (j.error) setErr(j.error); else setErr(`${verb === "Approve" ? "Approved" : "Published"} ${j.updated.toLocaleString()} articles.`);
+    } catch (e: any) { setErr(e.message); }
     setBusy("");
     load();
-    if (!fail) setErr(`Approved ${ok} articles.`);
-    else setErr(`Approved ${ok}, ${fail} failed.`);
   };
-
-  const bulkPublish = async () => {
-    if (!data || busy) return;
-    const ids = data.articles.filter((a) => a.status === "approved").map((a) => a.id);
-    if (!ids.length) { alert("No approved articles to publish."); return; }
-    setBusy("publishing");
-    let ok = 0, fail = 0;
-    for (const id of ids) {
-      try {
-        const r = await fetch(`/api/admin/article/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: "live" }) });
-        const j = await r.json();
-        if (j.error) fail++; else ok++;
-      } catch { fail++; }
-    }
-    setBusy("");
-    load();
-    if (!fail) setErr(`Published ${ok} articles.`);
-    else setErr(`Published ${ok}, ${fail} failed.`);
-  };
+  const bulkApprove = () => runBulk("approve");
+  const bulkPublish = () => runBulk("publish");
 
   // create a new magazine on demand
   const newMag = async () => {
@@ -421,12 +412,12 @@ export default function AdminQueue() {
           <option value="live">Live</option>
           <option value="rejected">Rejected</option>
         </select>
-        <span style={{ marginLeft: "auto", fontSize: 12, opacity: 0.7 }}>{data ? `${data.articles.length} shown · ${data.articles.filter((a) => a.socialRepeat).length} for social · ${data.articles.filter((a) => a.status === "draft").length} draft · ${data.articles.filter((a) => a.status === "approved").length} approved` : "…"}</span>
-        {data && data.articles.filter((a) => a.status === "draft").length > 0 && (
-          <button onClick={bulkApprove} disabled={!!busy} style={{ ...btn, color: "#34d399", borderColor: "rgba(52,211,153,.4)", fontWeight: 700 }}>{busy === "approving" ? "⏳ Approving…" : "✓ Approve All"}</button>
+        <span style={{ marginLeft: "auto", fontSize: 12, opacity: 0.7 }}>{data ? `${data.articles.length} shown · ${data.articles.filter((a) => a.socialRepeat).length} for social · ${counts ? `${counts.approve.toLocaleString()} draft · ${counts.publish.toLocaleString()} approved (in scope)` : "…"}` : "…"}</span>
+        {counts && counts.approve > 0 && (
+          <button onClick={bulkApprove} disabled={!!busy} style={{ ...btn, color: "#34d399", borderColor: "rgba(52,211,153,.4)", fontWeight: 700 }}>{busy === "approving" ? "⏳ Approving…" : `✓ Approve All (${counts.approve.toLocaleString()})`}</button>
         )}
-        {data && data.articles.filter((a) => a.status === "approved").length > 0 && (
-          <button onClick={bulkPublish} disabled={!!busy} style={{ ...btn, color: "#58a6ff", borderColor: "rgba(88,166,255,.4)", fontWeight: 700 }}>{busy === "publishing" ? "⏳ Publishing…" : "📤 Publish All Approved"}</button>
+        {counts && counts.publish > 0 && (
+          <button onClick={bulkPublish} disabled={!!busy} style={{ ...btn, color: "#58a6ff", borderColor: "rgba(88,166,255,.4)", fontWeight: 700 }}>{busy === "publishing" ? "⏳ Publishing…" : `📤 Publish All Approved (${counts.publish.toLocaleString()})`}</button>
         )}
         <button onClick={genWWN} style={{ ...btn, color: "#ff6b9d", borderColor: "rgba(255,107,157,.4)", fontWeight: 700 }} disabled={genLoading}>🐱 {genLoading ? "Generating…" : "Generate WWN Article"}</button>
         <button onClick={newMag} title="Create a new magazine" style={{ ...btn, color: "var(--accent,#ffd700)", borderColor: "rgba(255,215,0,.4)" }}>＋ New Magazine</button>

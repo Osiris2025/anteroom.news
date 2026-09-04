@@ -93,14 +93,9 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
   const [articles, setArticles] = useState<LiveArticle[]>([]);
   const [openTools, setOpenTools] = useState<Record<string, boolean>>({});
   const [total, setTotal] = useState(0);
-  // Persist page depth across browser Back → article → Back so the user's place
-  // (how deep the grid was loaded + scroll) survives a remount.
-  const pageKey = typeof window !== "undefined" ? `mz-page:${magazine}:${subcatParam}` : "";
-  const [visibleCount, setVisibleCount] = useState(() => {
-    if (typeof window === "undefined") return 16;
-    const v = parseInt(window.sessionStorage.getItem(pageKey + ":vc") || "", 10);
-    return Number.isFinite(v) && v > 0 ? v : 16;
-  });
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(20);
+  const [loadingPg, setLoadingPg] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [magazines, setMagazines] = useState<{ id: string; name: string }[]>([]);
 
@@ -116,56 +111,27 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
     }).catch(() => {});
   }, [magazine]);
 
-  useEffect(() => {
+  const load = useCallback((pg: number, sz: number) => {
+    setLoadingPg(true);
     const q = subcatParam && subcatParam !== "all" ? `&subcat=${encodeURIComponent(subcatParam)}` : "";
-    fetch(`/api/articles?magazine=${magazine}&limit=200${q}`)
+    fetch(`/api/articles?magazine=${magazine}&limit=${sz}&offset=${pg * sz}${q}`)
       .then((r) => r.json())
       .then((j) => { if (!j.error && Array.isArray(j.articles)) { setArticles(j.articles); setTotal(j.total || 0); } })
-      .catch(() => {});
+      .catch(() => {})
+      .finally(() => setLoadingPg(false));
   }, [magazine, subcatParam]);
 
-  // Persist page depth so browser Back restores it.
-  useEffect(() => {
-    if (!pageKey) return;
-    window.sessionStorage.setItem(pageKey + ":vc", String(visibleCount));
-  }, [visibleCount, pageKey]);
+  // Reset to page 0 whenever the magazine or subcategory changes.
+  useEffect(() => { setPage(0); }, [magazine, subcatParam]);
 
-  // Remember scroll position when leaving the page (clicking an article), then
-  // restore it when we remount after coming back.
-  useEffect(() => {
-    if (typeof window === "undefined" || !pageKey) return;
-    const onScroll = () => {
-      window.sessionStorage.setItem(pageKey + ":sy", String(window.scrollY));
-    };
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [pageKey]);
+  // Load the current page (also fires on magazine/subcat change via deps).
+  useEffect(() => { load(page, size); }, [magazine, subcatParam, page, size, load]);
 
-  // After articles load, restore the saved scroll (defer a tick so the grid has
-  // laid out at the restored visibleCount).
-  useEffect(() => {
-    if (typeof window === "undefined" || !pageKey) return;
-    if (articles.length === 0) return;
-    const sy = parseInt(window.sessionStorage.getItem(pageKey + ":sy") || "", 10);
-    if (Number.isFinite(sy) && sy > 0) {
-      requestAnimationFrame(() => window.scrollTo(0, sy));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [articles, pageKey]);
+  // Refresh the grid in place after an admin action (e.g. comment/pin).
+  const refresh = useCallback(() => { load(page, size); }, [load, page, size]);
 
-  // Refresh the grid in place after an admin action (e.g. comment/pin) WITHOUT a
-  // full page reload, so the user keeps their scroll position.
-  const refresh = useCallback(() => {
-    const q = subcatParam && subcatParam !== "all" ? `&subcat=${encodeURIComponent(subcatParam)}` : "";
-    fetch(`/api/articles?magazine=${magazine}&limit=200${q}`)
-      .then((r) => r.json())
-      .then((j) => { if (!j.error && Array.isArray(j.articles)) { setArticles(j.articles); setTotal(j.total || 0); } })
-      .catch(() => {});
-  }, [magazine, subcatParam]);
-
-  const leader = pickLeader(articles);
-  const grid = articles.filter((a) => a.id !== leader?.id);
-  const magName = leader?.magazine?.name || magazine;
+  const leader = page === 0 ? pickLeader(articles) : null;
+  const grid = page === 0 ? articles.filter((a) => a.id !== leader?.id) : articles;
 
   // Derive the magazine's subcategory vocabulary from loaded articles (fallback
   // to a small default set if none are tagged yet).
@@ -175,11 +141,10 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
     return s.size ? [...s] : ["Features", "Analysis", "Explainers", "Briefs"];
   }, [articles]);
 
-  // Main varied mosaic, then ONE "more in" block (fresh thumbnails, not repeated).
-  const cells = buildCells(grid, visibleCount + 1, magazine);
-  const morePool = articles.slice(visibleCount).length ? articles.slice(visibleCount) : grid.slice(visibleCount);
-  const moreItems = morePool.slice(0, 4);
-  const hasMore = visibleCount < total;
+  const cells = buildCells(grid, grid.length, magazine);
+  const totalPages = Math.max(1, Math.ceil(total / size));
+  const canPrev = page > 0;
+  const canNext = (page + 1) * size < total;
 
   if (grid.length === 0) return null;
 
@@ -231,28 +196,18 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
           into two grids earlier is what caused the big void between rows). */}
       <div className="mz-ed-grid">{cells.map((c, i) => renderCell(c, i))}</div>
 
-      {moreItems.length > 0 && (
-        <div className="mz-ed-moreblock" style={{ marginTop: 20 }}>
-          <div className="mz-ed-moreblock-head"><span className="mz-ed-mark">▸</span> More in {magName}</div>
-          <div className="mz-ed-moreblock-grid">
-            {moreItems.map((m) => (
-              <a key={m.id} href={`/articles/${m.id}`} className="mz-ed-moreblock-card">
-                {m.imageUrl ? <span className="mz-ed-moreblock-thumb"><img src={m.imageUrl} alt="" loading="lazy" /></span> : null}
-                <span className="mz-ed-moreblock-title">{m.headline || m.title}</span>
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {hasMore && (
-        <div style={{ marginTop: 18, textAlign: "center" }}>
-          <button onClick={() => setVisibleCount((c) => c + 16)}
-            style={{ background: "transparent", border: "1px solid var(--accent, rgba(255,215,0,.4))", borderRadius: 8, color: "var(--accent, #ffd700)", padding: "8px 24px", cursor: "pointer", fontSize: 13, fontWeight: 700 }}>
-            Load more ({visibleCount} / {total})
-          </button>
-        </div>
-      )}
+      <div style={{ marginTop: 22, display: "flex", alignItems: "center", justifyContent: "center", gap: 14, flexWrap: "wrap" }}>
+        <label style={{ fontSize: 12, color: "inherit", opacity: .8, display: "inline-flex", alignItems: "center", gap: 6 }}>
+          Per page
+          <select value={size} onChange={(e) => { setSize(parseInt(e.target.value, 10)); setPage(0); }}
+            style={{ background: "var(--card-bg, rgba(127,127,127,.1))", color: "inherit", border: "1px solid var(--border, rgba(150,150,150,.3))", borderRadius: 6, padding: "6px 8px", fontSize: 13, cursor: "pointer" }}>
+            {[20, 50, 100, 200].map((n) => <option key={n} value={n}>{n}</option>)}
+          </select>
+        </label>
+        <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={!canPrev || loadingPg} style={{ ...pgBtn, opacity: (!canPrev || loadingPg) ? .4 : 1, cursor: (!canPrev || loadingPg) ? "not-allowed" : "pointer" }}>◀ Prev</button>
+        <span style={{ fontSize: 13, opacity: .8 }}>{loadingPg ? "Loading…" : `Page ${page + 1} of ${totalPages} · ${total.toLocaleString()} stories`}</span>
+        <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={!canNext || loadingPg} style={{ ...pgBtn, opacity: (!canNext || loadingPg) ? .4 : 1, cursor: (!canNext || loadingPg) ? "not-allowed" : "pointer" }}>Next ▶</button>
+      </div>
     </section>
   );
 
@@ -304,6 +259,11 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
     );
   }
 }
+
+const pgBtn: React.CSSProperties = {
+  background: "transparent", border: "1px solid var(--accent, rgba(255,215,0,.4))", borderRadius: 8,
+  color: "var(--accent, #ffd700)", padding: "8px 18px", cursor: "pointer", fontSize: 13, fontWeight: 700,
+};
 
 const cardLink: React.CSSProperties = {
   textDecoration: "none", color: "inherit", display: "flex", flexDirection: "column", padding: "18px 20px",

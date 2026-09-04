@@ -6,9 +6,6 @@ import { renderTemplate, MAGAZINES } from "@/lib/themes";
 import LiveFeed from "@/components/LiveFeed";
 import MagazineTopStories from "@/components/MagazineTopStories";
 import MagazineEditorial from "@/components/MagazineEditorial";
-import FrontierRail from "@/components/FrontierRail";
-import SubcategoryRail from "@/components/SubcategoryRail";
-import MobileExploreDrawer from "@/components/MobileExploreDrawer";
 import FollowButton from "@/components/FollowButton";
 
 /**
@@ -132,56 +129,27 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
 
   return (
     <div>
-      {/* Neural Hardware gets a two-column layout: main editorial content left,
-          "AI Frontier" model rail on the right (this magazine tracks everything-AI). */}
-      {magazine?.id === "neural-hardware" ? (
+      {/* Magazine/stream pages: header row with the Explore control (opens the
+          right-side popover with Browse subcats + AI Frontier on every screen),
+          then full-width editorial content. No persistent sidebar — all width
+          is for articles. */}
+      {magazine ? (
         <>
-          <style>{`.nexus-nh-layout{display:flex;gap:28px;align-items:flex-start}.nexus-nh-main{flex:1 1 0;min-width:0}.nexus-nh-rail{flex:0 0 280px;width:280px;max-width:100%}@media(max-width:920px){.nexus-nh-layout{flex-direction:column}.nexus-nh-rail{display:none}}`}</style>
-          <div className="nexus-nh-layout">
-            <MobileExploreDrawer magazine={magazine ? magazine.id : ""} showFrontier />
-            <div className="nexus-nh-main">
-              {magazine && (
-                <div style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "6px 0 2px" }}>
-                  <span style={{ width: 9, height: 9, borderRadius: "50%", background: magazine.accent, display: "inline-block" }} />
-                  <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: "-0.5px" }}>
-                    {magazine.name.toUpperCase()}
-                  </h1>
-                  <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
-                  <FollowButton magazineId={magazine.id} magazineName={magazine.name} />
-                </div>
-              )}
-              {magazine && <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />}
-              <LiveFeed magazine={magazine ? magazine.id : undefined} />
-              {magazine && <MagazineTopStories magazine={magazine.id} />}
-              <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
-            </div>
-            <div className="nexus-nh-rail">
-              {magazine && <SubcategoryRail magazine={magazine.id} />}
-              <FrontierRail />
-            </div>
+          <div style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "6px 0 2px" }}>
+            <span style={{ width: 9, height: 9, borderRadius: "50%", background: magazine.accent, display: "inline-block" }} />
+            <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: "-0.5px", fontFamily: "inherit" }}>
+              {magazine.name.toUpperCase()}
+            </h1>
+            <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
+            <FollowButton magazineId={magazine.id} magazineName={magazine.name} />
           </div>
-        </>
-      ) : (
-        <>
-          <MobileExploreDrawer magazine={magazine ? magazine.id : ""} />
-          {magazine && (
-            <div style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "6px 0 2px" }}>
-              <span style={{ width: 9, height: 9, borderRadius: "50%", background: magazine.accent, display: "inline-block" }} />
-              <h1 style={{ margin: 0, fontSize: 22, fontWeight: 800, letterSpacing: "-0.5px" }}>
-                {magazine.name.toUpperCase()}
-              </h1>
-              <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
-                  <FollowButton magazineId={magazine.id} magazineName={magazine.name} />
-            </div>
-          )}
-          {/* Editorial composition — only on magazine/stream pages */}
-          <style>{`@media(max-width:920px){.nexus-subcat-rail{display:none!important}}`}</style>
-          {magazine && <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />}
-          {magazine && <SubcategoryRail magazine={magazine.id} />}
-          <LiveFeed magazine={magazine ? magazine.id : undefined} />
-          {magazine && <MagazineTopStories magazine={magazine.id} />}
+          <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />
+          <LiveFeed magazine={magazine.id} />
+          <MagazineTopStories magazine={magazine.id} />
           <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
         </>
+      ) : (
+        <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
       )}
     </div>
   );

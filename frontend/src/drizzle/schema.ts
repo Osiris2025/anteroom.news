@@ -86,6 +86,13 @@ export const magazine = pgTable("magazine", {
   description: text("description"),
   tone: text("tone").notNull().default("neutral"),
   colors: jsonb("colors"),
+  // identity-in-data: these carry the magazine's visual/identity identity so the
+  // frontend can render from data instead of the hardcoded themes.ts MAGAZINES array.
+  realm: text("realm"),
+  theme: text("theme"),
+  accent: text("accent"),
+  accent2: text("accent2"),
+  tags: jsonb("tags"),
   // per-magazine named AI agent (writes on-site commentary for this magazine)
   agentName: text("agent_name"),
   agentModel: text("agent_model").notNull().default("deepseek/deepseek-v4-flash-0731"),
@@ -159,6 +166,19 @@ export const magazineMoveLog = pgTable("magazine_move_log", {
   toMagazineId: text("to_magazine_id").references(() => magazine.id, { onDelete: "set null" }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+// Reusable "cards" attached to a magazine — the right Explore drawer content.
+// Card assignment is DATA (which cards a magazine shows), not hardcoded.
+// card_id examples: "ai_model_watchlist", "browse", "releases".
+export const magazineCard = pgTable("magazine_card", {
+  magazineId: text("magazine_id").notNull().references(() => magazine.id, { onDelete: "cascade" }),
+  cardId: text("card_id").notNull(),
+  position: integer("position").notNull().default(0),
+  params: jsonb("params"),
+  enabled: boolean("enabled").notNull().default(true),
+}, (t) => ({
+  pk: primaryKey(t.magazineId, t.cardId),
+}));
 
 // Articles — the core content entity, shared by all 3 ingress points.
 // Lifecycle: draft -> approved (review queue) -> live. Rejected if unsuitable.

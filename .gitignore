@@ -5,3 +5,4 @@ dist/
 .env
 audit-assigner/*.tsv
 backups/
+traefik/letsencrypt/

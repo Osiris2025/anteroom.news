@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import MagazineSwitcher from "@/components/MagazineSwitcher";
+import RightExploreDrawer from "@/components/RightExploreDrawer";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import TrackPageView from "@/components/TrackPageView";
 
 export const metadata: Metadata = {
-  title: "AI News Nexus",
-  metadataBase: new URL("https://nexus.osiris2025.com"),
-  description: "Multi-stream AI-powered news platform",
+  title: "Anteroom",
+  metadataBase: new URL("https://anteroom.news"),
+  description: "Anteroom — a house of rooms. Cross the threshold.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -16,10 +17,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen">
         <ThemeProvider>
-          {/* Magazine switcher mounted OUTSIDE the navbar so its fixed elements
-              (hamburger / drawer / rail) live at body stacking level — reliable open/close. */}
-          <MagazineSwitcher />
+          {/* Navbar first, then the two fixed hamburgers AFTER it in the DOM so
+              Safari paints/their compositing layer above the sticky navbar — the
+              buttons keep a fixed on-screen position but reliably receive taps.
+              (Both hamburgers are `position:fixed`; reordering changes only
+              stacking order on Safari/WebKit, not their visual placement.) */}
           <Navbar />
+          <MagazineSwitcher />
+          <RightExploreDrawer />
           <main className="max-w-6xl mx-auto px-4 py-8">{children}</main>
           <TrackPageView />
         </ThemeProvider>

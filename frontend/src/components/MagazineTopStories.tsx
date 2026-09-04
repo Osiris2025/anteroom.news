@@ -101,8 +101,6 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
     const v = parseInt(window.sessionStorage.getItem(pageKey + ":vc") || "", 10);
     return Number.isFinite(v) && v > 0 ? v : 16;
   });
-  const [releases, setReleases] = useState<LiveArticle[]>([]);
-  // Admin inline-editor hover tools on every magazine; no longer a Dark Matter pilot.
   const [isAdmin, setIsAdmin] = useState(false);
   const [magazines, setMagazines] = useState<{ id: string; name: string }[]>([]);
 
@@ -164,15 +162,6 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
       .then((j) => { if (!j.error && Array.isArray(j.articles)) { setArticles(j.articles); setTotal(j.total || 0); } })
       .catch(() => {});
   }, [magazine, subcatParam]);
-
-  // Software release-version entries (Hermes v0.x.y etc.) — NOT on the front
-  // grid; shown newest-first in the dedicated Releases section below.
-  useEffect(() => {
-    fetch(`/api/articles?magazine=${magazine}&releases=1&limit=50`)
-      .then((r) => r.json())
-      .then((j) => { if (!j.error && Array.isArray(j.articles)) setReleases(j.articles); })
-      .catch(() => {});
-  }, [magazine]);
 
   const leader = pickLeader(articles);
   const grid = articles.filter((a) => a.id !== leader?.id);
@@ -250,23 +239,6 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
               <a key={m.id} href={`/articles/${m.id}`} className="mz-ed-moreblock-card">
                 {m.imageUrl ? <span className="mz-ed-moreblock-thumb"><img src={m.imageUrl} alt="" loading="lazy" /></span> : null}
                 <span className="mz-ed-moreblock-title">{m.headline || m.title}</span>
-              </a>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {releases.length > 0 && (
-        <div className="mz-ed-releases" style={{ marginTop: 20, borderTop: "1px solid rgba(150,150,150,.18)", paddingTop: 16 }}>
-          <div className="mz-ed-moreblock-head"><span className="mz-ed-mark">⟳</span> Releases</div>
-          <div className="mz-ed-releases-list" style={{ display: "grid", gap: 8 }}>
-            {releases.map((r) => (
-              <a key={r.id} href={`/articles/${r.id}`}
-                style={{ display: "flex", alignItems: "baseline", gap: 10, padding: "6px 2px", color: "inherit", textDecoration: "none", fontSize: 13 }}>
-                <span style={{ flex: "0 0 auto", color: "var(--accent, #ffd700)", fontSize: 12, fontFamily: "var(--mono, monospace)" }}>
-                  {(r.publishedAt || "").slice(0, 10)}
-                </span>
-                <span style={{ fontSize: 13, opacity: 0.9 }}>{r.headline || r.title}</span>
               </a>
             ))}
           </div>
@@ -377,8 +349,6 @@ const totemCss = `
   #${UID} .mz-ed-grid { grid-template-columns: repeat(1, 1fr); gap: 12px; grid-auto-rows: auto; }
   #${UID} .mz-ed-wrap, #${UID} .mz-ed-cell, #${UID} .mz-ed-cell-wide, #${UID} .mz-ed-cell-narrow, #${UID} .mz-ed-cell-tall { grid-column: span 1 !important; grid-row: auto !important; }
   #${UID} .mz-ed-cell-wide .mz-ed-title, #${UID} .mz-ed-cell-tall .mz-ed-title { font-size: 19px; }
-  /* Releases live in the mobile Explore drawer, not the end of the main feed. */
-  #${UID} .mz-ed-releases { display: none; }
 }
 /* Admin inline-editor: toolbar revealed on hover of the card (bottom edge) */
 #${UID} .mz-admin-tools { position: absolute; left: 0; right: 0; bottom: 0; transform: translateY(0);

@@ -31,14 +31,14 @@ export default function StoryCard({ article, onChanged }: { article: StoryArticl
   return (
     <>
       <style>{`
-#${UID} .sc-hover { position: absolute; left: 0; right: 0; bottom: 0; opacity: 0; pointer-events: none; }
-#${UID} .sc-wrap:hover .sc-hover { opacity: 1; pointer-events: auto; }
-#${UID} .sc-wrap.sc-open .sc-hover { opacity: 1 !important; pointer-events: auto !important; }
+#${UID} .sc-hover { display: none; }
+#${UID} .sc-wrap:hover .sc-hover { display: block; }
+#${UID} .sc-wrap.sc-open .sc-hover { display: block !important; }
 #${UID} .sc-a { display: none; }
 @media (pointer: coarse) {
-  #${UID} .sc-wrap:hover .sc-hover, #${UID} .sc-wrap.sc-touch .sc-hover { opacity: 0; pointer-events: none; }
+  #${UID} .sc-wrap:hover .sc-hover { display: none; }
   #${UID} .sc-a { display: flex; }
-  #${UID} .sc-wrap.sc-open .sc-hover { opacity: 1 !important; pointer-events: auto !important; }
+  #${UID} .sc-wrap.sc-open .sc-hover { display: block !important; }
 }
 `}</style>
       <span className={`sc-wrap${open ? " sc-open" : ""}`} style={{ display: "block", position: "relative", minWidth: 0 }}>
@@ -71,7 +71,7 @@ export default function StoryCard({ article, onChanged }: { article: StoryArticl
           </span>
         </a>
         {isAdmin ? (
-          <span className="sc-hover" style={{ display: "block" }}>
+          <span className="sc-hover">
             <AdminCardTools articleId={article.id} currentMag={article.magazine?.id || ""} currentSubcat={article.subcategory}
               featured={false} pinned={!!article.pinned} magazines={magazines} subcats={subcats} onChanged={() => onChanged?.()} />
           </span>

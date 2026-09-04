@@ -1,0 +1,29 @@
+# Staging: run from /home/todd/anteroom-preview (git worktree, branch `staging`)
+#   docker compose -f docker-compose.preview.yml up -d --build
+# Shares the nexus-db container with live but uses database nexus_preview.
+name: anteroom-preview
+services:
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: anteroom-preview
+    environment:
+      HOSTNAME: "0.0.0.0"
+      DATABASE_URL: postgresql://nexus:${NEXUS_DB_PASSWORD:-changeme}@nexus-db:5432/nexus_preview
+      AUTH_URL: https://preview.anteroom.news
+      NEXT_PUBLIC_AUTH_URL: https://preview.anteroom.news
+      SITE_BASE_URL: https://preview.anteroom.news
+      BETTER_AUTH_SECRET: ${AUTH_SECRET:-dev-only-change-me}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
+      CRON_SECRET: ${CRON_SECRET}
+    restart: unless-stopped
+    networks:
+      - nexus
+      - homelab_default
+networks:
+  nexus:
+    name: ai-news-nexus_default
+    external: true
+  homelab_default:
+    external: true

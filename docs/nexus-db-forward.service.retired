@@ -1,0 +1,13 @@
+[Unit]
+Description=tailnet Postgres forward: 100.65.69.37:5432 -> local nexus :5433
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/socat TCP-LISTEN:5432,bind=100.65.69.37,reuseaddr,fork TCP:127.0.0.1:5433
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

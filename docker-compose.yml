@@ -30,7 +30,7 @@ services:
     env_file: .env
     environment:
       PYTHONUNBUFFERED: "1"
-      DATABASE_URL: postgresql://nexus:changeme@postgres:5432/nexus
+      DATABASE_URL: postgresql://nexus:${NEXUS_DB_PASSWORD}@postgres:5432/nexus
     volumes:
       - ./streams:/app/streams:ro
     restart: unless-stopped
@@ -51,7 +51,7 @@ services:
     environment:
       PYTHONUNBUFFERED: "1"
       HOSTNAME: "0.0.0.0"
-      DATABASE_URL: postgresql://nexus:${NEXUS_DB_PASSWORD:-changeme}@postgres:5432/nexus
+      DATABASE_URL: postgresql://nexus:${NEXUS_DB_PASSWORD}@postgres:5432/nexus
       AUTH_URL: https://anteroom.news
       NEXT_PUBLIC_AUTH_URL: https://anteroom.news
       SITE_BASE_URL: https://anteroom.news

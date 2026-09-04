@@ -6,3 +6,4 @@ dist/
 audit-assigner/*.tsv
 backups/
 traefik/letsencrypt/
+node_modules/

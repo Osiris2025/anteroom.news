@@ -1,0 +1,37 @@
+# Traefik dynamic config (file provider) — Anteroom
+# Live site on anteroom.news; isolated preview on preview.anteroom.news.
+http:
+  routers:
+    anteroom-http:
+      rule: "Host(`anteroom.news`) || Host(`www.anteroom.news`)"
+      entryPoints:
+        - web
+      service: anteroom
+    anteroom-https:
+      rule: "Host(`anteroom.news`) || Host(`www.anteroom.news`)"
+      entryPoints:
+        - websecure
+      tls:
+        certresolver: letsencrypt
+      service: anteroom
+    preview-http:
+      rule: "Host(`preview.anteroom.news`)"
+      entryPoints:
+        - web
+      service: preview
+    preview-https:
+      rule: "Host(`preview.anteroom.news`)"
+      entryPoints:
+        - websecure
+      tls:
+        certresolver: letsencrypt
+      service: preview
+  services:
+    anteroom:
+      loadBalancer:
+        servers:
+          - url: "http://anteroom-frontend:3000"
+    preview:
+      loadBalancer:
+        servers:
+          - url: "http://preview-frontend:3001"

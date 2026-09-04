@@ -1,0 +1,21 @@
+# Traefik dynamic config (file provider) — Anteroom
+http:
+  routers:
+    anteroom-http:
+      rule: "Host(`anteroom.news`) || Host(`www.anteroom.news`)"
+      entryPoints:
+        - web
+      service: anteroom
+      # redirect http -> https handled by cloudflare/tls; serve direct
+    anteroom-https:
+      rule: "Host(`anteroom.news`) || Host(`www.anteroom.news`)"
+      entryPoints:
+        - websecure
+      tls:
+        certresolver: letsencrypt
+      service: anteroom
+  services:
+    anteroom:
+      loadBalancer:
+        servers:
+          - url: "http://anteroom-frontend:3000"

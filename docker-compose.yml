@@ -1,64 +1,95 @@
-services:
-  postgres:
-    image: pgvector/pgvector:pg16
-    container_name: nexus-db
-    volumes:
-      - nexus_pgdata:/var/lib/postgresql/data
-    environment:
-      HOSTNAME: "0.0.0.0"
-      POSTGRES_DB: nexus
-      POSTGRES_USER: nexus
-      POSTGRES_PASSWORD: ${NEXUS_DB_PASSWORD:-changeme}
-    ports:
-      - "127.0.0.1:5433:5432"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U nexus"]
-      interval: 10s
+# homelab2 · Anteroom public site
+# mirrors homelab1's proven pattern: cloudflared -> traefik(web:80) -> app
+# DB reaches homelab1's nexus-postgres over tailscale at 100.65.69.37:5432
 
-  engine:
-    build:
-      context: .
-      dockerfile: engine/Dockerfile
-    container_name: nexus-engine
-    depends_on:
-      postgres:
-        condition: service_healthy
-    env_file: .env
-    environment:
-      DATABASE_URL: postgresql://nexus:changeme@postgres:5432/nexus
-    volumes:
-      - ./streams:/app/streams:ro
+services:
+  traefik:
+    image: traefik:v3.1
+    container_name: anchor-traefik
     restart: unless-stopped
+    command:
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+      - "--providers.file.directory=/dynamic"
+      - "--providers.file.watch=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.email=${CLOUDFLARE_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.letsencrypt.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53"
+    environment:
+      - CF_DNS_API_TOKEN=${CLOUDFLARE_API_KEY}
+      - CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "8080:8080"
+    volumes:
+      - ./traefik/dynamic:/dynamic:ro
+      - ./traefik/letsencrypt:/letsencrypt
     networks:
       - default
-      - homelab_default
 
-  frontend:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: anteroom-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN}
+    depends_on:
+      - traefik
+    networks:
+      - default
+
+  anteroom-frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: nexus-frontend
-    ports:
-      - "3001:3000"
-    depends_on:
-      postgres:
-        condition: service_healthy
+    container_name: anteroom-frontend
+    restart: unless-stopped
     environment:
       HOSTNAME: "0.0.0.0"
-      DATABASE_URL: postgresql://nexus:${NEXUS_DB_PASSWORD:-changeme}@postgres:5432/nexus
-      AUTH_URL: ${AUTH_URL:-https://nexus.osiris2025.com}
-      BETTER_AUTH_SECRET: ${AUTH_SECRET:-dev-only-change-me}
-      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY}
-      # External ingress reaches the app on port 3000 inside the container (EXPOSE 3000)
-    restart: unless-stopped
+      # homelab1 Postgres over the tailnet (socat forward on homlab1 :5432 -> 5433)
+      DATABASE_URL: postgresql://nexus:changeme@100.65.69.37:5432/nexus
+      AUTH_URL: https://anteroom.news
+      NEXT_PUBLIC_AUTH_URL: https://anteroom.news
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      SITE_BASE_URL: https://anteroom.news
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.anteroom.rule=Host(`anteroom.news`)"
+      - "traefik.http.routers.anteroom.entrypoints=web"
+      - "traefik.http.services.anteroom.loadbalancer.server.port=3000"
     networks:
       - default
-      - homelab_default
+
+  preview-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: preview-frontend
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    environment:
+      HOSTNAME: "0.0.0.0"
+      PORT: "3001"
+      DATABASE_URL: postgresql://nexus:changeme@100.65.69.37:5432/nexus
+      AUTH_URL: https://preview.anteroom.news
+      NEXT_PUBLIC_AUTH_URL: https://preview.anteroom.news
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+      SITE_BASE_URL: https://preview.anteroom.news
+      USE_DB_IDENTITY: ${USE_DB_IDENTITY:-0}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.anteroom-preview.rule=Host(`preview.anteroom.news`)"
+      - "traefik.http.routers.anteroom-preview.entrypoints=web"
+      - "traefik.http.services.anteroom-preview.loadbalancer.server.port=3001"
+    networks:
+      - default
 
 networks:
-  homelab_default:
-    external: true
-
-volumes:
-  nexus_pgdata:
+  default:
+    name: homelab_default

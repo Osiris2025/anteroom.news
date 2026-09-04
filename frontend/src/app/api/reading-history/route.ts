@@ -28,6 +28,7 @@ export async function GET(_req: NextRequest) {
       articlePublishedAt: article.publishedAt,
       magazineId: article.magazineId,
       magazineName: magazine.name,
+      subcategory: article.subcategory,
     })
     .from(readingHistory)
     .innerJoin(article, eq(readingHistory.articleId, article.id))

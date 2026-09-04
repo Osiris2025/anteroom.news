@@ -1,4 +1,5 @@
 "use client";
+import StoryCard, { StoryArticle } from "@/components/StoryCard";
 
 import { useEffect, useState, useCallback, Suspense } from "react";
 import Link from "next/link";
@@ -13,6 +14,9 @@ type ArticleHit = {
   publishedAt?: string | null;
   createdAt?: string | null;
   subcategory?: string | null;
+  imageUrl?: string | null;
+  pinned?: boolean;
+  pinKind?: string | null;
   magazine?: { id: string; name: string } | null;
 };
 
@@ -176,47 +180,15 @@ function SearchPageInner() {
           </p>
 
           <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}>
-            {results.map((a) => (
-              <Link
-                key={a.id}
-                href={`/articles/${a.id}`}
-                className="block p-4 rounded-xl transition-all hover:scale-[1.02]"
-                style={{
-                  background: "rgba(150,150,150,.06)",
-                  border: "1px solid rgba(150,150,150,.15)",
-                  textDecoration: "none",
-                  color: "inherit",
-                }}
-              >
-                <div className="flex items-start gap-2 mb-2">
-                  {a.magazine && (
-                    <span
-                      className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded"
-                      style={{ background: "rgba(59,130,246,.15)", color: "var(--accent,#3b82f6)" }}
-                    >
-                      {a.magazine.name}
-                    </span>
-                  )}
-                  {a.subcategory && (
-                    <span className="text-[10px] opacity-50">{a.subcategory}</span>
-                  )}
-                </div>
-                <h3 className="text-sm font-semibold leading-snug mb-1">{a.title}</h3>
-                {a.summary && (
-                  <p className="text-xs opacity-65 line-clamp-2 leading-relaxed">
-                    {a.summary.replace(/<[^>]*>/g, "").slice(0, 200)}
-                  </p>
-                )}
-                <div className="flex items-center gap-3 mt-2 text-[11px] opacity-40">
-                  {a.publishedAt && (
-                    <span>{new Date(a.publishedAt).toLocaleDateString()}</span>
-                  )}
-                  {a.sourceUrl && (
-                    <span className="truncate">{new URL(a.sourceUrl).hostname.replace(/^www\./, "")}</span>
-                  )}
-                </div>
-              </Link>
-            ))}
+            {results.map((a) => {
+              const art: StoryArticle = {
+                id: a.id, title: a.title, headline: a.headline || null, summary: a.summary,
+                imageUrl: a.imageUrl || null,
+                magazine: a.magazine && a.magazine.name ? { id: a.magazine.id || "", name: a.magazine.name } : null,
+                subcategory: a.subcategory || null, pinned: !!a.pinned, pinKind: a.pinKind || null,
+              };
+              return <StoryCard key={a.id} article={art} onChanged={() => doSearch(q, magazine)} />;
+            })}
           </div>
         </div>
       )}

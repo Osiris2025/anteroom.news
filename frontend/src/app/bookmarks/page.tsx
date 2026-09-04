@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
+import StoryCard, { StoryArticle } from "@/components/StoryCard";
+
 
 type BookmarkEntry = {
   id: string;
@@ -81,50 +83,14 @@ export default function BookmarksPage() {
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {bookmarks.map((bm) => (
-            <div key={bm.id} style={{
-              display: "flex", gap: 14, padding: 14, borderRadius: 12,
-              border: "1px solid #e5e7eb", background: "#fff",
-              alignItems: "flex-start",
-            }}>
-              {bm.articleImageUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={bm.articleImageUrl} alt=""
-                  style={{ width: 80, height: 60, borderRadius: 8, objectFit: "cover", flexShrink: 0 }}
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                />
-              )}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#0072f5", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>
-                  {bm.magazineName || "News"}
-                </div>
-                <Link href={`/articles/${bm.articleId}`} style={{
-                  fontSize: 16, fontWeight: 700, color: "#1a1a2e", textDecoration: "none",
-                  display: "block", lineHeight: 1.3,
-                }}>
-                  {bm.articleHeadline || bm.articleTitle}
-                </Link>
-                {bm.articleSummary && (
-                  <div style={{ fontSize: 13, color: "#666", marginTop: 4, lineHeight: 1.4,
-                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {bm.articleSummary}
-                  </div>
-                )}
-                <div style={{ fontSize: 12, color: "#999", marginTop: 6 }}>
-                  {bm.articlePublishedAt ? new Date(bm.articlePublishedAt).toLocaleDateString() : ""}
-                </div>
-              </div>
-              <button onClick={() => removeBm(bm.id)}
-                style={{
-                  background: "none", border: "1px solid #e5e7eb", borderRadius: 8,
-                  padding: "6px 10px", cursor: "pointer", color: "#f87171",
-                  fontSize: 12, fontWeight: 700, flexShrink: 0,
-                  marginTop: 2,
-                }}
-                title="Remove bookmark"
-              >Remove</button>
-            </div>
-          ))}
+          {bookmarks.map((bm) => {
+            const art: StoryArticle = {
+              id: bm.articleId, title: bm.articleTitle, headline: bm.articleHeadline || null,
+              summary: bm.articleSummary, imageUrl: bm.articleImageUrl || null,
+              magazine: bm.magazineId ? { id: bm.magazineId, name: bm.magazineName || "News" } : null,
+            };
+            return <StoryCard key={bm.id} article={art} onChanged={load} />;
+          })}
         </div>
       )}
     </div>

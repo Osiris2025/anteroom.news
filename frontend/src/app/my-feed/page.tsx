@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import StoryCard, { StoryArticle } from "@/components/StoryCard";
+
 import { useSession } from "@/lib/auth-client";
 
 type FollowEntry = {
@@ -175,49 +177,14 @@ export default function MyFeedPage() {
         </div>
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          {articles.map((art) => (
-            <div key={art.id} style={{
-              display: "flex", gap: 14, padding: 14, borderRadius: 12,
-              border: "1px solid #e5e7eb", background: "#fff",
-              alignItems: "flex-start",
-            }}>
-              {art.imageUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img src={art.imageUrl} alt=""
-                  style={{ width: 100, height: 70, borderRadius: 8, objectFit: "cover", flexShrink: 0 }}
-                  onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
-                />
-              )}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ fontSize: 11, fontWeight: 700, color: "#0072f5", textTransform: "uppercase", letterSpacing: 1, marginBottom: 4 }}>
-                  {art.magazineName || "News"}
-                </div>
-                <Link href={`/articles/${art.id}`} style={{
-                  fontSize: 16, fontWeight: 700, color: "#1a1a2e", textDecoration: "none",
-                  display: "block", lineHeight: 1.3,
-                }}>
-                  {art.headline || art.title}
-                </Link>
-                {art.summary && (
-                  <div style={{ fontSize: 13, color: "#666", marginTop: 4, lineHeight: 1.4,
-                    overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                    {art.summary}
-                  </div>
-                )}
-                <div style={{ fontSize: 12, color: "#999", marginTop: 6 }}>
-                  {art.sourceName && <span>{art.sourceName} · </span>}
-                  {art.publishedAt ? new Date(art.publishedAt).toLocaleDateString() : ""}
-                </div>
-              </div>
-              <Link href={`/articles/${art.id}`} style={{
-                background: "#0072f5", color: "#fff", borderRadius: 8,
-                padding: "6px 12px", fontSize: 12, fontWeight: 700,
-                textDecoration: "none", flexShrink: 0, marginTop: 2,
-              }}>
-                Read
-              </Link>
-            </div>
-          ))}
+          {articles.map((art) => {
+            const art2: StoryArticle = {
+              id: art.id, title: art.title, headline: art.headline || null, summary: art.summary,
+              imageUrl: art.imageUrl || null,
+              magazine: art.magazineId ? { id: art.magazineId, name: art.magazineName || "News" } : null,
+            };
+            return <StoryCard key={art.id} article={art2} onChanged={() => loadArticles(follows.map((f: any) => f.magazineId))} />;
+          })}
         </div>
       )}
     </div>

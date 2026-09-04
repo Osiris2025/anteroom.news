@@ -1,4 +1,5 @@
 "use client";
+import StoryCard, { StoryArticle } from "@/components/StoryCard";
 
 import { useEffect, useState } from "react";
 
@@ -135,54 +136,13 @@ export default function HighlightsPage() {
 
           {/* Article cards */}
           <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
-            {mag.articles.map((a) => (
-              <a
-                key={a.id}
-                href={a.articleUrl}
-                style={{
-                  textDecoration: "none",
-                  color: "inherit",
-                  background: "var(--card-bg, rgba(255,255,255,.03))",
-                  border: "1px solid rgba(127,127,127,.15)",
-                  borderRadius: 10,
-                  overflow: "hidden",
-                  display: "flex",
-                  flexDirection: "column",
-                  transition: "border-color .15s",
-                }}
-                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = mag.accent; }}
-                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = "rgba(127,127,127,.15)"; }}
-              >
-                {a.imageUrl && (
-                  <div style={{ width: "100%", height: 140, overflow: "hidden", background: "rgba(0,0,0,.05)" }}>
-                    <img
-                      src={a.imageUrl}
-                      alt=""
-                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
-                      loading="lazy"
-                      onError={(e) => { (e.currentTarget as HTMLElement).style.display = "none"; }}
-                    />
-                  </div>
-                )}
-                <div style={{ padding: "10px 14px", flex: 1, display: "flex", flexDirection: "column" }}>
-                  <div style={{ fontSize: 10, color: mag.accent, letterSpacing: 1, textTransform: "uppercase", marginBottom: 4 }}>
-                    {a.subcategory || (a.featured ? "Featured" : "New")}
-                    {a.sourceName ? " · " + a.sourceName : ""}
-                  </div>
-                  <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.3, marginBottom: 4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                    {a.title}
-                  </div>
-                  {a.summary && (
-                    <p style={{ fontSize: 12, opacity: 0.7, lineHeight: 1.4, margin: 0, display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
-                      {a.summary}
-                    </p>
-                  )}
-                  <div style={{ marginTop: "auto", fontSize: 11, color: "#666", paddingTop: 6 }}>
-                    Published {new Date(a.publishedAt).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
-                  </div>
-                </div>
-              </a>
-            ))}
+            {mag.articles.map((a) => {
+              const art: StoryArticle = {
+                id: a.id, title: a.title, headline: null, summary: a.summary, imageUrl: a.imageUrl || null,
+                magazine: { id: mag.id, name: mag.name }, subcategory: a.subcategory || null,
+              };
+              return <StoryCard key={a.id} article={art} onChanged={() => window.location.reload()} />;
+            })}
           </div>
 
           {/* Link to full magazine */}

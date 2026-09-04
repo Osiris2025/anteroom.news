@@ -742,6 +742,66 @@ def load_publishing_settings(db_conn) -> dict:
     }
 
 
+
+# ---------------------------------------------------------------------------
+# Content-quality gate — "no substance" detector.
+# An article has no substance when the feed gave us nothing readable: empty
+# summary, pure link-aggregator boilerplate ("submitted by ... [link]
+# [comments]"), or a link to a discussion/aggregator page instead of an article.
+# Such articles are forced to 'draft' regardless of auto-publish tier, and the
+# source's delete_count is bumped so habitual offenders sink to paused.
+# ---------------------------------------------------------------------------
+_AGGREGATOR_LINK_PATTERNS = (
+    "news.ycombinator.com/item",
+    "reddit.com/r/hackernews",
+)
+
+_BOILERPLATE_RE = re.compile(r"submitted by|\[link\]|\[comments\]|^\s*\[Reddit r", re.I)
+
+
+def has_substance(art: dict) -> bool:
+    """True when the article carries readable content (summary or commentary)."""
+    summary = (art.get("summary") or "").strip()
+    if _BOILERPLATE_RE.search(summary):
+        return False
+    if len(summary) < 20:
+        # Allow AI commentary to rescue an empty-summary article.
+        commentary = (art.get("commentary") or "").strip()
+        return len(commentary) >= 40 and not _BOILERPLATE_RE.search(commentary)
+    return True
+
+
+def is_aggregator_link(art: dict) -> bool:
+    url = (art.get("source_url") or "").lower()
+    return any(pat in url for pat in _AGGREGATOR_LINK_PATTERNS)
+
+
+def bump_source_delete_count(db_conn, source_name: str, magazine_id: str) -> None:
+    """Record a quality strike against the source; auto-pause at the threshold."""
+    if not source_name:
+        return
+    try:
+        with db_conn.cursor() as cur:
+            cur.execute(
+                """
+                UPDATE source
+                   SET delete_count = COALESCE(delete_count,0) + 1,
+                       last_delete_at = now(),
+                       tune = CASE WHEN COALESCE(delete_count,0) + 1 >= 15 THEN -5 ELSE tune END,
+                       status = CASE WHEN COALESCE(delete_count,0) + 1 >= 15 THEN 'paused' ELSE status END
+                 WHERE name = %s AND COALESCE(status,'active') = 'active'
+                """,
+                (source_name,),
+            )
+        db_conn.commit()
+    except Exception as exc:
+        logger.warning("source strike update failed for %s: %s", source_name, exc)
+        try:
+            db_conn.rollback()
+        except Exception:
+            pass
+
+
 def decide_tier(settings: dict, art: dict) -> str:
     """Decide insert status: 'live' (auto-publish) | 'approved' (queue) | 'draft'."""
     enabled = settings.get("enabled", False)
@@ -777,6 +837,7 @@ def decide_tier(settings: dict, art: dict) -> str:
 
 def insert_articles(db_conn, articles: list[dict], publish_settings: dict | None = None) -> int:
     """Insert articles into the DB, skipping duplicates by source_url."""
+    _quality_strikes: list[tuple[str, str]] = []
     import psycopg2.extras
 
     inserted = 0
@@ -812,9 +873,16 @@ def insert_articles(db_conn, articles: list[dict], publish_settings: dict | None
             )
             continue
 
-        # SAFEGUARD: decide publish status via the data-driven two-tier logic
-        # (live = auto-publish, approved = review queue, draft = human only).
-        art["status"] = decide_tier(publish_settings or {}, art)
+        # QUALITY GATE: no-substance articles (empty/boilerplate summary, or a
+        # link to an aggregator/discussion page) are ALWAYS draft, and the source
+        # takes a strike. This outranks any auto-publish tier.
+        if not has_substance(art) or is_aggregator_link(art):
+            art["status"] = "draft"
+            _quality_strikes.append((art.get("source_name") or "", art.get("magazine_id") or ""))
+        else:
+            # SAFEGUARD: decide publish status via the data-driven two-tier logic
+            # (live = auto-publish, approved = review queue, draft = human only).
+            art["status"] = decide_tier(publish_settings or {}, art)
         try:
             with db_conn.cursor() as cur:
                 cur.execute(
@@ -882,6 +950,32 @@ def insert_articles(db_conn, articles: list[dict], publish_settings: dict | None
             logger.warning("DB insert error for %s: %s", art.get("title", "?"), exc)
             db_conn.rollback()
             continue
+
+    # Flush quality strikes collected during this batch (one per unsubstantial
+    # article, grouped per source) so habitual offenders sink automatically.
+    try:
+        from collections import Counter
+        strikes = Counter((sn, mid) for sn, mid in _quality_strikes if sn)
+        for (sn, _mid), n in strikes.items():
+            with db_conn.cursor() as cur:
+                cur.execute(
+                    """
+                    UPDATE source
+                       SET delete_count = COALESCE(delete_count,0) + %s,
+                           last_delete_at = now(),
+                           tune = CASE WHEN COALESCE(delete_count,0) + %s >= 15 THEN -5 ELSE tune END,
+                           status = CASE WHEN COALESCE(delete_count,0) + %s >= 15 THEN 'paused' ELSE status END
+                     WHERE name = %s AND COALESCE(status,'active') = 'active'
+                    """,
+                    (n, n, n, sn),
+                )
+        db_conn.commit()
+    except Exception as exc:
+        logger.warning("quality strike flush failed: %s", exc)
+        try:
+            db_conn.rollback()
+        except Exception:
+            pass
 
     db_conn.commit()
     return inserted

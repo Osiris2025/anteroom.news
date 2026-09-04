@@ -13,6 +13,8 @@ from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
+from . import has_substance, is_aggregator_link  # quality gate
+
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 DEFAULT_MODEL = "deepseek/deepseek-v4-flash-0731"
 
@@ -219,6 +221,13 @@ def run_batch_summarization(configs: list, db_url: str, max_articles: int = 25) 
                     stream_cfg = first.model_dump() if hasattr(first, "model_dump") else first
 
             if not stream_cfg:
+                results["skipped"] += 1
+                continue
+
+            # QUALITY GATE: don't spend tokens summarizing articles with no
+            # substance (empty/boilerplate summary, aggregator/redirect links).
+            # These stay draft for human review or rejection.
+            if not has_substance(article) or is_aggregator_link(article):
                 results["skipped"] += 1
                 continue
 

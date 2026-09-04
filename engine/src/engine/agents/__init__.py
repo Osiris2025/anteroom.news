@@ -754,6 +754,9 @@ def load_publishing_settings(db_conn) -> dict:
 _AGGREGATOR_LINK_PATTERNS = (
     "news.ycombinator.com/item",
     "reddit.com/r/hackernews",
+    # Google News search-feed "articles" are encrypted redirects to the real
+    # story: no fetchable page, no body, title-only. Never real articles.
+    "news.google.com/rss/articles",
 )
 
 _BOILERPLATE_RE = re.compile(r"submitted by|\[link\]|\[comments\]|^\s*\[Reddit r", re.I)
@@ -761,6 +764,8 @@ _BOILERPLATE_RE = re.compile(r"submitted by|\[link\]|\[comments\]|^\s*\[Reddit r
 
 def has_substance(art: dict) -> bool:
     """True when the article carries readable content (summary or commentary)."""
+    if is_aggregator_link(art):
+        return False
     summary = (art.get("summary") or "").strip()
     if _BOILERPLATE_RE.search(summary):
         return False

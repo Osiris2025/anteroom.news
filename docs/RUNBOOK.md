@@ -131,7 +131,7 @@ gunzip -c ~/anteroom/backups/nexus-YYYYMMDD-HHMMSS.sql.gz | \
 - **Admin Publishing tab**: auto-publish kill-switch, thresholds, per-source overrides, 24h digest.
 
 ## 7. Known gaps (fix me)
-- [ ] **No git remote** — repo exists only on hl1 (+ hl2 archive bundle). Push to Gitea (zeus 100.68.149.17:3000).
-- [ ] **Backups not off-site** — dumps live on the same host as the DB. Copy to hl2/zeus/CF R2.
+- [ ] **No git remote** — repo exists only on hl1 (+ hl2 archive bundle). zeus/Gitea is OUT (work resource, personal project). Options: hl2 bare repo + private GitHub (recommended).
+- [ ] **Backups not off-site** — dumps live on the same host as the DB. Copy to hl2 or CF R2 (zeus excluded: work resource).
 - [ ] Restore into `nexus_preview` never tested end-to-end.
 - [ ] Secrets in `.env` unencrypted (`NEXUS_DB_PASSWORD`, OPENROUTER, SMTP). Acceptable on tailnet-only host; revisit if ever exposed.

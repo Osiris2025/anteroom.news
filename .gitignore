@@ -7,3 +7,9 @@ audit-assigner/*.tsv
 backups/
 traefik/letsencrypt/
 node_modules/
+frontend/.next/
+.next/
+*.pack
+.DS_Store
+__pycache__/
+*.pyc

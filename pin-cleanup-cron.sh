@@ -4,7 +4,7 @@
 # Cleans up expired pins in the pin table.
 #
 # Add to crontab (crontab -e):
-#   */10 * * * * /home/todd/ai-news-nexus/pin-cleanup-cron.sh >> /var/log/pin-cleanup.log 2>&1
+#   */10 * * * * /home/todd/anteroom/pin-cleanup-cron.sh >> /var/log/pin-cleanup.log 2>&1
 
 LOG="/var/log/pin-cleanup.log"
 

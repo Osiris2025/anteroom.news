@@ -1,7 +1,7 @@
 #!/bin/bash
 # pg-backup.sh — Daily Postgres backup for AI News Nexus
 # Backup only (no rotation). Run daily: 0 7 * * *
-BACKUP_DIR="/home/todd/ai-news-nexus/backups"
+BACKUP_DIR="/home/todd/anteroom/backups"
 mkdir -p "$BACKUP_DIR"
 TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 FILENAME="${BACKUP_DIR}/nexus-${TIMESTAMP}.sql.gz"

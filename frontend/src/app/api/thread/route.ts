@@ -85,7 +85,7 @@ export async function GET(request: Request) {
   const a = r.article;
   const mag = r.magazine;
   const agentName = mag?.agentName || "The Desk";
-  const magName = mag?.name || "AI News Nexus";
+  const magName = mag?.name || "Anteroom";
   const title = a.headline || a.title || "Untitled";
   const commentary = a.commentary || a.summary || "";
 

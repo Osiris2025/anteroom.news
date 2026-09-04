@@ -30,9 +30,9 @@ export default function CollectPage() {
     credentials:"include",
     body:JSON.stringify({url:u})
   }).then(r=>r.json()).then(d=>{
-    if(d.error) alert("Nexus: "+d.error);
-    else alert("Nexus: \\""+(d.article?.title||"Saved")+"\\" saved as draft"+(d.magazine?" in "+d.magazine.name:"")+"!");
-  }).catch(e=>alert("Nexus error: "+e.message));
+    if(d.error) alert("Anteroom: "+d.error);
+    else alert("Anteroom: \\""+(d.article?.title||"Saved")+"\\" saved as draft"+(d.magazine?" in "+d.magazine.name:"")+"!");
+  }).catch(e=>alert("Anteroom error: "+e.message));
 })();`;
 
   const handleCollect = async () => {
@@ -72,7 +72,7 @@ export default function CollectPage() {
           Link Collector
         </div>
         <h1 style={{ fontSize: 36, fontWeight: 900, lineHeight: 1.05, margin: 0, letterSpacing: -0.5 }}>
-          🔗 Save links to Nexus
+          🔗 Save links to Anteroom
         </h1>
         <p style={{ fontSize: 15, opacity: 0.7, marginTop: 8, lineHeight: 1.5 }}>
           Drop any article URL — AI auto-detects the best magazine, checks suitability,
@@ -120,7 +120,7 @@ export default function CollectPage() {
                 textDecoration: "none", fontSize: 14, userSelect: "none",
               }}
             >
-              ⚡ Save to Nexus
+              ⚡ Save to Anteroom
             </a>
             <div style={{ fontSize: 11, opacity: 0.5, marginTop: 8 }}>
               Drag the button above to your browser&apos;s bookmarks bar

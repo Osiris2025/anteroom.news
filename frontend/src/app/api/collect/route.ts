@@ -83,7 +83,7 @@ async function analyzeWithAI(
   ).join("\n");
 
   const system = [
-    `You are a news intake classifier for AI News Nexus.`,
+    `You are a news intake classifier for Anteroom.`,
     `Your job: read an article title and description, then:`,
     `1. Pick the MOST appropriate magazine from the catalogue below.`,
     `2. Flag any suitability concerns (profanity, hate speech, spam, paywall-only, clickbait-only, violent/extremist content that shouldn't be published).`,
@@ -109,7 +109,7 @@ async function analyzeWithAI(
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
         "HTTP-Referer": "https://nexus.osiris2025.com",
-        "X-Title": "AI News Nexus",
+        "X-Title": "Anteroom",
       },
       body: JSON.stringify({
         model: MODEL,

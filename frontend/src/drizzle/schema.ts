@@ -75,7 +75,7 @@ export const passkey = pgTable("passkey", {
 });
 
 // ---------------------------------------------------------------------------
-// AI News Nexus content tables (intake pipeline + rendering + pins)
+// Anteroom content tables (intake pipeline + rendering + pins)
 // ---------------------------------------------------------------------------
 
 // Magazines — a stream/brand on the site (Tech Pulse, WWN, Climate Watch, ...)

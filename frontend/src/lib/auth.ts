@@ -56,7 +56,7 @@ export const auth = betterAuth({
   },
   plugins: [
     passkey({
-      rpName: "AI News Nexus",
+      rpName: "Anteroom",
       rpID: new URL(authUrl).hostname,
       origin: authUrl,
     }),

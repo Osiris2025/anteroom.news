@@ -5,16 +5,16 @@ import { useTheme } from "@/lib/ThemeContext";
 /** Data-driven static content shell for About / Support / Legal. */
 const pages: Record<string, { title: string; intro: string; sections: { h: string; p: string; id: string }[] }> = {
   about: {
-    title: "About AI News Nexus",
+    title: "About Anteroom",
     intro: "What we're building and why.",
     sections: [
-      { id: "our-mission", h: "Our Mission", p: "AI News Nexus is a multi-magazine news platform where AI does the heavy lifting and human editors keep it honest. Seven magazines, one community." },
+      { id: "our-mission", h: "Our Mission", p: "Anteroom is a multi-magazine news platform where AI does the heavy lifting and human editors keep it honest. Seven magazines, one community." },
       { id: "contact", h: "Contact", p: "Reach the team at hello@osiris2025.com. We reply to every note." },
       { id: "careers", h: "Careers", p: "We're always looking for editors, engineers, and cryptid skeptics. Write to careers@osiris2025.com." },
     ],
   },
   support: {
-    title: "Support AI News Nexus",
+    title: "Support Anteroom",
     intro: "Help keep independent, AI-verified news sustainable.",
     sections: [
       { id: "become-a-member", h: "Become a Member", p: "Members get ad-free reading, full-length summaries, and early access to new features." },
@@ -26,7 +26,7 @@ const pages: Record<string, { title: string; intro: string; sections: { h: strin
     title: "Legal",
     intro: "Terms, privacy, DMCA, and cookies.",
     sections: [
-      { id: "terms", h: "Terms", p: "By using AI News Nexus you agree to these terms. Summaries are AI-generated and linked to sources." },
+      { id: "terms", h: "Terms", p: "By using Anteroom you agree to these terms. Summaries are AI-generated and linked to sources." },
       { id: "privacy", h: "Privacy", p: "We store only what's needed to personalize your experience. No PCI data is ever collected." },
       { id: "dmca", h: "DMCA", p: "To report copyright concerns, email dmca@osiris2025.com." },
       { id: "cookie-policy", h: "Cookie Policy", p: "We use cookies to personalize your news experience." },

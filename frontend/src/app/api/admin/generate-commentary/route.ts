@@ -93,7 +93,7 @@ export async function POST(req: NextRequest) {
 
   const agentName = mag?.agentName || a.magazineId || "the desk";
   const agentModel = mag?.agentModel || FALLBACK_MODEL;
-  const magName = mag?.name || "AI News Nexus";
+  const magName = mag?.name || "Anteroom";
   const magTone = mag?.tone || "neutral";
   const magTagline = mag?.tagline || "";
   const magDesc = mag?.description || "";
@@ -124,7 +124,7 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
         "HTTP-Referer": "https://nexus.osiris2025.com",
-        "X-Title": "AI News Nexus",
+        "X-Title": "Anteroom",
       },
       body: JSON.stringify({
         model: agentModel,

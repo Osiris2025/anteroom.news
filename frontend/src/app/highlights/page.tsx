@@ -95,7 +95,7 @@ export default function HighlightsPage() {
           Tier 3 · Social-First Content
         </div>
         <h1 style={{ fontSize: 32, fontWeight: 900, margin: "0 0 4px", letterSpacing: "-0.5px" }}>
-          📊 This Week in AI News Nexus
+          📊 This Week in Anteroom
         </h1>
         <p style={{ fontSize: 14, color: "#888", margin: 0 }}>
           {weekStart.toLocaleDateString("en-US", dateFormat)} — {weekEnd.toLocaleDateString("en-US", dateFormat)}
@@ -209,7 +209,7 @@ export default function HighlightsPage() {
           <a href={"/subscribe"} style={{ color: "#888" }}>Subscribe to get this by email</a>
         </p>
         <p style={{ margin: "4px 0 0", opacity: 0.6 }}>
-          AI News Nexus — {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
+          Anteroom — {new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })}
         </p>
       </div>
     </div>

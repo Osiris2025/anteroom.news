@@ -69,7 +69,7 @@ export async function GET(request: Request) {
   const branding = MAGAZINE_BRANDING[magId];
   const color = branding?.color || "#1e3a5f";
   const accent = branding?.accent || "#58a6ff";
-  const magName = mag?.name || branding?.name || "AI News Nexus";
+  const magName = mag?.name || branding?.name || "Anteroom";
   const agentName = mag?.agentName || "";
 
   const title = (a.headline || a.title || "").substring(0, 120);
@@ -141,7 +141,7 @@ export async function GET(request: Request) {
               color: textColor,
             }}
           >
-            AI News Nexus
+            Anteroom
           </div>
         </div>
 

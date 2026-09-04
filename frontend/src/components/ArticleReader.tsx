@@ -58,7 +58,7 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
   const C = palette(themeId);
   const router = useRouter();
   const { title, headline, sourceUrl, sourceName, imageUrl, efx, summary, commentary, subcategory, publishedAt } = article;
-  const magName = magazine?.name || "AI News Nexus";
+  const magName = magazine?.name || "Anteroom";
   const agentName = magazine?.agentName || "The Desk";
   const displayTitle = headline || title;
   // Deeper history than the app root means the reader was reached by navigation

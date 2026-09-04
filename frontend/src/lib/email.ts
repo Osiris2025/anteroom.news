@@ -1,5 +1,5 @@
 /**
- * Email sending module for AI News Nexus digests.
+ * Email sending module for Anteroom digests.
  * Uses nodemailer with SMTP config from environment variables.
  * Falls back gracefully (logs/reports) if SMTP is not configured.
  */

@@ -100,7 +100,7 @@ async function detectMagazine(
         "Content-Type": "application/json",
         Authorization: "Bearer " + apiKey,
         "HTTP-Referer": "https://nexus.osiris2025.com",
-        "X-Title": "AI News Nexus",
+        "X-Title": "Anteroom",
       },
       body: JSON.stringify({
         model: "deepseek/deepseek-v4-flash-0731",
@@ -217,7 +217,7 @@ export async function GET() {
     "body:JSON.stringify({url:u})," +
     "credentials:'include'" +
     "}).then(function(r){return r.json()}).then(function(d){" +
-    "if(d.article){alert('Saved to Nexus: '+d.article.title)}" +
+    "if(d.article){alert('Saved to Anteroom: '+d.article.title)}" +
     "else{alert('Error: '+(d.error||'unknown'))}" +
     "}).catch(function(e){alert('Error: '+e.message)})" +
     "})();";
@@ -227,7 +227,7 @@ export async function GET() {
     '<head>\n' +
     '  <meta charset="UTF-8">\n' +
     '  <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
-    '  <title>Link Collector - AI News Nexus</title>\n' +
+    '  <title>Link Collector - Anteroom</title>\n' +
     '  <style>\n' +
     '    body { font-family: system-ui, -apple-system, sans-serif; background: #0b0e11; color: #e6e6e6; max-width: 600px; margin: 40px auto; padding: 0 20px; line-height: 1.6; }\n' +
     '    h1 { font-size: 24px; font-weight: 800; margin-bottom: 4px; }\n' +
@@ -243,19 +243,19 @@ export async function GET() {
     '</head>\n' +
     '<body>\n' +
     '  <h1>&#128279; <span class="accent">Link Collector</span></h1>\n' +
-    '  <p style="margin-bottom: 24px;">Save any link to AI News Nexus as a draft article. Drag the button below to your bookmarks bar.</p>\n' +
+    '  <p style="margin-bottom: 24px;">Save any link to Anteroom as a draft article. Drag the button below to your bookmarks bar.</p>\n' +
     '  \n' +
     '  <div class="card" style="text-align: center;">\n' +
     '    <p style="margin-top: 0; font-size: 13px; opacity: 0.7;">Drag this to your bookmarks bar</p>\n' +
     '    <a href="' + bookmarkletCode.replace(/"/g, '&quot;') + '" class="bookmarklet" onclick="return false;">\n' +
-    '      &#9889; Save to Nexus\n' +
+    '      &#9889; Save to Anteroom\n' +
     '    </a>\n' +
     '  </div>\n' +
     '\n' +
     '  <h2 style="font-size: 16px;">How to use</h2>\n' +
     '  <ol class="steps">\n' +
     '    <li>Sign in to <a href="https://nexus.osiris2025.com">nexus.osiris2025.com</a></li>\n' +
-    '    <li>Drag the <strong>"Save to Nexus"</strong> button above to your browser bookmarks bar</li>\n' +
+    '    <li>Drag the <strong>"Save to Anteroom"</strong> button above to your browser bookmarks bar</li>\n' +
     '    <li>When you find an interesting article, click the bookmarklet</li>\n' +
     '    <li>AI auto-detects which magazine it belongs to with suitability warnings</li>\n' +
     '  </ol>\n' +

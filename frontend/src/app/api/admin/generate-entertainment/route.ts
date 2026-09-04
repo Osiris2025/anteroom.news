@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
         "HTTP-Referer": "https://nexus.osiris2025.com",
-        "X-Title": "AI News Nexus",
+        "X-Title": "Anteroom",
       },
       body: JSON.stringify({
         model: agentModel,

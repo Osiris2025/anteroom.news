@@ -84,7 +84,7 @@ export default function AdminSocial() {
     <div style={{ padding: 16, color: lang.label }}>
       <h2 style={{ margin: "0 0 4px", fontSize: 20 }}>🌐 Social Accounts</h2>
       <p style={{ margin: "0 0 18px", color: lang.muted, fontSize: 13 }}>
-        Enter the publishing accounts so AI News Nexus can auto-post approved articles.
+        Enter the publishing accounts so Anteroom can auto-post approved articles.
         Tokens/credentials are stored per account (masked after entry).
       </p>
 

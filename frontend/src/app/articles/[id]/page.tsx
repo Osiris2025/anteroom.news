@@ -21,12 +21,12 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     .leftJoin(magazine, eq(article.magazineId, magazine.id))
     .where(eq(article.id, id));
   const r = rows[0];
-  if (!r || !r.article) return { title: "Article Not Found — AI News Nexus" };
+  if (!r || !r.article) return { title: "Article Not Found — Anteroom" };
 
   const a = r.article;
   const mag = r.magazine;
-  const title = a.headline || a.title || "AI News Nexus";
-  const description = a.summary || a.commentary || `Read on ${mag?.name || "AI News Nexus"}`;
+  const title = a.headline || a.title || "Anteroom";
+  const description = a.summary || a.commentary || `Read on ${mag?.name || "Anteroom"}`;
   const imageUrl = a.imageUrl || "";
   const canonicalUrl = `${SITE_URL}/articles/${id}`;
   const brandedOgUrl = `${SITE_URL}/api/og?articleId=${encodeURIComponent(id)}`;
@@ -38,14 +38,14 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   }
 
   return {
-    title: `${title} — ${mag?.name || "AI News Nexus"}`,
+    title: `${title} — ${mag?.name || "Anteroom"}`,
     description,
     alternates: { canonical: canonicalUrl },
     openGraph: {
       title,
       description,
       url: canonicalUrl,
-      siteName: "AI News Nexus",
+      siteName: "Anteroom",
       type: "article",
       images: ogImages,
       ...(mag ? { tags: [mag.name] } : {}),
@@ -75,7 +75,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
 
   // JSON-LD Article structured data for SEO
   const articleTitle = a.headline || a.title || "";
-  const authorName = mag?.agentName || mag?.name || "AI News Nexus";
+  const authorName = mag?.agentName || mag?.name || "Anteroom";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
@@ -90,7 +90,7 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
     },
     publisher: {
       "@type": "Organization",
-      name: "AI News Nexus",
+      name: "Anteroom",
       url: SITE_URL,
     },
     mainEntityOfPage: {

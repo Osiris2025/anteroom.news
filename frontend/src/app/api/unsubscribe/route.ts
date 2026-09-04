@@ -37,7 +37,7 @@ export async function GET(req: NextRequest) {
       .where(eq(digestSubscription.id, sub.id));
 
     return new Response(
-      "<html><body style='font-family:sans-serif;padding:40px;text-align:center;background:#0a0a0a;color:#e0e0e0;'><h1>Unsubscribed</h1><p>You have been unsubscribed from AI News Nexus digests.</p><a href='/' style='color:#0f3460;'>Back to AI News Nexus</a></body></html>",
+      "<html><body style='font-family:sans-serif;padding:40px;text-align:center;background:#0a0a0a;color:#e0e0e0;'><h1>Unsubscribed</h1><p>You have been unsubscribed from Anteroom digests.</p><a href='/' style='color:#0f3460;'>Back to Anteroom</a></body></html>",
       { headers: { "Content-Type": "text/html; charset=utf-8" } }
     );
   } catch (e: any) {

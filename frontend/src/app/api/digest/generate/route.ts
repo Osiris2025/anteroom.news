@@ -59,13 +59,13 @@ function renderDigestHtml(opts: {
 
   return `<!DOCTYPE html>
 <html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>AI News Nexus Digest</title></head>
+<title>Anteroom Digest</title></head>
 <body style="margin:0;padding:0;background:#0a0a0a;color:#e0e0e0;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,sans-serif;">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
 <tr><td align="center" style="padding:40px 20px;">
 <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#141414;border-radius:12px;overflow:hidden;">
 <tr><td style="padding:30px 30px 20px;text-align:center;background:linear-gradient(135deg,#1a1a2e,#16213e);">
-<h1 style="margin:0;font-size:24px;font-weight:900;color:#fff;letter-spacing:-0.5px;">AI News Nexus</h1>
+<h1 style="margin:0;font-size:24px;font-weight:900;color:#fff;letter-spacing:-0.5px;">Anteroom</h1>
 <p style="margin:8px 0 0;font-size:14px;color:#888;">Your curated digest &middot; ${totalArticles} stories</p>
 </td></tr>
 <tr><td style="padding:20px 30px;background:#1e1e1e;">
@@ -76,7 +76,7 @@ function renderDigestHtml(opts: {
 </td></tr>
 ${sections}
 <tr><td style="padding:30px;text-align:center;border-top:1px solid #222;">
-<p style="margin:0 0 10px;font-size:12px;color:#666;">You are receiving this because you subscribed to AI News Nexus.</p>
+<p style="margin:0 0 10px;font-size:12px;color:#666;">You are receiving this because you subscribed to Anteroom.</p>
 <a href="${siteUrl}/api/unsubscribe?token=${escapeHtml(unsubscribeToken)}" style="color:#666;font-size:12px;text-decoration:underline;">Unsubscribe</a>
 <p style="margin:10px 0 0;font-size:11px;color:#444;">${siteUrl}</p>
 </td></tr>
@@ -207,7 +207,7 @@ export async function GET(req: NextRequest) {
       });
 
       // Attempt to send the email via SMTP
-      const subject = `AI News Nexus Digest - ${magazineGroups.length} magazines, ${liveArticles.length} stories`;
+      const subject = `Anteroom Digest - ${magazineGroups.length} magazines, ${liveArticles.length} stories`;
       const emailResult = await sendEmail({ to: sub.email, subject, html });
 
       if (emailResult.sent) {

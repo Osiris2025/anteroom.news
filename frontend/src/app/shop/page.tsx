@@ -167,7 +167,7 @@ export default function ShopPage() {
         <h3 style={{ fontSize: 15, fontWeight: 700, margin: "0 0 12px" }}>About the store</h3>
         <ol style={{ fontSize: 13, lineHeight: 1.7, opacity: 0.8, margin: 0, paddingLeft: 20 }}>
           <li><strong>Catboy gear</strong> — officially licensed by CATBOY Industries™</li>
-          <li><strong>AI-themed</strong> — all proceeds support the AI News Nexus project</li>
+          <li><strong>AI-themed</strong> — all proceeds support the Anteroom project</li>
           <li><strong>Stripe checkout</strong> — payment processing coming soon (zero PCI, handled by Stripe)</li>
         </ol>
       </div>

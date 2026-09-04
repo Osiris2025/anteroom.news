@@ -99,7 +99,7 @@ async function callLLM(
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
       "HTTP-Referer": "https://nexus.osiris2025.com",
-      "X-Title": "AI News Nexus",
+      "X-Title": "Anteroom",
     },
     body: JSON.stringify({
       model,
@@ -172,7 +172,7 @@ export async function POST(req: NextRequest) {
   let aiThoughts: any = {};
 
   const system = [
-    "You are an AI news curator for AI News Nexus. You evaluate article URLs and produce structured output.",
+    "You are an AI news curator for Anteroom. You evaluate article URLs and produce structured output.",
     "Your job: (1) Assign the article to the most relevant magazine, (2) write a concise summary, (3) write a short editorial commentary/thoughts.",
     "",
     `Available magazines:\n${magList}`,

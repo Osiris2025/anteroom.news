@@ -81,10 +81,10 @@ export async function GET(request: Request) {
   const branding = MAGAZINE_BRANDING[magId];
   const color = branding?.color || "#1e3a5f";
   const accent = branding?.accent || "#58a6ff";
-  const magName = mag?.name || branding?.name || "AI News Nexus";
+  const magName = mag?.name || branding?.name || "Anteroom";
   const agentName = mag?.agentName || "";
 
-  const title = (a.headline || a.title || "AI News Nexus").substring(0, 200);
+  const title = (a.headline || a.title || "Anteroom").substring(0, 200);
   const description = (a.summary || "").substring(0, 250);
 
   // Only use image if Satori supports the format AND URL is absolute
@@ -154,7 +154,7 @@ export async function GET(request: Request) {
                 textTransform: "uppercase",
               }}
             >
-              AI News Nexus
+              Anteroom
             </div>
             <div style={{ fontSize: "22px", fontWeight: 700, marginTop: "2px" }}>
               {magName}

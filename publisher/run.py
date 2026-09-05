@@ -2,23 +2,28 @@
 """CLI entrypoint for the Nexus social publisher.
 
 Usage:
-  nexus-social queue --magazine tech-pulse [--status approved] [--platform x,bluesky]
+  nexus-social queue [--magazine m] [--status live] [--platform x,bluesky]
   nexus-social post [--dry-run] [--platform x,bluesky] [--limit 20]
+  nexus-social fetch-metrics [--limit 100]
   nexus-social metrics
 """
 from __future__ import annotations
 
 import argparse
-import os
 import sys
 
 from . import db
 from .config import Config
 from .publisher import publish_due
+from .scheduling import schedule_slots
 
 
 def _article_rows(conn, magazine_id: str | None, status: str) -> list[dict]:
-    """Fetch candidate articles from the DB for the queue command."""
+    """Fetch candidate articles from the DB for the queue command.
+
+    Only picks up articles flagged social_repeat — those are the ones meant
+    to be recycled onto social platforms.
+    """
     import psycopg2.extras
 
     sql = """
@@ -27,6 +32,7 @@ def _article_rows(conn, magazine_id: str | None, status: str) -> list[dict]:
         FROM article a
         LEFT JOIN magazine m ON m.id = a.magazine_id
         WHERE a.status = %s
+          AND a.social_repeat = TRUE
     """
     params: list = [status]
     if magazine_id:
@@ -51,18 +57,32 @@ def cmd_queue(args) -> int:
     db.ensure_schema(conn)
     rows = _article_rows(conn, args.magazine, args.status)
     platforms = args.platform.split(",") if args.platform else ["x"]
-    enqueued = 0
+    platforms = [p.strip().lower() for p in platforms]
+
+    # Plan which (article, platform) pairs actually need a new row first, so
+    # staggered slots stay compact (no gaps from already-posted articles).
+    pending: list[tuple[dict, str]] = []
     for article in rows:
         for p in platforms:
-            p = p.strip().lower()
             if not config.platform_enabled(p):
                 continue
             if db.already_posted(conn, article["id"], p):
                 continue
-            from .publisher import enqueue_article
-            enqueue_article(conn, article, p, config)
-            enqueued += 1
-    print(f"Enqueued {enqueued} posts from {len(rows)} articles across {platforms}")
+            pending.append((article, p))
+
+    if not pending:
+        print("Enqueued 0 posts from %d articles across %s" % (len(rows), platforms))
+        return 0
+
+    slots = schedule_slots(len(pending), config.max_per_day)
+    enqueued = 0
+    from .publisher import enqueue_article
+    for (article, p), scheduled_at in zip(pending, slots):
+        enqueue_article(conn, article, p, config,
+                        scheduled_at=scheduled_at.isoformat())
+        enqueued += 1
+        print("Queued %s -> %s at %s" % (article["id"], p, scheduled_at.isoformat()))
+    print("Enqueued %d posts from %d articles across %s" % (enqueued, len(rows), platforms))
     return 0
 
 
@@ -75,6 +95,17 @@ def cmd_post(args) -> int:
                          media_getter=_media_getter_factory(config))
     print(result)
     return 0
+
+
+def cmd_fetch_metrics(args) -> int:
+    from .metrics import fetch_bluesky_metrics
+
+    config = Config.from_env()
+    conn = db.get_conn(config.database_url)
+    db.ensure_schema(conn)
+    result = fetch_bluesky_metrics(conn, config, limit=args.limit)
+    print(result)
+    return 0 if "error" not in result else 1
 
 
 def cmd_metrics(args) -> int:
@@ -94,9 +125,9 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="nexus-social")
     sub = parser.add_subparsers(dest="cmd", required=True)
 
-    q = sub.add_parser("queue", help="Enqueue candidate articles for posting")
+    q = sub.add_parser("queue", help="Enqueue socialRepeat live articles for posting")
     q.add_argument("--magazine", default=None)
-    q.add_argument("--status", default="approved")
+    q.add_argument("--status", default="live")
     q.add_argument("--platform", default=None)
     q.set_defaults(func=cmd_queue)
 
@@ -105,6 +136,10 @@ def main(argv: list[str] | None = None) -> int:
     p.add_argument("--platform", default=None)
     p.add_argument("--limit", type=int, default=50)
     p.set_defaults(func=cmd_post)
+
+    fm = sub.add_parser("fetch-metrics", help="Fetch Bluesky engagement metrics for posted posts")
+    fm.add_argument("--limit", type=int, default=100)
+    fm.set_defaults(func=cmd_fetch_metrics)
 
     m = sub.add_parser("metrics", help="Show post status counts")
     m.set_defaults(func=cmd_metrics)

@@ -11,10 +11,11 @@ import AdminLinkDrop from "./AdminLinkDrop";
 import AdminSources from "./AdminSources";
 import AdminStats from "./AdminStats";
 import AdminSocial from "./AdminSocial";
+import AdminSocialQueue from "./AdminSocialQueue";
 import AdminTraffic from "./AdminTraffic";
 import AdminPublishing from "./AdminPublishing";
 
-type TabId = "inbox" | "linkdrop" | "users" | "magazines" | "pins" | "sources" | "stats" | "social" | "traffic" | "publishing";
+type TabId = "inbox" | "linkdrop" | "users" | "magazines" | "pins" | "sources" | "stats" | "social" | "socialqueue" | "traffic" | "publishing";
 
 export default function AdminHome() {
   const { currentTheme } = useTheme();
@@ -30,6 +31,7 @@ export default function AdminHome() {
     { id: "stats", label: "📊 Stats" },
     { id: "traffic", label: "🚦 Traffic" },
     { id: "social", label: "🌐 Social" },
+    { id: "socialqueue", label: "📣 Social Queue" },
     { id: "pins", label: "📌 Pins" },
   ];
 
@@ -67,6 +69,7 @@ export default function AdminHome() {
           : tab === "stats" ? <AdminStats />
           : tab === "traffic" ? <AdminTraffic />
           : tab === "social" ? <AdminSocial />
+          : tab === "socialqueue" ? <AdminSocialQueue />
           : <AdminPins />}
       </div>
     </main>

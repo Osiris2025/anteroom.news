@@ -41,14 +41,24 @@ def ensure_schema(conn) -> None:
 
 
 def enqueue(conn, row: dict[str, Any]) -> None:
-    """Insert a queued social_post (idempotent on article_id+platform)."""
+    """Insert a queued social_post (idempotent on article_id+platform).
+
+    Re-queueing an existing queued/failed row refreshes its schedule and text.
+    Posted rows are never touched.
+    """
     with conn.cursor() as cur:
         cur.execute(
             """
             INSERT INTO social_post
               (id, article_id, platform, status, post_text, media_url, scheduled_at)
             VALUES (%s, %s, %s, 'queued', %s, %s, %s)
-            ON CONFLICT (article_id, platform) DO NOTHING
+            ON CONFLICT (article_id, platform) DO UPDATE
+              SET status = 'queued',
+                  post_text = EXCLUDED.post_text,
+                  media_url = EXCLUDED.media_url,
+                  scheduled_at = EXCLUDED.scheduled_at,
+                  error = NULL
+            WHERE social_post.status <> 'posted'
             """,
             (
                 row.get("id"),
@@ -81,6 +91,29 @@ def mark_failed(conn, post_row_id: str, error: str) -> None:
         cur.execute(
             "UPDATE social_post SET status='failed', error=%s WHERE id=%s",
             (error[:1000], post_row_id),
+        )
+    conn.commit()
+
+
+def requeue(conn, post_row_id: str, scheduled_at=None) -> None:
+    """Reset a failed post back to queued so publish_due can retry it."""
+    with conn.cursor() as cur:
+        cur.execute(
+            """
+            UPDATE social_post
+            SET status='queued', error=NULL, scheduled_at=COALESCE(%s, now())
+            WHERE id=%s AND status='failed'
+            """,
+            (scheduled_at, post_row_id),
+        )
+    conn.commit()
+
+
+def update_metrics(conn, post_row_id: str, metrics: dict) -> None:
+    with conn.cursor() as cur:
+        cur.execute(
+            "UPDATE social_post SET metrics=%s::jsonb WHERE id=%s",
+            (psycopg2.extras.Json(metrics), post_row_id),
         )
     conn.commit()
 

@@ -5,6 +5,7 @@ import TopNavItems from '@/components/TopNavItems';
 import MagazineSearch from '@/components/MagazineSearch';
 import NotificationBell from '@/components/NotificationBell';
 import { useSession } from '@/lib/auth-client';
+import ProfileMenu from '@/components/ProfileMenu';
 
 // The two hamburger triggers live INSIDE the navbar as normal in-flow elements
 // (never `position:fixed` overlaying the sticky bar). This sidesteps a WebKit/iOS
@@ -78,6 +79,7 @@ export default function Navbar() {
               </Link>
             )}
             <NotificationBell />
+            <ProfileMenu />
             <Toggle
               ariaLabel="Open explore panel"
               eventName="nexus:toggle-explore"

@@ -123,11 +123,89 @@ function SignedInView({ theme, onSignOut }: { theme: { box: string; ink: string;
     finally { setCpBusy(false); }
   };
 
+  // ---- Profile picture + display name (2026-09-06) ----
+  const [displayName, setDisplayName] = useState(user?.name || "");
+  const [avatarMsg, setAvatarMsg] = useState<{ t: string; k: "ok" | "err" } | null>(null);
+  const [avatarBusy, setAvatarBusy] = useState(false);
+
+  const pickAvatar = (file: File | null) => {
+    if (!file) return;
+    setAvatarMsg(null);
+    if (!file.type.startsWith("image/")) { setAvatarMsg({ t: "Pick an image file.", k: "err" }); return; }
+    if (file.size > 8 * 1024 * 1024) { setAvatarMsg({ t: "Image too large (max 8 MB).", k: "err" }); return; }
+    setAvatarBusy(true);
+    const img = new Image();
+    const reader = new FileReader();
+    reader.onload = () => {
+      img.onload = async () => {
+        try {
+          // Downscale to max 256x256, JPEG quality 0.85 -> compact data URL
+          const max = 256;
+          const scale = Math.min(1, max / Math.max(img.width, img.height));
+          const w = Math.max(1, Math.round(img.width * scale));
+          const h = Math.max(1, Math.round(img.height * scale));
+          const canvas = document.createElement("canvas");
+          canvas.width = w; canvas.height = h;
+          const ctx = canvas.getContext("2d");
+          if (!ctx) throw new Error("canvas unavailable");
+          ctx.drawImage(img, 0, 0, w, h);
+          const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+          const r: any = await authClient.updateUser({ image: dataUrl });
+          if (r?.error) setAvatarMsg({ t: r.error.message || "Could not save picture.", k: "err" });
+          else setAvatarMsg({ t: "Profile picture saved.", k: "ok" });
+        } catch (e: any) {
+          setAvatarMsg({ t: e?.message || "Could not process image.", k: "err" });
+        } finally { setAvatarBusy(false); }
+      };
+      img.src = String(reader.result);
+    };
+    reader.onerror = () => { setAvatarMsg({ t: "Could not read file.", k: "err" }); setAvatarBusy(false); };
+    reader.readAsDataURL(file);
+  };
+
+  const saveName = async () => {
+    setAvatarBusy(true); setAvatarMsg(null);
+    try {
+      const r: any = await authClient.updateUser({ name: displayName.trim() });
+      if (r?.error) setAvatarMsg({ t: r.error.message || "Could not save name.", k: "err" });
+      else setAvatarMsg({ t: "Display name saved.", k: "ok" });
+    } catch (e: any) { setAvatarMsg({ t: e?.message || "Error", k: "err" }); }
+    finally { setAvatarBusy(false); }
+  };
+
   return (
     <>
       <section className="rounded-xl p-6 mb-6 border" style={s.card}>
         <h2 className="text-xl font-bold mb-2" style={{ color: ink }}>Account</h2>
-        <p className="text-sm" style={{ color: body }}><b>{user?.name}</b><br />{user?.email}<br />ID: {user?.id}</p>
+        <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 12 }}>
+          {user?.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={user.image} alt="" width={64} height={64} style={{ width: 64, height: 64, borderRadius: "50%", objectFit: "cover", border: `1px solid ${accent}55` }} />
+          ) : (
+            <span style={{ width: 64, height: 64, borderRadius: "50%", display: "inline-flex", alignItems: "center", justifyContent: "center", background: "rgba(127,127,127,.18)", border: `1px solid ${accent}55`, fontSize: 22, fontWeight: 800, color: body }}>
+              {(user?.name || "?").split(/\s+/).slice(0, 2).map((w: string) => w.charAt(0).toUpperCase()).join("")}
+            </span>
+          )}
+          <div>
+            <div style={{ fontWeight: 700, color: ink }}>{user?.name}</div>
+            <div style={{ fontSize: 13, color: body }}>{user?.email}</div>
+            <label style={{ display: "inline-block", marginTop: 6, fontSize: 12.5, cursor: "pointer", color: accent }}>
+              {avatarBusy ? "Saving…" : "Change picture…"}
+              <input type="file" accept="image/*" style={{ display: "none" }} onChange={(e) => pickAvatar(e.target.files?.[0] || null)} />
+            </label>
+            {user?.image && (
+              <button onClick={async () => { setAvatarBusy(true); try { await authClient.updateUser({ image: null }); setAvatarMsg({ t: "Picture removed.", k: "ok" }); } finally { setAvatarBusy(false); } }} style={{ display: "block", marginTop: 4, fontSize: 12, background: "none", border: "none", color: "#ff6b6b", cursor: "pointer", padding: 0 }}>
+                Remove picture
+              </button>
+            )}
+          </div>
+        </div>
+        <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+          <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Display name" style={{ ...s.input, maxWidth: 260 }} />
+          <button onClick={saveName} disabled={avatarBusy} className="px-4 py-2 rounded-lg font-semibold" style={{ border: `1px solid ${accent}`, color: accent, background: "transparent", cursor: "pointer" }}>{avatarBusy ? "…" : "Save name"}</button>
+        </div>
+        <p className="text-sm" style={{ color: body, marginTop: 8, opacity: 0.7 }}>ID: {user?.id}</p>
+        {avatarMsg && <p className="text-sm mt-2" style={{ color: avatarMsg.k === "ok" ? "#22c55e" : "#ef4444" }}>{avatarMsg.t}</p>}
         <div className="mt-4 flex flex-wrap gap-3">
           <button onClick={onSignOut} className="px-5 py-2 rounded-lg font-semibold text-white" style={{ background: "#ef4444" }}>Sign Out</button>
           <button onClick={async () => { const r: any = await authClient.passkey.addPasskey({ name: "Primary" }); alert(r?.error?.message || "Passkey registered ✓ (HTTPS required to actually prompt)"); }} className="px-5 py-2 rounded-lg font-semibold" style={{ border: `1px solid ${accent}`, color: accent }}>&#128272; Register a Passkey</button>

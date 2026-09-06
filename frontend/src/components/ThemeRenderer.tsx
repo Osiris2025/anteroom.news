@@ -5,6 +5,7 @@ import { useTheme } from "@/lib/ThemeContext";
 import { renderTemplate, MAGAZINES } from "@/lib/themes";
 import LiveFeed from "@/components/LiveFeed";
 import MagazineTopStories from "@/components/MagazineTopStories";
+import HomeHero from "@/components/HomeHero";
 import MagazineEditorial from "@/components/MagazineEditorial";
 import FollowButton from "@/components/FollowButton";
 
@@ -100,6 +101,13 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
     descs,
     mapStories: mapStories || undefined,
   };
+  // Homepage composition (2026-09-06): HomeHero replaces the old mast + magazine
+  // showcase + static "Top stories" filler. magScope is the theme engine's own
+  // suppression flag (scoped pages use it) — set it ONLY for the homepage so the
+  // theme chrome (crawl/footer/CSS) still applies. themes.ts is NOT modified.
+  if (!magazine) {
+    structure.magScope = "homepage";
+  }
   const html = renderTemplate(structure);
 
   useEffect(() => {
@@ -149,7 +157,10 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
           <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
         </>
       ) : (
-        <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
+        <>
+          <HomeHero dbMagazines={dbMagazines || []} />
+          <div ref={shellRef} data-theme-shell="" dangerouslySetInnerHTML={{ __html: html }} />
+        </>
       )}
     </div>
   );

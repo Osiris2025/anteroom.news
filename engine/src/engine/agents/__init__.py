@@ -761,7 +761,7 @@ _AGGREGATOR_LINK_PATTERNS = (
     "news.google.com/rss/articles",
 )
 
-_BOILERPLATE_RE = re.compile(r"submitted by|\[link\]|\[comments\]|^\s*\[Reddit r", re.I)
+_BOILERPLATE_RE = re.compile(r"submitted by|\[link\]|\[comments\]|^\s*\[Reddit r|^Article URL:|^Comments URL:|^Points: \d+|^\d+ points?\b|^\d+ comments?\b", re.I | re.M)
 
 
 def has_substance(art: dict) -> bool:

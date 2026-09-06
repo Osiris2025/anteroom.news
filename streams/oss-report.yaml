@@ -31,9 +31,6 @@ ingestion:
     - type: rss
       url: "https://opensource.com/feed"
       name: "Opensource.com"
-    - type: rss
-      url: "https://hnrss.org/frontpage"
-      name: "Hacker News"
 
 social:
   accounts:

@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { headers } from "next/headers";
 import { eq, and, sql, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { article } from "@/drizzle/schema";
+import { article, deletionLog, source } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
@@ -20,6 +20,9 @@ async function getRole(): Promise<string> {
 const FROM: Record<string, string[]> = {
   approve: ["draft"],
   publish: ["approved"],
+  // Bulk delete is DRAFTS-ONLY by construction: the eligible-status machinery
+  // makes any other status unmatchable, whatever the UI sends.
+  "delete-drafts": ["draft"],
 };
 const TO: Record<string, string> = { approve: "approved", publish: "live" };
 
@@ -63,10 +66,56 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     const action = String(body.action || "");
-    if (!FROM[action]) return Response.json({ error: "action must be approve|publish" }, { status: 400 });
+    if (!FROM[action]) return Response.json({ error: "action must be approve|publish|delete-drafts" }, { status: 400 });
     const magazine = String(body.magazine || "all");
     const status = String(body.status || "all");
     const q = String(body.q || "").trim();
+
+    // ---- DELETE-DRAFTS: drafts only, ever. ----
+    if (action === "delete-drafts") {
+      // Extra hard guard on top of FROM: a specific status filter must be 'draft'.
+      if (status && status !== "all" && status !== "draft") {
+        return Response.json({ error: "Delete All works on DRAFTS only — filter is '" + status + "'" }, { status: 400 });
+      }
+      // Optional typed-count confirmation (belt and braces on top of UI confirm).
+      const expected = Number(body.confirmCount);
+      const scope = buildConds(action, magazine, status, q);
+      if (Number.isFinite(expected) && expected > 0) {
+        const c = await db.select({ n: sql<number>`count(*)::int` }).from(article).where(scope);
+        if ((c[0]?.n || 0) !== expected) {
+          return Response.json({ error: `Count mismatch: scope has ${c[0]?.n || 0} drafts, not ${expected}. Nothing deleted.` }, { status: 409 });
+        }
+      }
+      // Select the doomed rows first so we can log + strike sources.
+      const doomed = await db.select({
+        id: article.id, title: article.title, sourceUrl: article.sourceUrl,
+        sourceName: article.sourceName, magazineId: article.magazineId,
+      }).from(article).where(scope);
+      if (doomed.length) {
+        await db.insert(deletionLog).values(doomed.map((r) => ({
+          id: crypto.randomUUID(), articleId: r.id, title: r.title,
+          sourceUrl: r.sourceUrl, sourceName: r.sourceName,
+          magazineId: r.magazineId, reason: "bulk-delete-drafts",
+        })));
+        // Per-source strike counts (same semantics as single delete).
+        const bySource = new Map<string, number>();
+        for (const r of doomed) {
+          if (!r.sourceName || !r.magazineId) continue;
+          const key = r.sourceName + "\u0000" + r.magazineId;
+          bySource.set(key, (bySource.get(key) || 0) + 1);
+        }
+        for (const [key, n] of bySource) {
+          const [srcName, magId] = key.split("\u0000");
+          await db.update(source).set({
+            deleteCount: sql`${source.deleteCount} + ${n}`,
+            lastDeleteAt: new Date(),
+          }).where(and(eq(source.name, srcName), eq(source.magazineId, magId)));
+        }
+      }
+      const rows = await db.delete(article).where(scope).returning({ id: article.id });
+      return Response.json({ updated: rows.length, action, scope: { magazine, status, q } });
+    }
+    // ---- status-mutating actions below ----
     const upd: any = { status: TO[action] };
     if (action === "publish") upd.publishedAt = new Date();
     const rows = await db.update(article).set(upd).where(buildConds(action, magazine, status, q)).returning({ id: article.id });

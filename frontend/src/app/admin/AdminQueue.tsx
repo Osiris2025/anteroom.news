@@ -177,7 +177,7 @@ export default function AdminQueue() {
   const [mag, setMag] = useState("all");
   const [status, setStatus] = useState("all");
   const [q, setQ] = useState("");
-  const [counts, setCounts] = useState<{ approve: number; publish: number } | null>(null);
+  const [counts, setCounts] = useState<{ approve: number; publish: number; "delete-drafts": number } | null>(null);
   const [err, setErr] = useState("");
   const [genLoading, setGenLoading] = useState(false);
   // Growing list of subcategories, KEYED BY PARENT MAGAZINE so an article only
@@ -313,6 +313,30 @@ export default function AdminQueue() {
   const bulkApprove = () => runBulk("approve");
   const bulkPublish = () => runBulk("publish");
 
+  // BULK DELETE — DRAFTS ONLY. Never offered for any other status; requires the
+  // user to type the exact count into the confirm prompt (typed count is also
+  // verified server-side). Deleted articles land in deletion_log + strike sources.
+  const bulkDeleteDrafts = async () => {
+    if (busy) return;
+    const n = counts ? counts["delete-drafts"] : 0;
+    if (!n) { alert(`No drafts to delete in ${scopeLabel()}.`); return; }
+    const answer = prompt(
+      `DELETE ${n.toLocaleString()} DRAFT article${n === 1 ? "" : "s"} in ${scopeLabel()}?\n\n` +
+      `This is permanent (metadata is kept in deletion_log; sources take strikes).\n` +
+      `Type the count ${n} to confirm:`
+    );
+    if (answer === null) return;
+    if (answer.trim() !== String(n)) { alert("Count didn't match — nothing deleted."); return; }
+    setBusy("deleting");
+    try {
+      const r = await fetch("/api/admin/queue/bulk", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "delete-drafts", magazine: mag, status, q: q.trim(), confirmCount: n }) });
+      const j = await r.json();
+      if (j.error) setErr(j.error); else setErr(`Deleted ${j.updated.toLocaleString()} drafts.`);
+    } catch (e: any) { setErr(e.message); }
+    setBusy("");
+    load();
+  };
+
   // create a new magazine on demand
   const newMag = async () => {
     const name = prompt("New magazine name:");
@@ -419,6 +443,9 @@ export default function AdminQueue() {
         )}
         {counts && counts.publish > 0 && (
           <button onClick={bulkPublish} disabled={!!busy} style={{ ...btn, color: "#58a6ff", borderColor: "rgba(88,166,255,.4)", fontWeight: 700 }}>{busy === "publishing" ? "⏳ Publishing…" : `📤 Publish All Approved (${counts.publish.toLocaleString()})`}</button>
+        )}
+        {counts && counts["delete-drafts"] > 0 && (
+          <button onClick={bulkDeleteDrafts} disabled={!!busy} style={{ ...btn, color: "#ff6b6b", borderColor: "rgba(255,107,107,.4)", fontWeight: 700 }}>{busy === "deleting" ? "Deleting..." : `Delete All Drafts (${counts["delete-drafts"].toLocaleString()})`}</button>
         )}
         <button onClick={genWWN} style={{ ...btn, color: "#ff6b9d", borderColor: "rgba(255,107,157,.4)", fontWeight: 700 }} disabled={genLoading}>🐱 {genLoading ? "Generating…" : "Generate WWN Article"}</button>
         <button onClick={newMag} title="Create a new magazine" style={{ ...btn, color: "var(--accent,#ffd700)", borderColor: "rgba(255,215,0,.4)" }}>＋ New Magazine</button>

@@ -2,13 +2,59 @@
 
 Install: pip install atproto
 Credentials: BLUESKY_HANDLE + BLUESKY_APP_PASSWORD env vars.
+
+Clickable links: Bluesky only renders a URL as a tappable link when the post
+record carries a richtext facet (byte range + External link). Plain-text URLs
+in a facet-less record render inert on many clients, so we always build facets
+for detected URLs and attach an External embed (link card) when no photo.
 """
 from __future__ import annotations
 
+import re
 from typing import Any
 
 from .base import BaseAdapter
 from ..config import Config
+
+_URL_RE = re.compile("https?://[^\\s<>\"]+")
+
+
+def _build_facets_and_embed(client: Any, text: str):
+    """Return (facets, embed) for a post text.
+
+    - Every URL in the text gets a link facet -> tappable everywhere.
+    - The LAST URL additionally gets an External embed (link card preview).
+    """
+    from atproto import models
+    from atproto_client.models.app.bsky.richtext.facet import ByteSlice, Main as FacetMain, Link
+
+    facets = []
+    last_url = None
+    for m in _URL_RE.finditer(text):
+        url = m.group(0)
+        # byte offsets (utf-8), NOT python char offsets
+        b_start = len(text[: m.start()].encode("utf-8"))
+        b_end = b_start + len(url.encode("utf-8"))
+        facets.append(FacetMain(
+            index=ByteSlice(byte_start=b_start, byte_end=b_end),
+            features=[Link(uri=url)],
+        ))
+        last_url = url
+
+    embed = None
+    if last_url:
+        try:
+            embed = models.AppBskyEmbedExternal.Main(
+                external=models.AppBskyEmbedExternal.External(
+                    uri=last_url,
+                    title="Anteroom",
+                    description="Read the full story on Anteroom",
+                )
+            )
+        except Exception:
+            embed = None
+
+    return (facets or None), embed
 
 
 class BlueskyAdapter(BaseAdapter):
@@ -25,6 +71,8 @@ class BlueskyAdapter(BaseAdapter):
         client = Client()
         client.login(self.config.bluesky_handle, self.config.bluesky_password)
 
+        facets, link_embed = _build_facets_and_embed(client, text)
+
         embed = None
         if media_path:
             try:
@@ -37,8 +85,11 @@ class BlueskyAdapter(BaseAdapter):
                 )
             except Exception:
                 embed = None
+        # No photo -> attach the link card so the article preview renders.
+        if embed is None:
+            embed = link_embed
 
-        resp = client.send_post(text=text, embed=embed)
+        resp = client.send_post(text=text, facets=facets, embed=embed)
         uri = str(getattr(resp, "uri", ""))
         post_url = f"https://bsky.app/profile/{self.config.bluesky_handle}/post/{uri.rstrip('/').split('/')[-1]}" if uri else ""
         return {"post_id": uri, "post_url": post_url}

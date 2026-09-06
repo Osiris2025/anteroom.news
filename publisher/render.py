@@ -11,6 +11,8 @@ Character caps (approximate, per platform):
 """
 from __future__ import annotations
 
+import re
+
 from .config import Config
 
 # Per-platform max text length for the visible post body (without the link).
@@ -23,7 +25,8 @@ MAX_TEXT = {
 # Magazine name -> short, on-brand opener. Fallback below.
 MAGAZINE_OPENERS = {
     "weekly-weird-news": "In today's Weekly Weird News:",
-    "weird-and-wild": "From New Frontiers in Science:",
+    "weird-and-wild": "This one's wild —",
+    "ai-frontier": "AI Frontiers:",
     "tech-pulse": "Tech Pulse:",
     "poli-split": "Political Picture:",
     "political picture": "Political Picture:",
@@ -34,7 +37,7 @@ MAGAZINE_OPENERS = {
     "vital-sign": "Vital Signs:",
     "vital signs": "Vital Signs:",
 }
-DEFAULT_OPENER = "Read this from AI News Nexus:"
+DEFAULT_OPENER = "From Anteroom:"
 
 
 def _slugify(value: str) -> str:
@@ -50,8 +53,9 @@ def render_post(article: dict, config: Config, platform: str) -> str:
     platform = platform.lower()
     cap = MAX_TEXT.get(platform, 280)
 
-    hook = (article.get("headline") or "").strip() or (article.get("title") or "").strip()
-    summary = (article.get("summary") or "").strip()
+    _TAG_RE = re.compile(r"</?[a-zA-Z_][a-zA-Z0-9_]*>")
+    hook = _TAG_RE.sub("", (article.get("headline") or "").strip() or (article.get("title") or "").strip()).strip()
+    summary = _TAG_RE.sub("", (article.get("summary") or "").strip()).strip()
 
     mag = (article.get("magazine_name") or "").strip()
     key = mag.lower()
@@ -62,20 +66,24 @@ def render_post(article: dict, config: Config, platform: str) -> str:
     # Start with opener + hook, then a short teaser if room, then the link.
     body = f"{opener} {hook}".strip()
     if summary and len(body) + len(summary) + 1 <= cap:
-        body = f"{body} {summary}".strip()
+        body = f"{body}\n\n{summary}".strip()
     else:
         # Teaser clip so we still hint without overflowing.
         room = cap - len(body) - 1
         if room > 20:
-            teaser = summary[:room].rsplit(" ", 1)[0].rstrip(".,;:")
-            body = f"{body} {teaser}".strip()
+            teaser = summary[:room]
+            if len(summary) > room:
+                teaser = teaser.rsplit(" ", 1)[0].rstrip(".,;: ") + "\u2026"
+            else:
+                teaser = teaser.rstrip()
+            body = f"{body}\n\n{teaser}".strip()
 
     # Ensure the link fits; the link is the whole point, so truncate prose to fit.
-    link_len = len(url) + 1  # newline + url
+    link_len = len(url) + 2  # blank line + url
     if len(body) + link_len > cap:
-        room = cap - link_len
-        body = body[:room].rsplit(" ", 1)[0].rstrip(".,;:")
-    return f"{body}\n{url}"
+        room = cap - link_len - 1
+        body = body[:room].rsplit(" ", 1)[0].rstrip(".,;: ") + "\u2026"
+    return f"{body}\n\n{url}"
 
 
 def render_hashtags(article: dict, platform: str) -> str:

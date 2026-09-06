@@ -65,7 +65,9 @@ _JUNK_DEAL_RE = re.compile(
     r"off\s+your\s+(order|purchase|first\s+order)|best\s+deals?\s+(for|this|of)\b)\b|"
     r"\bdeals?\s+of\s+the\s+day\b|\bon\s+sale\b|\bclearance\b|\bmarked\s+down\b|"
     r"\bdeal\s+alert\b|\bprice\s+drop\b|\btoday\s+only\b|"
-    r"\b(today\'?s?\s+|this\s+)deals?\b",
+    r"\b(today\'?s?\s+|this\s+)deals?\b|"
+    r"\b(subscribe|subscribers?|subscription)\b|\bnewsletters?\b|"
+    r"\bsign\s?up\b|\bwebinar\b|\bmailing\s+list\b|\broundup\s+of\b",
     re.IGNORECASE,
 )
 

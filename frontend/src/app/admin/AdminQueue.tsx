@@ -53,7 +53,7 @@ function TitlePreview({ a }: { a: QArticle }) {
   }, [open]);
 
   return (
-    <span ref={ref} style={{ display: "block", position: "relative", marginBottom: 6 }}>
+    <span ref={ref} style={{ display: "block", marginBottom: 6 }}>
       <span
         onClick={() => setOpen((v) => !v)}
         title="Click to preview the article"
@@ -64,49 +64,74 @@ function TitlePreview({ a }: { a: QArticle }) {
       >
         {a.title}
       </span>
-      {open && (
-        <span style={{
-          position: "absolute", top: "calc(100% + 8px)", left: 0, zIndex: 70,
-          display: "block", width: "min(560px, 86vw)",
-          background: "rgba(19,22,26,.99)", color: "#dfe3ea",
-          border: "1px solid rgba(150,150,150,.35)", borderRadius: 12,
-          boxShadow: "0 16px 44px rgba(0,0,0,.55)", overflow: "hidden",
-        }}>
-          <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", borderBottom: "1px solid rgba(150,150,150,.18)", fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 700, color: "var(--accent,#ffd700)" }}>
-            Quick review
-            <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", color: "#9aa0aa", fontSize: 14, cursor: "pointer", padding: "0 4px" }} aria-label="Close">✕</button>
-          </span>
-          {a.imageUrl && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={a.imageUrl} alt="" style={{ display: "block", width: "100%", maxHeight: 220, objectFit: "cover" }} />
-          )}
-          <span style={{ display: "block", padding: "12px 14px", maxHeight: "48vh", overflowY: "auto" }}>
-            <span style={{ display: "block", fontWeight: 800, fontSize: 15, lineHeight: 1.3, marginBottom: 8 }}>{a.title}</span>
-            {a.summary && (
-              <span style={{ display: "block", fontSize: 13, lineHeight: 1.55, color: "#c6ccd6", whiteSpace: "pre-wrap" }}>
-                <b style={{ color: "#8f96a3", fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", display: "block", marginBottom: 3 }}>Summary</b>
-                {a.summary}
-              </span>
-            )}
-            {a.commentary && (
-              <span style={{ display: "block", fontSize: 13, lineHeight: 1.55, color: "#b9c2cf", whiteSpace: "pre-wrap", marginTop: 10, borderTop: "1px solid rgba(150,150,150,.15)", paddingTop: 10 }}>
-                <b style={{ color: "#8f96a3", fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", display: "block", marginBottom: 3 }}>Commentary</b>
-                {a.commentary}
-              </span>
-            )}
-            {!a.summary && !a.commentary && (
-              <span style={{ display: "block", fontSize: 13, color: "#8a8f98" }}>No summary or commentary on this one — check the source directly.</span>
-            )}
-          </span>
-          <span style={{ display: "flex", gap: 8, padding: "10px 12px", borderTop: "1px solid rgba(150,150,150,.18)" }}>
-            {a.sourceUrl && (
-              <a href={a.sourceUrl} target="_blank" rel="noreferrer" style={{ ...btn, textDecoration: "none", display: "inline-block" }}>Source ↗</a>
-            )}
-            <a href={`/articles/${a.id}`} target="_blank" rel="noreferrer" style={{ ...btn, textDecoration: "none", display: "inline-block", color: "var(--accent,#ffd700)", borderColor: "rgba(255,215,0,.4)" }}>Open on site ↗</a>
-          </span>
-        </span>
+      {open && typeof document !== "undefined" && (
+        <PreviewModal a={a} onClose={() => setOpen(false)} />
       )}
     </span>
+  );
+}
+
+// PreviewModal — large centered article preview. Full-width images, horizontally
+// unconstrained text, whole body scrolls. Esc / backdrop / ✕ to close.
+function PreviewModal({ a, onClose }: { a: QArticle; onClose: () => void }) {
+  useEffect(() => {
+    const onEsc = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onEsc);
+    return () => document.removeEventListener("keydown", onEsc);
+  }, [onClose]);
+
+  return (
+    <div
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+      style={{
+        position: "fixed", inset: 0, zIndex: 1000,
+        background: "rgba(0,0,0,.62)", backdropFilter: "blur(2px)",
+        display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
+      }}
+    >
+      <div style={{
+        width: "min(920px, 94vw)", maxHeight: "88vh",
+        display: "flex", flexDirection: "column",
+        background: "#15181d", color: "#dfe3ea",
+        border: "1px solid rgba(150,150,150,.35)", borderRadius: 14,
+        boxShadow: "0 24px 70px rgba(0,0,0,.6)", overflow: "hidden",
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 16px", borderBottom: "1px solid rgba(150,150,150,.18)", flexShrink: 0 }}>
+          <span style={{ fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 700, color: "var(--accent,#ffd700)" }}>
+            Quick review {a.magazine ? `\u00b7 ${a.magazine.name}` : ""}
+          </span>
+          <button onClick={onClose} style={{ background: "none", border: "none", color: "#9aa0aa", fontSize: 16, cursor: "pointer", padding: "0 4px" }} aria-label="Close">✕</button>
+        </div>
+        {a.imageUrl && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={a.imageUrl} alt="" style={{ display: "block", width: "100%", maxHeight: 320, objectFit: "cover", flexShrink: 0 }} />
+        )}
+        <div style={{ padding: "16px 20px", overflowY: "auto" }}>
+          <div style={{ fontWeight: 800, fontSize: 19, lineHeight: 1.3, marginBottom: 12 }}>{a.title}</div>
+          {a.summary && (
+            <div style={{ fontSize: 14, lineHeight: 1.65, color: "#c6ccd6", whiteSpace: "pre-wrap" }}>
+              <b style={{ color: "#8f96a3", fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", display: "block", marginBottom: 4 }}>Summary</b>
+              {a.summary}
+            </div>
+          )}
+          {a.commentary && (
+            <div style={{ fontSize: 14, lineHeight: 1.65, color: "#b9c2cf", whiteSpace: "pre-wrap", marginTop: 14, borderTop: "1px solid rgba(150,150,150,.15)", paddingTop: 14 }}>
+              <b style={{ color: "#8f96a3", fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", display: "block", marginBottom: 4 }}>Commentary</b>
+              {a.commentary}
+            </div>
+          )}
+          {!a.summary && !a.commentary && (
+            <div style={{ fontSize: 14, color: "#8a8f98" }}>No summary or commentary on this one — check the source directly.</div>
+          )}
+        </div>
+        <div style={{ display: "flex", gap: 8, padding: "12px 16px", borderTop: "1px solid rgba(150,150,150,.18)", flexShrink: 0 }}>
+          {a.sourceUrl && (
+            <a href={a.sourceUrl} target="_blank" rel="noreferrer" style={{ ...btn, textDecoration: "none", display: "inline-block" }}>Source ↗</a>
+          )}
+          <a href={`/articles/${a.id}`} target="_blank" rel="noreferrer" style={{ ...btn, textDecoration: "none", display: "inline-block", color: "var(--accent,#ffd700)", borderColor: "rgba(255,215,0,.4)" }}>Open on site ↗</a>
+        </div>
+      </div>
+    </div>
   );
 }
 

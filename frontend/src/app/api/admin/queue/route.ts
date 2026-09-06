@@ -67,6 +67,7 @@ export async function GET(req: NextRequest) {
       id: r.article.id,
       title: r.article.title,
       sourceUrl: r.article.sourceUrl,
+      imageUrl: r.article.imageUrl,
       summary: r.article.summary,
       commentary: r.article.commentary,
       warnings: r.article.warnings,

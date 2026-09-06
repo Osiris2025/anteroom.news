@@ -1,10 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTheme } from "@/lib/ThemeContext";
 import { DELETION_REASONS } from "@/lib/deletionReasons";
 
 type QArticle = {
-  id: string; title: string; sourceUrl: string | null; summary: string | null;
+  id: string; title: string; sourceUrl: string | null; imageUrl?: string | null; summary: string | null;
   commentary: string | null;
   warnings: any; status: string; ingress: string; flagged: boolean; suitabilityOk: boolean;
   subcategory: string | null; createdAt: string; publishedAt: string | null; socialRepeat: boolean;
@@ -30,6 +30,85 @@ const EFX_OPTS: { value: string; label: string }[] = [
   { value: "rain", label: "🌧 Rain" },
   { value: "lightning", label: "⚡ Lightning" },
 ];
+
+// TitlePreview — click the article name to open a hover-style review popover:
+// image, summary, commentary, source link, and open-on-site. Closes on X / Esc /
+// outside click. Data comes from the row itself (no extra fetch).
+function TitlePreview({ a }: { a: QArticle }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onDoc = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    const onEsc = (e: KeyboardEvent) => { if (e.key === "Escape") setOpen(false); };
+    document.addEventListener("mousedown", onDoc);
+    document.addEventListener("keydown", onEsc);
+    return () => {
+      document.removeEventListener("mousedown", onDoc);
+      document.removeEventListener("keydown", onEsc);
+    };
+  }, [open]);
+
+  return (
+    <span ref={ref} style={{ display: "block", position: "relative", marginBottom: 6 }}>
+      <span
+        onClick={() => setOpen((v) => !v)}
+        title="Click to preview the article"
+        style={{
+          fontSize: 15, fontWeight: 700, lineHeight: 1.25, cursor: "pointer",
+          borderBottom: "1px dashed rgba(150,150,150,.4)", paddingBottom: 1,
+        }}
+      >
+        {a.title}
+      </span>
+      {open && (
+        <span style={{
+          position: "absolute", top: "calc(100% + 8px)", left: 0, zIndex: 70,
+          display: "block", width: "min(560px, 86vw)",
+          background: "rgba(19,22,26,.99)", color: "#dfe3ea",
+          border: "1px solid rgba(150,150,150,.35)", borderRadius: 12,
+          boxShadow: "0 16px 44px rgba(0,0,0,.55)", overflow: "hidden",
+        }}>
+          <span style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 12px", borderBottom: "1px solid rgba(150,150,150,.18)", fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", fontWeight: 700, color: "var(--accent,#ffd700)" }}>
+            Quick review
+            <button onClick={() => setOpen(false)} style={{ background: "none", border: "none", color: "#9aa0aa", fontSize: 14, cursor: "pointer", padding: "0 4px" }} aria-label="Close">✕</button>
+          </span>
+          {a.imageUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={a.imageUrl} alt="" style={{ display: "block", width: "100%", maxHeight: 220, objectFit: "cover" }} />
+          )}
+          <span style={{ display: "block", padding: "12px 14px", maxHeight: "48vh", overflowY: "auto" }}>
+            <span style={{ display: "block", fontWeight: 800, fontSize: 15, lineHeight: 1.3, marginBottom: 8 }}>{a.title}</span>
+            {a.summary && (
+              <span style={{ display: "block", fontSize: 13, lineHeight: 1.55, color: "#c6ccd6", whiteSpace: "pre-wrap" }}>
+                <b style={{ color: "#8f96a3", fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", display: "block", marginBottom: 3 }}>Summary</b>
+                {a.summary}
+              </span>
+            )}
+            {a.commentary && (
+              <span style={{ display: "block", fontSize: 13, lineHeight: 1.55, color: "#b9c2cf", whiteSpace: "pre-wrap", marginTop: 10, borderTop: "1px solid rgba(150,150,150,.15)", paddingTop: 10 }}>
+                <b style={{ color: "#8f96a3", fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", display: "block", marginBottom: 3 }}>Commentary</b>
+                {a.commentary}
+              </span>
+            )}
+            {!a.summary && !a.commentary && (
+              <span style={{ display: "block", fontSize: 13, color: "#8a8f98" }}>No summary or commentary on this one — check the source directly.</span>
+            )}
+          </span>
+          <span style={{ display: "flex", gap: 8, padding: "10px 12px", borderTop: "1px solid rgba(150,150,150,.18)" }}>
+            {a.sourceUrl && (
+              <a href={a.sourceUrl} target="_blank" rel="noreferrer" style={{ ...btn, textDecoration: "none", display: "inline-block" }}>Source ↗</a>
+            )}
+            <a href={`/articles/${a.id}`} target="_blank" rel="noreferrer" style={{ ...btn, textDecoration: "none", display: "inline-block", color: "var(--accent,#ffd700)", borderColor: "rgba(255,215,0,.4)" }}>Open on site ↗</a>
+          </span>
+        </span>
+      )}
+    </span>
+  );
+}
 
 // ArticleCard — magazine change persists immediately (works even for live articles)
 // but updates the card IN PLACE (no re-sort/re-arrange). Status changes reload the list.
@@ -77,7 +156,7 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
         </span>
       </div>
       <div style={{ padding: 12, flex: 1 }}>
-        <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.25, marginBottom: 6 }}>{a.title}</div>
+        <TitlePreview a={a} />
         <div style={{ fontSize: 10, color: "var(--accent, #ffd700)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
           {magazines.find((m) => m.id === a.magazine?.id)?.name || "Unassigned"}{a.subcategory ? ` / ${a.subcategory}` : ""}
         </div>

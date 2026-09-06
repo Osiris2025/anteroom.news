@@ -117,10 +117,49 @@ def cmd_queue(args) -> int:
     return 0
 
 
+def _drain_campaigns(conn, config) -> int:
+    """Move due campaign items into the social_post queue (per target platform).
+
+    Slots: items are scheduled by the campaign creator; items without a slot
+    get next free slot per campaign-day capacity (posts_per_day, ET window).
+    """
+    from datetime import datetime, timedelta, timezone
+    from .scheduling import schedule_slots
+
+    db.activate_due_campaigns(conn)
+    items = db.due_campaign_items(conn)
+    created = 0
+    for item in items:
+        platforms = item.get("target_platforms") or []
+        # Which platform copies are still missing?
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT platform FROM social_post WHERE campaign_id=%s AND post_text=%s",
+                (item["campaign_id"], item.get("body") or item.get("title") or ""))
+            have = {r[0] for r in cur.fetchall()}
+        missing = [p for p in platforms if p.lower() not in have]
+        if not missing:
+            db.item_mark_posted(conn, item["id"], "")
+            continue
+        # free slots for this campaign today (capacity = posts_per_day * platforms)
+        cap_per_slot_day = max(1, int((item.get("posts_per_day") or 2)))
+        slots = schedule_slots(len(missing), max_per_day=cap_per_slot_day,
+                               first_start=item.get("scheduled_at"))
+        for p, slot in zip(missing, slots):
+            db.enqueue_campaign_item(conn, item, p, slot.isoformat())
+            created += 1
+    if created:
+        print(f"Campaign drain: {created} platform posts queued")
+    return created
+
+
 def cmd_post(args) -> int:
     config = Config.from_env()
     conn = db.get_conn(config.database_url)
     db.ensure_schema(conn)
+    config.load_db_accounts()  # connections: social_account table is truth
+    if not args.dry_run:
+        _drain_campaigns(conn, config)
     platforms = args.platform.split(",") if args.platform else None
     result = publish_due(conn, config, platforms=platforms, dry_run=args.dry_run,
                          media_getter=_media_getter_factory(config))

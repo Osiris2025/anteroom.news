@@ -68,8 +68,12 @@ class BlueskyAdapter(BaseAdapter):
         except ImportError as e:
             raise RuntimeError("Bluesky adapter needs `atproto`. pip install atproto") from e
 
+        # Connection may come from the social_account table (DB) or env fallback
+        acct = getattr(self.config, "db_accounts", {}).get("bluesky", {})
+        handle = acct.get("handle") or self.config.bluesky_handle
+        password = acct.get("app_password") or self.config.bluesky_password
         client = Client()
-        client.login(self.config.bluesky_handle, self.config.bluesky_password)
+        client.login(handle, password)
 
         facets, link_embed = _build_facets_and_embed(client, text)
 

@@ -40,8 +40,41 @@ class Config:
             raise ValueError("SITE_BASE_URL is not set")
         return f"{self.site_base_url}/articles/{article_id}"
 
+    def load_db_accounts(self, database_url: str | None = None) -> None:
+        """Load enabled connections from the social_account table (DB is truth).
+
+        Sets self.db_accounts = {platform: {handle, secret...}}. Env creds remain
+        a fallback when the table has no enabled row for the platform.
+        """
+        url = database_url or self.database_url
+        if not url:
+            self.db_accounts = {}
+            return
+        try:
+            import psycopg2, json
+            conn = psycopg2.connect(url)
+            with conn.cursor() as cur:
+                cur.execute(
+                    "SELECT platform, handle, account_json FROM social_account "
+                    "WHERE enabled = TRUE")
+                rows = cur.fetchall()
+            conn.close()
+            acc: dict[str, dict] = {}
+            for platform, handle, js in rows:
+                try:
+                    data = json.loads(js or "{}")
+                except Exception:
+                    data = {}
+                data["handle"] = handle or data.get("handle") or ""
+                acc[platform.lower()] = data
+            self.db_accounts = acc
+        except Exception:
+            self.db_accounts = {}
+
     def platform_enabled(self, platform: str) -> bool:
         platform = platform.lower()
+        if getattr(self, "db_accounts", None) and platform in self.db_accounts:
+            return True
         if self.enabled_platforms:
             return platform in self.enabled_platforms
         # No explicit list: platform is enabled if it has credentials below.

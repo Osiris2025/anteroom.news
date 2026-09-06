@@ -13,6 +13,7 @@ export type StoryArticle = {
   subcategory?: string | null;
   pinned?: boolean;
   pinKind?: string | null;
+  socialRepeat?: boolean;
   readCount?: number;
   readAt?: string | null;
 };
@@ -73,7 +74,7 @@ export default function StoryCard({ article, onChanged }: { article: StoryArticl
         {isAdmin ? (
           <span className="sc-hover">
             <AdminCardTools articleId={article.id} currentMag={article.magazine?.id || ""} currentSubcat={article.subcategory}
-              featured={false} pinned={!!article.pinned} magazines={magazines} subcats={subcats} onChanged={() => onChanged?.()} />
+              featured={false} pinned={!!article.pinned} socialRepeat={article.socialRepeat === true} magazines={magazines} subcats={subcats} onChanged={() => onChanged?.()} />
           </span>
         ) : null}
         {isAdmin ? (

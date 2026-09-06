@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import { headers } from "next/headers";
-import { eq, and, sql } from "drizzle-orm";
+import { eq, and, sql, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { article } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
@@ -32,7 +32,7 @@ function buildConds(action: string, magazine: string, status: string, q: string)
   if (status && status !== "all") {
     conds.push(eligible.includes(status) ? eq(article.status, status) : sql`false`);
   } else {
-    conds.push(sql`${article.status} = ANY(${eligible})`);
+    conds.push(inArray(article.status, eligible));
   }
   if (q) conds.push(sql`search_vector @@ plainto_tsquery('english', ${q})`);
   return and(...conds);

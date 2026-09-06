@@ -88,6 +88,7 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
         {a.status === "draft" && <Btn onClick={() => onStatus(a.id, "approved")} bg="#00331f" fg="#34d399">✓ Approve</Btn>}
         {a.status === "approved" && <Btn onClick={() => onStatus(a.id, "live")} bg="#06253a" fg="#58a6ff">Publish</Btn>}
         {a.status !== "rejected" && <Btn onClick={() => onStatus(a.id, "rejected")} bg="#3a0a0a" fg="#f87171">✕ Reject</Btn>}
+        <Btn onClick={() => onAct(a.id, { socialRepeat: !a.socialRepeat })} bg={a.socialRepeat ? "#06253a" : "#0d1b2a"} fg={a.socialRepeat ? "#58a6ff" : "#7fb3ff"}>{a.socialRepeat ? "↻ Social ✓" : "↻ Social"}</Btn>
         {a.status === "rejected" && <Btn onClick={() => onStatus(a.id, "draft")} bg="#222" fg="#aaa">↩ Draft</Btn>}
         <select title="Change magazine (applies immediately)" value={a.magazine?.id || ""}
           onChange={(e) => e.target.value && onMag(a.id, e.target.value)} style={{ ...sel, minWidth: 120, padding: "5px 8px", fontSize: 11 }}>
@@ -232,8 +233,8 @@ export default function AdminQueue() {
       .catch((e) => setErr(e.message));
     fetch(`/api/admin/queue/bulk?${params.toString()}`)
       .then((r) => r.json())
-      .then((j) => { if (!j.error) setCounts(j); })
-      .catch(() => {});
+      .then((j) => { if (j.error) setErr("Counts: " + j.error); else setCounts(j); })
+      .catch((e) => setErr("Counts fetch failed: " + (e?.message || e)));
   };
   useEffect(load, [mag, status, q]);
 

@@ -8,6 +8,7 @@ type Props = {
   currentSubcat?: string | null;
   featured?: boolean;
   pinned?: boolean;
+  socialRepeat?: boolean;
   magazines: { id: string; name: string }[];
   subcats: string[];
   onChanged: () => void; // reload cards after an admin action
@@ -17,7 +18,7 @@ type Props = {
 // card in the regular magazine view (admin only). Mirrors the Dispatch queue's
 // tools: approve/reject/draft, move magazine, move subcategory, regenerate
 // commentary, pin. Reuses the same admin article/generate-commentary endpoints.
-export default function AdminCardTools({ articleId, currentMag, currentSubcat, featured, pinned, magazines, subcats, onChanged }: Props) {
+export default function AdminCardTools({ articleId, currentMag, currentSubcat, featured, pinned, socialRepeat: socialRepeatProp, magazines, subcats, onChanged }: Props) {
   const [mag, setMag] = useState(currentMag || "");
   const [subcat, setSubcat] = useState(currentSubcat || "");
   const [busy, setBusy] = useState(false);
@@ -26,6 +27,7 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
   const [editSub, setEditSub] = useState(false);
   const [delOpen, setDelOpen] = useState(false);
   const [delReason, setDelReason] = useState("other");
+  const [social, setSocial] = useState(!!socialRepeatProp);
 
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(""), 2200); };
 
@@ -89,6 +91,7 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
       {statusBtn("↥ Publish", "live", "#0b1f33", "#58a6ff")}
       {statusBtn("✕ Reject", "rejected", "#3a0d0d", "#f57b7b")}
       <button onClick={() => act(() => patch({ status: "draft" }))} disabled={busy} style={btn("#202020", "#ccc", 10)}>↩ Draft</button>
+      <button onClick={() => act(async () => { const ok = await patch({ socialRepeat: !social }); if (ok) setSocial(!social); return ok; })} disabled={busy} style={btn(social ? "#0b1f33" : "#202020", social ? "#58a6ff" : "#ccc", 10)}> {social ? "\u21bb Social \u2713" : "\u21bb Social"} </button>
 
       {/* Delete — ask WHY (drives troublesome-source stats). */}
       {!delOpen ? (

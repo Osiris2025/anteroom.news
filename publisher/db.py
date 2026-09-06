@@ -81,7 +81,7 @@ def mark_posted(conn, post_row_id: str, post_id: str, post_url: str, metrics: di
                 metrics=%s::jsonb, error=NULL
             WHERE id=%s
             """,
-            (post_id, post_url, (metrics or {}), post_row_id),
+            (post_id, post_url, psycopg2.extras.Json(metrics or {}), post_row_id),
         )
     conn.commit()
 

@@ -10,6 +10,7 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 
 from . import db
@@ -46,8 +47,38 @@ def _article_rows(conn, magazine_id: str | None, status: str) -> list[dict]:
 
 
 def _media_getter_factory(config: Config):
+    """Resolve article media: look up article.image_url, download to /tmp, return path."""
+    import urllib.request
+    import tempfile
+
     def _get(row: dict) -> str | None:
-        return None  # media resolution to local file lives in the caller/app
+        try:
+            import psycopg2
+            conn = psycopg2.connect(config.database_url)
+            with conn.cursor() as cur:
+                cur.execute("SELECT image_url FROM article WHERE id = %s", (row["article_id"],))
+                r = cur.fetchone()
+            conn.close()
+            url = (r[0] if r else None) or ""
+            if not url.startswith("http"):
+                return None
+            ext = ".jpg"
+            for e in (".png", ".webp", ".gif", ".jpeg"):
+                if e in url.lower():
+                    ext = e
+                    break
+            path = os.path.join(tempfile.gettempdir(), "social_%d%s" % (abs(hash(url)) % 10**10, ext))
+            if os.path.exists(path) and os.path.getsize(path) > 1000:
+                return path
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0 (compatible; AnteroomSocial/1.0)"})
+            with urllib.request.urlopen(req, timeout=20) as resp, open(path, "wb") as f:
+                data = resp.read()
+                if len(data) < 1000:
+                    return None
+                f.write(data)
+            return path
+        except Exception:
+            return None  # never block a post over media
     return _get
 
 

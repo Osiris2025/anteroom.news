@@ -6,7 +6,7 @@ import AdminCardTools from "@/components/AdminCardTools";
 type LiveArticle = {
   id: string; title: string; headline?: string | null; summary: string | null;
   sourceUrl: string | null; imageUrl?: string | null; subcategory: string | null;
-  featured?: boolean; pinned?: boolean; pinKind?: string | null;
+  featured?: boolean; pinned?: boolean; pinKind?: string | null; socialRepeat?: boolean;
   magazine: { id: string; name: string } | null; publishedAt?: string | null;
   commentary?: string | null;
 };
@@ -247,6 +247,7 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
                 currentMag={c.article.magazine?.id || magazine}
                 currentSubcat={c.article.subcategory}
                 featured={c.article.featured === true}
+                socialRepeat={c.article.socialRepeat === true}
                 pinned={!!c.article.pinned}
                 magazines={magazines}
                 subcats={subcats}

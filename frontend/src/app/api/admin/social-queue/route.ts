@@ -149,6 +149,18 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  if (action === "post-now") {
+    const id = (body.id || "").toString();
+    if (!id) return Response.json({ error: "id required" }, { status: 400 });
+    // Hot item: pull a queued post's slot to now — the hourly publisher run sends it within 15 min.
+    await db.execute(sql`
+      UPDATE social_post
+      SET scheduled_at = now()
+      WHERE id = ${id} AND status = 'queued'
+    `);
+    return Response.json({ ok: true });
+  }
+
   if (action === "retry") {
     const id = (body.id || "").toString();
     if (!id) return Response.json({ error: "id required" }, { status: 400 });

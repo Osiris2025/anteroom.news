@@ -8,7 +8,7 @@ import { sourceLabel, hostOf } from "@/lib/sourceUtil";
 type NewsItem = {
   id: string; title: string; headline?: string | null; summary: string | null;
   sourceUrl: string | null; sourceName?: string | null; imageUrl?: string | null; publishedAt?: string | null;
-  pinned?: boolean; magazineId?: string | null; subcategory?: string | null;
+  pinned?: boolean; magazineId?: string | null; subcategory?: string | null; socialRepeat?: boolean;
 };
 type ModelInfo = { slug: string; name: string; vendor: string; color: string; desc: string };
 
@@ -103,6 +103,7 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
                         currentSubcat={a.subcategory}
                         featured={false}
                         pinned={!!a.pinned}
+                        socialRepeat={a.socialRepeat === true}
                         magazines={magazines}
                         subcats={[]}
                         onChanged={() => setReloadKey((k) => k + 1)}

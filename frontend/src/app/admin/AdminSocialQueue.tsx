@@ -120,6 +120,19 @@ export default function AdminSocialQueue() {
     }
   }
 
+  async function postNow(id: string) {
+    setBusy(id); setErr(""); setMsg("");
+    try {
+      const r = await fetch("/api/admin/social-queue", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "post-now", id }),
+      });
+      const j = await r.json();
+      if (!r.ok) setErr(j.error || "post-now failed");
+      else { setMsg("Hot item — publisher sends it within 15 min."); await load(); }
+    } finally { setBusy(""); }
+  }
+
   async function retry(id: string) {
     setBusy(id); setErr(""); setMsg("");
     try {
@@ -174,6 +187,9 @@ export default function AdminSocialQueue() {
                 {p.magazine || "—"} · {p.platform} · pushes {fmtDate(p.scheduledAt)}
               </div>
             </div>
+            <button style={btnAccent} disabled={busy === p.id} onClick={() => postNow(p.id)}>
+              {busy === p.id ? "…" : "⚡ Post Now"}
+            </button>
             <button style={btnDanger} disabled={busy === p.id} onClick={() => unqueue(p.id)}>
               {busy === p.id ? "…" : "Delete"}
             </button>

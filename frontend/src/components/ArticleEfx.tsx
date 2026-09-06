@@ -7,6 +7,30 @@ const UID = "ae";
 
 function ff(n: string) { return `ae_${n}`; }
 
+// Rain tile generator: 256x256 tile with ~26 randomized short streaks.
+// Seeded PRNG (mulberry32) so SSR and client produce the identical tile (no hydration flash).
+function rainTile(seed: number, baseOpacity: number): string {
+  let t = seed >>> 0;
+  const rnd = () => { t += 0x6D2B79F5; let x = Math.imul(t ^ (t >>> 15), 1 | t); x ^= x + Math.imul(x ^ (x >>> 7), 61 | x); return ((x ^ (x >>> 14)) >>> 0) / 4294967296; };
+  const lines: string[] = [];
+  const n = 26;
+  for (let i = 0; i < n; i++) {
+    const x = Math.round(rnd() * 256);
+    const y = Math.round(rnd() * 256);
+    const len = 9 + Math.round(rnd() * 16);           // 9-25px streak
+    const w = (0.8 + rnd() * 1.1).toFixed(2);          // 0.8-1.9px width
+    const op = (baseOpacity * (0.5 + rnd() * 0.5)).toFixed(2);
+    // slanted streak: dx = len * tan(12deg) ~ len * 0.21
+    const dx = (len * 0.21).toFixed(1);
+    lines.push(`<line x1='${x}' y1='${y}' x2='${x + Number(dx)}' y2='${y + len}' stroke='white' stroke-width='${w}' stroke-opacity='${op}' stroke-linecap='round'/>`);
+  }
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='256' height='256' viewBox='0 0 256 256'>${lines.join("")}</svg>`;
+  return encodeURIComponent(svg).replace(/'/g, "%27").replace(/"/g, "%22");
+}
+const RAIN_TILE_A = rainTile(1337, 0.42);
+const RAIN_TILE_B = rainTile(4242, 0.30);
+const RAIN_TILE_C = rainTile(90210, 0.55);
+
 export default function ArticleEfx({ efx }: { efx: string | null }) {
   if (!efx) return null;
   const b = `${UID}-${efx}`;
@@ -37,16 +61,16 @@ export default function ArticleEfx({ efx }: { efx: string | null }) {
         @keyframes ${ff("wob")}{0%{transform:translateY(-22px)}15%{transform:translateY(2px) skewX(2deg)}35%{transform:translateY(-9px)}70%{transform:translateY(16px) skewX(-3deg)}100%{transform:translateY(-22px)}}
         @keyframes ${ff("flick")}{0%,49%{opacity:.12}50%,100%{opacity:.05}}
 
-        /* Rain — three sparse streak layers at different scales/speeds for depth.
-           Each layer: long transparent gaps, short 2px streaks, falling at an angle.
-           Layers animate translate along the streak axis so motion reads as falling. */
+        /* Rain v3 — randomized SVG streak tiles, 3 parallax layers.
+           Streaks are short rounded lines at pseudo-random x/y/length/opacity,
+           so no repeating pattern reads. Angle: ~12deg from vertical (dx=1,dy=5). */
         .ae-rain{overflow:hidden}
-        .ae-rain::before{content:"";position:absolute;inset:-60% -20%;background:repeating-linear-gradient(103deg,transparent 0 74px,rgba(255,255,255,0.38) 74px 76px);animation:${ff("rainA")} .55s linear infinite}
-        .ae-rain-b::before{background:repeating-linear-gradient(103deg,transparent 0 46px,rgba(255,255,255,0.26) 46px 47.5px);animation:${ff("rainB")} .38s linear infinite}
-        .ae-rain-c::before{background:repeating-linear-gradient(103deg,transparent 0 118px,rgba(200,225,255,0.5) 118px 121px);animation:${ff("rainC")} .8s linear infinite}
-        @keyframes ${ff("rainA")}{0%{transform:translate3d(-14px,-40px,0)}100%{transform:translate3d(4px,40px,0)}}
-        @keyframes ${ff("rainB")}{0%{transform:translate3d(-11px,-40px,0)}100%{transform:translate3d(3px,40px,0)}}
-        @keyframes ${ff("rainC")}{0%{transform:translate3d(-18px,-40px,0)}100%{transform:translate3d(5px,40px,0)}}
+        .ae-rain::before{content:"";position:absolute;inset:-30% -30%;background-image:url("data:image/svg+xml,${RAIN_TILE_A}");background-size:260px 260px;animation:${ff("rainA")} .5s linear infinite}
+        .ae-rain-b::before{background-image:url("data:image/svg+xml,${RAIN_TILE_B}");background-size:170px 170px;animation:${ff("rainB")} .34s linear infinite}
+        .ae-rain-c::before{background-image:url("data:image/svg+xml,${RAIN_TILE_C}");background-size:420px 420px;animation:${ff("rainC")} .9s linear infinite}
+        @keyframes ${ff("rainA")}{0%{transform:translate3d(-10px,-52px,0)}100%{transform:translate3d(2px,52px,0)}}
+        @keyframes ${ff("rainB")}{0%{transform:translate3d(-7px,-40px,0)}100%{transform:translate3d(1.5px,40px,0)}}
+        @keyframes ${ff("rainC")}{0%{transform:translate3d(-14px,-80px,0)}100%{transform:translate3d(3px,80px,0)}}
 
         /* Lightning */
         .ae-flash{background:rgba(255,255,255,0.9);opacity:0;animation:${ff("flash")} 6s steps(1) infinite}

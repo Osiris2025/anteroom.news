@@ -23,7 +23,7 @@ export default function ArticleEfx({ efx }: { efx: string | null }) {
           <span style={{ position: "absolute", bottom: 6, right: 8, fontFamily: "monospace", fontSize: 10, letterSpacing: 1, color: "rgba(255,255,255,0.92)", background: "rgba(0,0,0,0.72)", padding: "2px 6px", borderRadius: 3 }}>REC · 02:47</span>
         </>
       )}
-      {efx === "rain" && <span className="ae-rain" />}
+      {efx === "rain" && (<><span className="ae-rain ae-rain-a" /><span className="ae-rain ae-rain-b" /><span className="ae-rain ae-rain-c" /></>)}
       {efx === "lightning" && (<><span className="ae-flash" /><span className="ae-bolt" /></>)}
 
       <style>{`
@@ -37,10 +37,16 @@ export default function ArticleEfx({ efx }: { efx: string | null }) {
         @keyframes ${ff("wob")}{0%{transform:translateY(-22px)}15%{transform:translateY(2px) skewX(2deg)}35%{transform:translateY(-9px)}70%{transform:translateY(16px) skewX(-3deg)}100%{transform:translateY(-22px)}}
         @keyframes ${ff("flick")}{0%,49%{opacity:.12}50%,100%{opacity:.05}}
 
-        /* Rain */
-        .ae-rain{opacity:.4}
-        .ae-rain::before{content:"";position:absolute;left:-20%;right:-20%;top:-20%;bottom:-20%;background:repeating-linear-gradient(115deg,transparent 0 11px,rgba(255,255,255,0.55) 11px 12px);animation:${ff("rain")} .45s linear infinite}
-        @keyframes ${ff("rain")}{0%{transform:translateY(0)}100%{transform:translateY(34px)}}
+        /* Rain — three sparse streak layers at different scales/speeds for depth.
+           Each layer: long transparent gaps, short 2px streaks, falling at an angle.
+           Layers animate translate along the streak axis so motion reads as falling. */
+        .ae-rain{overflow:hidden}
+        .ae-rain::before{content:"";position:absolute;inset:-60% -20%;background:repeating-linear-gradient(103deg,transparent 0 74px,rgba(255,255,255,0.38) 74px 76px);animation:${ff("rainA")} .55s linear infinite}
+        .ae-rain-b::before{background:repeating-linear-gradient(103deg,transparent 0 46px,rgba(255,255,255,0.26) 46px 47.5px);animation:${ff("rainB")} .38s linear infinite}
+        .ae-rain-c::before{background:repeating-linear-gradient(103deg,transparent 0 118px,rgba(200,225,255,0.5) 118px 121px);animation:${ff("rainC")} .8s linear infinite}
+        @keyframes ${ff("rainA")}{0%{transform:translate3d(-14px,-40px,0)}100%{transform:translate3d(4px,40px,0)}}
+        @keyframes ${ff("rainB")}{0%{transform:translate3d(-11px,-40px,0)}100%{transform:translate3d(3px,40px,0)}}
+        @keyframes ${ff("rainC")}{0%{transform:translate3d(-18px,-40px,0)}100%{transform:translate3d(5px,40px,0)}}
 
         /* Lightning */
         .ae-flash{background:rgba(255,255,255,0.9);opacity:0;animation:${ff("flash")} 6s steps(1) infinite}

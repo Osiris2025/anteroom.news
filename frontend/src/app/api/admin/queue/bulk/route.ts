@@ -1,8 +1,8 @@
 import { NextRequest } from "next/server";
 import { headers } from "next/headers";
-import { eq, and, sql, inArray } from "drizzle-orm";
+import { eq, and, sql, inArray, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
-import { article, deletionLog, source } from "@/drizzle/schema";
+import { article, deletionLog, source, magazine as magazineTable } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
@@ -54,6 +54,34 @@ export async function GET(req: NextRequest) {
     for (const action of Object.keys(FROM)) {
       const r = await db.select({ n: sql<number>`count(*)::int` }).from(article).where(buildConds(action, magazine, status, q));
       out[action] = r[0]?.n || 0;
+    }
+    // Optional: per-magazine + per-source breakdown for one action's scope.
+    const breakdownAction = sp.get("breakdown") || "";
+    if (breakdownAction) {
+      const action: string = breakdownAction;
+      if (!Object.prototype.hasOwnProperty.call(FROM, action)) return Response.json({ error: "unknown action" }, { status: 400 });
+      const scope = buildConds(action, magazine, status, q);
+      const byMag = await db
+        .select({
+          magazine: sql`coalesce(${magazineTable.name}, 'Unassigned')`,
+          n: sql<number>`count(*)::int`,
+        })
+        .from(article)
+        .leftJoin(magazineTable, eq(article.magazineId, magazineTable.id))
+        .where(scope)
+        .groupBy(sql`coalesce(${magazineTable.name}, 'Unassigned')`)
+        .orderBy(desc(sql`count(*)`));
+      const bySource = await db
+        .select({
+          src: sql`coalesce(${article.sourceName}, '(no source)')`,
+          n: sql<number>`count(*)::int`,
+        })
+        .from(article)
+        .where(scope)
+        .groupBy(sql`coalesce(${article.sourceName}, '(no source)')`)
+        .orderBy(desc(sql`count(*)`))
+        .limit(20);
+      return Response.json({ byMagazine: byMag, bySource });
     }
     return Response.json(out);
   } catch (e: any) {

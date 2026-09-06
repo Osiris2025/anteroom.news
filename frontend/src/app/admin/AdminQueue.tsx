@@ -404,7 +404,29 @@ export default function AdminQueue() {
     const n = counts ? counts[action] : 0;
     const verb = action === "approve" ? "Approve" : "Publish";
     if (!n) { alert(`Nothing to ${verb.toLowerCase()} in ${scopeLabel()}.`); return; }
-    if (!confirm(`${verb} ${n.toLocaleString()} article${n === 1 ? "" : "s"} in ${scopeLabel()}?`)) return;
+
+    // Breakdown before commit: show exactly what would be touched, by magazine + source.
+    let breakdownText = "";
+    try {
+      const params = new URLSearchParams({ magazine: mag, status, q: q.trim(), breakdown: action });
+      const br = await fetch(`/api/admin/queue/bulk?${params.toString()}`);
+      const bj = await br.json();
+      if (bj.byMagazine && bj.bySource) {
+        const magLines = bj.byMagazine.slice(0, 12)
+          .map((r: any) => `   ${r.magazine}: ${r.n}`)
+          .join("\n");
+        const srcLines = bj.bySource.slice(0, 12)
+          .map((r: any) => `   ${r.src}: ${r.n}`)
+          .join("\n");
+        breakdownText =
+          `\nBy magazine:\n${magLines}` +
+          (bj.byMagazine.length > 12 ? `\n   …and ${bj.byMagazine.length - 12} more` : "") +
+          `\n\nTop sources:\n${srcLines}` +
+          (bj.bySource.length > 12 ? `\n   …and ${bj.bySource.length - 12} more` : "");
+      }
+    } catch { /* breakdown optional — never block the action on it */ }
+
+    if (!confirm(`${verb} ${n.toLocaleString()} article${n === 1 ? "" : "s"} in ${scopeLabel()}?\n${breakdownText}`)) return;
     setBusy(action === "approve" ? "approving" : "publishing");
     try {
       const r = await fetch("/api/admin/queue/bulk", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action, magazine: mag, status, q: q.trim() }) });

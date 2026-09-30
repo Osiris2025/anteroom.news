@@ -2,11 +2,10 @@ import type { MetadataRoute } from "next";
 import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
+import { SITE_URL } from "@/lib/site";
 
 // Force dynamic rendering — this sitemap queries Postgres at request time
 export const dynamic = "force-dynamic";
-
-const SITE_URL = "https://nexus.osiris2025.com";
 
 const STATIC_PAGES: { path: string; priority: number; changefreq: MetadataRoute.Sitemap[number]["changeFrequency"] }[] = [
   { path: "", priority: 1.0, changefreq: "hourly" },

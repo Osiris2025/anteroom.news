@@ -11,19 +11,72 @@ for detected URLs and attach an External embed (link card) when no photo.
 from __future__ import annotations
 
 import re
+import urllib.parse
+import urllib.request
 from typing import Any
 
 from .base import BaseAdapter
 from ..config import Config
 
 _URL_RE = re.compile("https?://[^\\s<>\"]+")
+_TAG_RE = re.compile(r"</?[a-zA-Z_][a-zA-Z0-9_]*>")
+_MAX_THUMB_BYTES = 950_000  # Bluesky blob limit is ~1 MB
+_UA = "Mozilla/5.0 (compatible; AnteroomSocial/1.0)"
 
 
-def _build_facets_and_embed(client: Any, text: str):
+def _clip(value: str, limit: int) -> str:
+    value = _TAG_RE.sub("", value or "").strip()
+    if len(value) <= limit:
+        return value
+    return value[: limit - 1].rsplit(" ", 1)[0].rstrip(".,;: ") + "\u2026"
+
+
+def _article_meta(config: Config, article_id: str | None) -> dict[str, str] | None:
+    """Real headline + summary for the link card, or None (caller falls back)."""
+    if not article_id or not config.database_url:
+        return None
+    try:
+        import psycopg2
+        conn = psycopg2.connect(config.database_url)
+        with conn.cursor() as cur:
+            cur.execute("SELECT headline, title, summary FROM article WHERE id = %s", (article_id,))
+            r = cur.fetchone()
+        conn.close()
+        if not r:
+            return None
+        title = _clip(r[0] or r[1] or "", 200)
+        if not title:
+            return None
+        return {"title": title, "description": _clip(r[2] or "", 300)}
+    except Exception:
+        return None
+
+
+def _og_thumb(client: Any, config: Config, article_id: str | None):
+    """Upload the site's OG image as the card thumb; None if anything fails."""
+    if not article_id or not config.site_base_url:
+        return None
+    try:
+        og = f"{config.site_base_url}/api/og?articleId={urllib.parse.quote(article_id, safe='')}"
+        req = urllib.request.Request(og, headers={"User-Agent": _UA})
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            if not (resp.headers.get("Content-Type") or "").startswith("image/"):
+                return None
+            data = resp.read(_MAX_THUMB_BYTES + 1)
+        if len(data) < 1000 or len(data) > _MAX_THUMB_BYTES:
+            return None
+        return client.upload_blob(data).blob
+    except Exception:
+        return None  # never block a post over a thumbnail
+
+
+def _build_facets_and_embed(client: Any, text: str, meta: dict[str, str] | None = None,
+                            thumb: Any = None):
     """Return (facets, embed) for a post text.
 
     - Every URL in the text gets a link facet -> tappable everywhere.
-    - The LAST URL additionally gets an External embed (link card preview).
+    - The LAST URL additionally gets an External embed (link card preview),
+      titled from `meta` (article headline/summary) when available.
     """
     from atproto import models
     from atproto_client.models.app.bsky.richtext.facet import ByteSlice, Main as FacetMain, Link
@@ -47,8 +100,9 @@ def _build_facets_and_embed(client: Any, text: str):
             embed = models.AppBskyEmbedExternal.Main(
                 external=models.AppBskyEmbedExternal.External(
                     uri=last_url,
-                    title="Anteroom",
-                    description="Read the full story on Anteroom",
+                    title=(meta or {}).get("title") or "Anteroom",
+                    description=(meta or {}).get("description") or "Read the full story on Anteroom",
+                    thumb=thumb,
                 )
             )
         except Exception:
@@ -75,10 +129,16 @@ class BlueskyAdapter(BaseAdapter):
         client = Client()
         client.login(handle, password)
 
-        facets, link_embed = _build_facets_and_embed(client, text)
+        article_id = post_row.get("article_id")
+        meta = _article_meta(self.config, article_id)
+        thumb = _og_thumb(client, self.config, article_id) if meta else None
+        facets, link_embed = _build_facets_and_embed(client, text, meta, thumb)
 
         embed = None
-        if media_path:
+        # Real article card (headline + OG thumb) beats a plain image embed.
+        if meta and link_embed is not None:
+            embed = link_embed
+        elif media_path:
             try:
                 with open(media_path, "rb") as fh:
                     img_data = fh.read()
@@ -89,7 +149,7 @@ class BlueskyAdapter(BaseAdapter):
                 )
             except Exception:
                 embed = None
-        # No photo -> attach the link card so the article preview renders.
+        # No article card or photo -> attach the generic link card.
         if embed is None:
             embed = link_embed
 

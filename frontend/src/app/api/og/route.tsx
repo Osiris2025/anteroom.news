@@ -41,8 +41,6 @@ function isUsableImageUrl(url: string): boolean {
          lower.includes(".png") || lower.includes(".gif");
 }
 
-const SITE_URL = "https://nexus.osiris2025.com";
-
 async function loadFont(): Promise<ArrayBuffer | null> {
   try {
     const cssUrl = "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap";

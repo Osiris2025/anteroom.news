@@ -6,10 +6,11 @@ import RightExploreDrawer from "@/components/RightExploreDrawer";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import TrackPageView from "@/components/TrackPageView";
 import { AdminProvider } from "@/components/AdminProvider";
+import { SITE_URL } from "@/lib/site";
 
 export const metadata: Metadata = {
   title: "Anteroom",
-  metadataBase: new URL("https://anteroom.news"),
+  metadataBase: new URL(SITE_URL),
   description: "Anteroom — a house of rooms. Cross the threshold.",
 };
 

@@ -29,7 +29,7 @@ def _article_rows(conn, magazine_id: str | None, status: str) -> list[dict]:
 
     sql = """
         SELECT a.id, a.title, a.headline, a.summary, a.commentary, a.image_url,
-               m.name AS magazine_name
+               a.magazine_id, m.name AS magazine_name
         FROM article a
         LEFT JOIN magazine m ON m.id = a.magazine_id
         WHERE a.status = %s

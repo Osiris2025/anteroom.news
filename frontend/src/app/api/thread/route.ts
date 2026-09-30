@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
+import { SITE_URL } from "@/lib/site";
 
 export const runtime = "nodejs";
 
@@ -93,7 +94,7 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: "No commentary available for this article" }, { status: 404 });
   }
 
-  const articleUrl = `https://nexus.osiris2025.com/articles/${articleId}`;
+  const articleUrl = `${SITE_URL}/articles/${articleId}?utm_source=x&utm_medium=social&utm_campaign=thread`;
 
   // Split commentary into thread posts
   const contentPosts = splitIntoPosts(commentary);

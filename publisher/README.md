@@ -14,7 +14,7 @@ social platforms with a link back to the source article. Works under **Docker**
 ## Quick start
 
 ```
-export SITE_BASE_URL=https://nexus.osiris2025.com   # or your new domain
+export SITE_BASE_URL=https://anteroom.news
 export SOCIAL_DISABLED=0                             # kill-switch
 pip install -e .
 nexus-social queue --status approved

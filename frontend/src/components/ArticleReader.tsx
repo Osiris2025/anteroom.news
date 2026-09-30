@@ -236,7 +236,7 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
             📌 Read the real article <span style={{ opacity: 0.7 }}>&#8599;</span>
           </a>
           <button
-            onClick={() => window.open(`https://x.com/intent/post?text=${encodeURIComponent(displayTitle + " https://nexus.osiris2025.com/articles/" + article.id)}`, "_blank")}
+            onClick={() => window.open(`https://x.com/intent/post?text=${encodeURIComponent(displayTitle + " https://anteroom.news/articles/" + article.id + "?utm_source=x&utm_medium=social&utm_campaign=share-button")}`, "_blank")}
             style={{
               background: "transparent",
               border: `1px solid ${C.border}`,

@@ -4,8 +4,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
 import ArticlePageClient from "@/components/ArticlePageClient";
-
-const SITE_URL = "https://nexus.osiris2025.com";
+import { SITE_URL } from "@/lib/site";
 
 // /articles/[id] — public on-site article reader (server component).
 // Fetches the article + its magazine, then hands off to ArticlePageClient, which

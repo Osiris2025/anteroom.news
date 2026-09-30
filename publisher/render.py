@@ -48,7 +48,7 @@ def render_post(article: dict, config: Config, platform: str) -> str:
     """Build the final post text for a platform.
 
     `article` is a dict with keys: id, title, headline, summary, magazine_name,
-    commentary (optional). Returns a string with the link already appended.
+    magazine_id (optional, used for utm_content), commentary (optional). Returns a string with the link already appended.
     """
     platform = platform.lower()
     cap = MAX_TEXT.get(platform, 280)
@@ -61,7 +61,15 @@ def render_post(article: dict, config: Config, platform: str) -> str:
     key = mag.lower()
     opener = MAGAZINE_OPENERS.get(key) or MAGAZINE_OPENERS.get(_slugify(key)) or DEFAULT_OPENER
 
-    url = config.article_url(article["id"])
+    utm = None
+    if platform == "bluesky":
+        utm = {
+            "utm_source": "bluesky",
+            "utm_medium": "social",
+            "utm_campaign": "auto-publish",
+            "utm_content": article.get("magazine_id") or _slugify(mag),
+        }
+    url = config.article_url(article["id"], utm)
 
     # Start with opener + hook, then a short teaser if room, then the link.
     body = f"{opener} {hook}".strip()

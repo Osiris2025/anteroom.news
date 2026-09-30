@@ -24,11 +24,10 @@ import { db } from "@/lib/db";
 import { article, magazine as magazineTable } from "@/drizzle/schema";
 import { eq, and, gte, desc } from "drizzle-orm";
 import { MAGAZINES } from "@/lib/themes";
+import { SITE_URL } from "@/lib/site";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const SITE_URL = "https://nexus.osiris2025.com";
 
 export async function GET() {
   try {

@@ -6,6 +6,7 @@ under Docker or bare systemd and on any domain.
 from __future__ import annotations
 
 import os
+from urllib.parse import urlencode
 
 
 def _env(name: str, default: str = "") -> str:
@@ -35,10 +36,13 @@ class Config:
         }
 
     # -- helpers ----------------------------------------------------------
-    def article_url(self, article_id: str) -> str:
+    def article_url(self, article_id: str, utm: dict[str, str] | None = None) -> str:
         if not self.site_base_url:
             raise ValueError("SITE_BASE_URL is not set")
-        return f"{self.site_base_url}/articles/{article_id}"
+        url = f"{self.site_base_url}/articles/{article_id}"
+        if utm:
+            url += "?" + urlencode({k: v for k, v in utm.items() if v})
+        return url
 
     def load_db_accounts(self, database_url: str | None = None) -> None:
         """Load enabled connections from the social_account table (DB is truth).

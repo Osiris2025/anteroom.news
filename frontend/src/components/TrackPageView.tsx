@@ -13,7 +13,7 @@ export default function TrackPageView() {
 
     const params = new URLSearchParams(window.location.search);
     const payload: Record<string, string | undefined> = {
-      path: window.location.pathname + window.location.search,
+      path: window.location.pathname,
       referrer: document.referrer || undefined,
     };
 

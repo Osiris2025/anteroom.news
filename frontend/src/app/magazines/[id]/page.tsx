@@ -2,8 +2,7 @@ import { db } from "@/lib/db";
 import { magazine as magazineTable } from "@/drizzle/schema";
 import { eq, asc } from "drizzle-orm";
 import ThemeRenderer from "@/components/ThemeRenderer";
-
-const SITE_URL = "https://nexus.osiris2025.com";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * Magazine page — renders through the SAME theme engine as the homepage.

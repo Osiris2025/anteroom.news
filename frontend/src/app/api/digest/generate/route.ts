@@ -40,7 +40,7 @@ function renderDigestHtml(opts: {
   const { magazineGroups, unsubscribeToken } = opts;
   const items = magazineGroups.flatMap((g) => g.articles);
   const totalArticles = items.length;
-  const siteUrl = process.env.AUTH_URL || "https://nexus.osiris2025.com";
+  const siteUrl = process.env.AUTH_URL || "https://anteroom.news";
 
   const sections = magazineGroups.map((group) => {
     const articlesHtml = group.articles.slice(0, 5).map((art) => {

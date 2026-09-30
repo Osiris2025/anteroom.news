@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { article, socialAccount } from "@/drizzle/schema";
 import { eq, and } from "drizzle-orm";
+import { SITE_URL } from "@/lib/site";
 
 export function buildTweetText({
   title,
@@ -13,10 +14,8 @@ export function buildTweetText({
   id: string;
   utmSource: string | null;
 }): string {
-  const baseUrl = `https://nexus.osiris2025.com/articles/${id}`;
-  const utm = utmSource
-    ? `?utm_source=${utmSource}&utm_medium=social&utm_campaign=auto-publish`
-    : "";
+  const baseUrl = `${SITE_URL}/articles/${id}`;
+  const utm = `?utm_source=${utmSource || "x"}&utm_medium=social&utm_campaign=auto-publish`;
 
   let text = `${title}\n\n`;
   if (summary) {

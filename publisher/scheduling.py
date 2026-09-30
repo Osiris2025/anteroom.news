@@ -4,11 +4,12 @@ Slots are computed once per queue run so that posts spread out:
 - up to N slots per calendar day (N = Config.max_per_day, SOCIAL_MAX_PER_DAY)
 - all times are random within 08:00-22:00 America/New_York
 - two slots less than 24h apart are never closer than 4 hours
-- the first slot is on the day `now + 5 days` (after the current time),
+- the first slot is on the day `now + SOCIAL_START_DELAY_DAYS` (default 5),
   with overflow pushed to the following days sequentially
 """
 from __future__ import annotations
 
+import os
 import random
 from datetime import datetime, time, timedelta
 from zoneinfo import ZoneInfo
@@ -64,7 +65,8 @@ def schedule_slots(count: int, max_per_day: int,
     max_per_day = max(1, int(max_per_day))
 
     if first_start is None:
-        base = datetime.now(ET) + timedelta(days=5)
+        base = datetime.now(ET) + timedelta(
+            days=float(os.environ.get("SOCIAL_START_DELAY_DAYS", "5")))
     else:
         base = first_start.astimezone(ET) if first_start.tzinfo \
             else first_start.replace(tzinfo=ET)

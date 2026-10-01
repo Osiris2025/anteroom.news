@@ -13,6 +13,9 @@ WITH ranked AS (
     AND a.image_url LIKE 'http%'
     AND coalesce(a.summary, '') <> '' AND a.summary NOT LIKE '<%'
     AND length(a.title) > 25
+    -- Keep politics off Bluesky: skip political magazines and political keywords.
+    AND a.magazine_id NOT IN ('poli-split', 'just-the-news-thats-fit-to-print')
+    AND (a.title || ' ' || coalesce(a.summary, '')) !~* '(trump|biden|harris|congress|senate|republican|democrat|\mgop\M|israel|gaza|palestin|ukrain|russia|election|midterm|white house|immigra|supreme court|pentagon|tariff|political|politic|lawmaker|federal agenc|\mmaha\M|campaign trail)'
     AND a.id NOT IN (SELECT article_id FROM social_post WHERE platform = 'bluesky')
 ), picks AS (
   SELECT id FROM ranked WHERE rn = 1 ORDER BY overall LIMIT 12

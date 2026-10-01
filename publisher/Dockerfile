@@ -17,7 +17,7 @@ RUN curl -fsSL https://raw.githubusercontent.com/xdevplatform/xurl/main/install.
     && ln -sf ~/.local/bin/xurl /usr/local/bin/xurl || true
 
 # Optional platform libs
-RUN pip install --no-cache-dir atproto 2>/dev/null || true
+RUN pip install --no-cache-dir atproto pillow 2>/dev/null || true
 
 ENV PYTHONUNBUFFERED=1
 # Expect: SITE_BASE_URL, DATABASE_URL, SOCIAL_DISABLED, platform creds via env.

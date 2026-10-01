@@ -39,7 +39,7 @@ def _article_meta(config: Config, article_id: str | None) -> dict[str, str] | No
         import psycopg2
         conn = psycopg2.connect(config.database_url)
         with conn.cursor() as cur:
-            cur.execute("SELECT headline, title, summary FROM article WHERE id = %s", (article_id,))
+            cur.execute("SELECT headline, title, summary, image_url FROM article WHERE id = %s", (article_id,))
             r = cur.fetchone()
         conn.close()
         if not r:
@@ -47,7 +47,40 @@ def _article_meta(config: Config, article_id: str | None) -> dict[str, str] | No
         title = _clip(r[0] or r[1] or "", 200)
         if not title:
             return None
-        return {"title": title, "description": _clip(r[2] or "", 300)}
+        return {"title": title, "description": _clip(r[2] or "", 300), "image_url": (r[3] or "").strip()}
+    except Exception:
+        return None
+
+
+def _photo_thumb(client: Any, image_url: str):
+    """Upload the article's own photo as the card thumb; None if anything fails.
+
+    Large photos are shrunk with Pillow (if installed) so they fit Bluesky's size limit.
+    """
+    if not image_url.startswith("http"):
+        return None
+    try:
+        req = urllib.request.Request(image_url, headers={"User-Agent": _UA})
+        with urllib.request.urlopen(req, timeout=20) as resp:
+            if not (resp.headers.get("Content-Type") or "").startswith("image/"):
+                return None
+            data = resp.read(15 * 1024 * 1024)
+        if len(data) < 1000:
+            return None
+        if len(data) > _MAX_THUMB_BYTES:
+            import io
+            from PIL import Image  # optional; without it we fall back to the OG card
+            img = Image.open(io.BytesIO(data)).convert("RGB")
+            img.thumbnail((1200, 1200))
+            for quality in (85, 75, 65, 55):
+                buf = io.BytesIO()
+                img.save(buf, "JPEG", quality=quality, optimize=True)
+                if buf.tell() <= _MAX_THUMB_BYTES:
+                    data = buf.getvalue()
+                    break
+            else:
+                return None
+        return client.upload_blob(data).blob
     except Exception:
         return None
 
@@ -131,7 +164,10 @@ class BlueskyAdapter(BaseAdapter):
 
         article_id = post_row.get("article_id")
         meta = _article_meta(self.config, article_id)
-        thumb = _og_thumb(client, self.config, article_id) if meta else None
+        thumb = None
+        if meta:
+            # The article's own photo first; the branded OG card is only the backup.
+            thumb = _photo_thumb(client, meta.get("image_url", "")) or _og_thumb(client, self.config, article_id)
         facets, link_embed = _build_facets_and_embed(client, text, meta, thumb)
 
         embed = None

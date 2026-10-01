@@ -12,7 +12,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-bluesky = ["atproto"]
+bluesky = ["atproto", "pillow"]
 
 [project.scripts]
 nexus-social = "publisher.run:main"

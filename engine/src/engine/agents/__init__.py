@@ -171,6 +171,46 @@ def apply_weird_route(article: dict) -> None:
             article["subcategory"] = sub
 
 
+# Political-Routing: sources like Wired sit under Tech Pulse, so straight politics (elections,
+# ICE, RFK Jr., etc.) used to land there. At ingest, headlines that are clearly political and
+# have no technology angle are filed in Political Picture instead. Stories about tech policy
+# (AI rules, chips, Anthropic and the Pentagon, FCC broadband...) stay put because any tech
+# word in the headline vetoes the move.
+_POLITICAL_ORIGINS = frozenset({"tech-pulse", "startup-signal", "neural-hardware"})
+_POLITICAL_RE = re.compile(
+    r"\b(trump|white house|gop|republicans?|democrats?|democratic|senate|senator|"
+    r"congress(man|woman|ional)?|elections?|midterms?|ballots?|mail-in|voters?|voting|"
+    r"supreme court|ice|immigrants?|immigration|deport\w*|border wall|israeli?|"
+    r"palestinian\w*|gaza|kamala|biden|obama|rfk|disney sues fcc|kimmel|turning point|"
+    r"maga|pentagon|governor)\b", re.I)
+_POLITICAL_TECH_VETO_RE = re.compile(
+    r"\b(ai|a\.i\.|artificial|anthropic|openai|chatgpt|claude|grok|gemini|nvidia|chips?|"
+    r"semiconductors?|tech|apple|google|meta|microsoft|amazon|tesla|spacex|starlink|musk|x|"
+    r"tiktok|app|apps|data centers?|phones?|iphone|android|crypto|bitcoin|binance|polymarket|"
+    r"prediction markets?|flock|cameras?|glasses|robots?|drones?|software|cyber\w*|hack\w*|"
+    r"privacy|surveillance|broadband|net neutrality|isps?|vpns?|internet|online|social media|"
+    r"chatbots?|algorithm|truth social|api|nasa|space|satellites?|tariff\w*|tetris|games?|"
+    r"nintendo|playdate|logitech|startups?|vc|vcs|a16z|andreessen|huang|palmer luckey|"
+    r"copyright|encryption|cloud|computing|quantum|battery|batteries|ev|evs|visa|big tech|"
+    r"silicon valley|alien|aliens|ufo|ufos|verizon|virtual|towers?|hub|age-verification|"
+    r"linux|wearable|device|devices|blood test)\b", re.I)
+
+
+def is_clearly_political(title: str) -> bool:
+    """True for headlines about politics with no technology angle."""
+    title = title or ""
+    return bool(_POLITICAL_RE.search(title)) and not _POLITICAL_TECH_VETO_RE.search(title)
+
+
+def apply_political_route(article: dict) -> None:
+    """File clearly political stories in Political Picture when a tech/startup source pulled them."""
+    if (article.get("magazine_id") or "") not in _POLITICAL_ORIGINS:
+        return
+    if is_clearly_political(article.get("title") or ""):
+        article["magazine_id"] = "poli-split"
+        article.pop("subcategory", None)
+
+
 def is_junk_deal(article: dict) -> bool:
     """True if an article is clearly money-saving/coupon/% off junk (drop it)."""
     title = str(article.get("title") or "")
@@ -585,6 +625,8 @@ def run_db_sources(configs: list, db_url: str) -> list[dict]:
             a["magazine_id"] = magazine_id
             # WWN-route: paranormal items pulled for The Veil belong in Weekly Weird News.
             apply_weird_route(a)
+            # Political-route: straight politics pulled by tech sources goes to Political Picture.
+            apply_political_route(a)
             # MOVE-LEARNING: if this source's work reliably gets moved to another
             # magazine (>=2 corroborating moves), start it off there instead.
             src_url = (a.get("source_url") or "").strip()

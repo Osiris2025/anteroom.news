@@ -5,15 +5,15 @@ export function palette(themeId: string) {
   const dark: Record<string, { box: string; border: string; ink: string; body: string; accent: string; img: string }> = {
     linear:    { box: "#0f1011", border: "#26282c", ink: "#f7f8f8", body: "#c9cdd4", accent: "#7170ff", img: "linear-gradient(135deg,#1a1a2e,#0f1011)" },
     terminal:  { box: "#001100", border: "#00ff40", ink: "#00ff00", body: "#00cc00", accent: "#00ff00", img: "linear-gradient(135deg,#002200,#000)" },
-    crt:       { box: "#001100", border: "#00ff40", ink: "#00ff00", body: "#00cc00", accent: "#00ff00", img: "linear-gradient(135deg,#002200,#000)" },
-    glass:     { box: "rgba(255,255,255,0.08)", border: "rgba(255,255,255,0.18)", ink: "#fff", body: "#d6d3f0", accent: "#a5b4fc", img: "linear-gradient(135deg,#302b63,#0f0c29)" },
-    dashboard: { box: "#111826", border: "#1f2a3d", ink: "#e8edf5", body: "#aab6c8", accent: "#38bdf8", img: "linear-gradient(135deg,#0a0e17,#1a2438)" },
+    crt: { box: "#140c00", border: "#7a5400", ink: "#ffb000", body: "#cc8d00", accent: "#ffb000", img: "linear-gradient(135deg,#1a1000,#000)" },
+    glass: { box: "rgba(255,255,255,0.12)", border: "rgba(255,255,255,0.3)", ink: "#fff", body: "#e6e2ff", accent: "#7ef0d4", img: "linear-gradient(135deg,#3b2f8f,#0b0a1f)" },
+    dashboard: { box: "#161c24", border: "#26303c", ink: "#ffffff", body: "#a9b6c4", accent: "#19e3a0", img: "linear-gradient(135deg,#0e1218,#1b232d)" },
     crawler:   { box: "#0f0f12", border: "#2a2a2e", ink: "#f4f4f5", body: "#c9c9cf", accent: "#e11d2e", img: "linear-gradient(135deg,#2a0000,#111)" },
     ticker:    { box: "#111826", border: "#1f2a3d", ink: "#e8edf5", body: "#aab6c8", accent: "#fbbf24", img: "linear-gradient(135deg,#1a1a3e,#16213e)" },
     board:     { box: "#3d2819", border: "#6e4a2e", ink: "#f6e7cc", body: "#e0cba6", accent: "#ff8a6b", img: "linear-gradient(135deg,#2c1810,#4a2f1a)" },
-    audio:     { box: "#161b22", border: "#2d333b", ink: "#c9d1d9", body: "#a5b0bd", accent: "#58a6ff", img: "linear-gradient(135deg,#0d1117,#1f2937)" },
+    audio: { box: "#1b1620", border: "#2e2535", ink: "#ffffff", body: "#cdbfd0", accent: "#ff6a3d", img: "linear-gradient(135deg,#0e0a12,#2a1a2e)" },
     social:    { box: "#16181c", border: "#2f3336", ink: "#e7e9ea", body: "#c2c5c9", accent: "#1d9bf0", img: "linear-gradient(135deg,#000,#101418)" },
-    map:       { box: "#101627", border: "#1e2a3e", ink: "#c8d6e5", body: "#9fb0c4", accent: "#00d4aa", img: "linear-gradient(135deg,#0a0e17,#16213e)" },
+    map: { box: "#0f2a2c", border: "#1f4a4c", ink: "#ffffff", body: "#a8cfc9", accent: "#ff9f1c", img: "linear-gradient(135deg,#0a1f21,#143437)" },
     deco:      { box: "#1b1636", border: "#6b5a2f", ink: "#efe2c4", body: "#d9c9a3", accent: "#d9b25f", img: "linear-gradient(135deg,#1a1a2e,#3a2f52)" },
   };
   if (dark[themeId]) return dark[themeId];
@@ -27,7 +27,7 @@ export function palette(themeId: string) {
     hemp:      { box: "#f3ead6", border: "#a99a73", ink: "#3e3322", body: "#5f503a", accent: "#6f8450", img: "linear-gradient(135deg,#e2d6bc,#f7f1e3)" },
     water:     { box: "rgba(255,255,255,0.78)", border: "#d9def0", ink: "#2f2a48", body: "#5d5877", accent: "#6b8fd6", img: "linear-gradient(135deg,#fef9ef,#e8f0fe)" },
     cardwall:  { box: "#ffffff", border: "#e5e7eb", ink: "#1a1a2e", body: "#5a5a6a", accent: "#667eea", img: "linear-gradient(135deg,#eef1fb,#fff)" },
-    split:     { box: "#ffffff", border: "#e0e0e0", ink: "#1a1a1a", body: "#555", accent: "#fbbf24", img: "linear-gradient(135deg,#fcf8ec,#fff)" },
+    split: { box: "#ffffff", border: "#e3e7ee", ink: "#1c2330", body: "#5b6577", accent: "#1a73e8", img: "linear-gradient(135deg,#e8f0fe,#fff)" },
   };
   return light[themeId] || { box: "#f5f5f7", border: "#dedfe3", ink: "#1a1a1a", body: "#444", accent: "#666", img: "linear-gradient(135deg,#eee,#fff)" };
 }

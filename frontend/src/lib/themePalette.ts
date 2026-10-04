@@ -8,7 +8,7 @@ export function palette(themeId: string) {
     crt:       { box: "#001100", border: "#00ff40", ink: "#00ff00", body: "#00cc00", accent: "#00ff00", img: "linear-gradient(135deg,#002200,#000)" },
     glass:     { box: "rgba(255,255,255,0.08)", border: "rgba(255,255,255,0.18)", ink: "#fff", body: "#d6d3f0", accent: "#a5b4fc", img: "linear-gradient(135deg,#302b63,#0f0c29)" },
     dashboard: { box: "#111826", border: "#1f2a3d", ink: "#e8edf5", body: "#aab6c8", accent: "#38bdf8", img: "linear-gradient(135deg,#0a0e17,#1a2438)" },
-    crawler:   { box: "#1c1c1c", border: "#333", ink: "#eee", body: "#c9c9c9", accent: "#f87171", img: "linear-gradient(135deg,#2a0000,#111)" },
+    crawler:   { box: "#0f0f12", border: "#2a2a2e", ink: "#f4f4f5", body: "#c9c9cf", accent: "#e11d2e", img: "linear-gradient(135deg,#2a0000,#111)" },
     ticker:    { box: "#111826", border: "#1f2a3d", ink: "#e8edf5", body: "#aab6c8", accent: "#fbbf24", img: "linear-gradient(135deg,#1a1a3e,#16213e)" },
     board:     { box: "#3a2417", border: "#5c3a22", ink: "#d4a574", body: "#c69a6d", accent: "#e8b890", img: "linear-gradient(135deg,#2c1810,#4a2f1a)" },
     audio:     { box: "#161b22", border: "#2d333b", ink: "#c9d1d9", body: "#a5b0bd", accent: "#58a6ff", img: "linear-gradient(135deg,#0d1117,#1f2937)" },

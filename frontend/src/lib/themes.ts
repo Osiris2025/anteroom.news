@@ -164,24 +164,26 @@ export const themes: Theme[] = [
       .btn-line{padding:6px 12px;border:1px solid #e0e0e0;border-radius:8px;background:#f8f8f8;font-size:12px;cursor:pointer;margin-right:4px}
       .foot{text-align:center;padding:16px;font-size:11px;color:#999}
     ` },
-  { id:"crawler", name:"News Crawler \u2014 TV", structure: {layout:"grid", showCrawl:true, crawlText:"CATBOY RETURNS · BLANCHE 50-49 · OPENAI PAUSES · NVIDIA \$3B · KITESURF", sidebar:null, showPoll:false, showQuiz:false, showStats:false, showSupport:true, footer:"minimal"}, css: `
-      body{background:#111;color:#eee;font-family:Inter,sans-serif}
-      .crawl{background:#c1121f;color:#fff;padding:5px;font-size:12px;font-weight:600;overflow:hidden;white-space:nowrap}
-      .crawl::after{content:"";display:inline-block;animation:marq 25s linear infinite}
-      .header{display:flex;justify-content:space-between;align-items:center;padding:12px 20px}
-      .brand{font-size:20px;font-weight:700}
-      .brand i{color:#ff4d4d;font-style:normal}
-      .nav{display:flex;gap:12px;font-size:12px;color:#888}
-      .grid{max-width:1100px;margin:0 auto;padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px}
-      .card{background:#1a1a1a;border-radius:4px;padding:12px;border-left:3px solid var(--accent,#ff4d4d)}
-      .card.wide{grid-column:span 2}
-      .card .k{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--accent,#ff4d4d);margin-bottom:3px}
-      .card h3{font-size:13px;font-weight:600}
-      .card p{font-size:11px;color:#888}
+  { id:"crawler", name:"News Crawler \u2014 TV", structure: {layout:"grid", showCrawl:false, sidebar:null, showPoll:false, showQuiz:false, showStats:false, showSupport:true, footer:"minimal"}, css: `
+      :root{--accent:#e11d2e}
+      body{background:#0a0a0c;color:#f4f4f5;font-family:'Barlow','Inter',Arial,sans-serif}
+      h1,h2,h3,.mz-ed-title,.mz-ed-h2{font-family:'Oswald','Arial Narrow',Impact,sans-serif !important}
+      h1,h2,.mz-ed-h2{text-transform:uppercase;letter-spacing:.03em}
+      .mz-ed-title{text-transform:uppercase;font-weight:600 !important;letter-spacing:.01em;line-height:1.1 !important}
+      .mz-ed-kicker{letter-spacing:.12em !important}
+      main [class*="mz-ed-"],main [class*="mag-"],main .card,main .panel,main .btn{border-radius:2px !important}
+      main [style*="border-radius"]{border-radius:2px !important}
+      main [style*="border-radius: 50%"],main [style*="border-radius:50%"],main img[class*="avatar"]{border-radius:50% !important}
+      .mz-ed-cell{background:#131316 !important;border-left:4px solid #e11d2e !important;border-color:#2a2a2e #2a2a2e #2a2a2e #e11d2e !important}
+      .mz-ed-cell:hover{background:#1b1b1f !important}
+      main [style*="linear-gradient(120deg"]{background:linear-gradient(110deg,#7d0d17,#16161a 72%) !important;border-color:#2a2a2e !important}
+      .crawl{display:none}
+      .grid{max-width:1100px;margin:0 auto;padding:16px}
+      .panel{background:#131316;border-top:3px solid #e11d2e;padding:12px;text-align:center}
+      .panel h4{font-family:'Oswald',Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:13px}
+      .btn{padding:10px 22px;background:#e11d2e;color:#fff;border:none;font-family:'Oswald',Arial,sans-serif;text-transform:uppercase;letter-spacing:.08em;font-size:13px;font-weight:700;cursor:pointer}
       .foot-row{max-width:1100px;margin:12px auto;display:flex;gap:10px;padding:0 16px}
-      .panel{flex:1;background:#1a1a1a;border-radius:4px;padding:10px;text-align:center}
-      .btn{padding:8px 20px;background:#ff4d4d;color:#fff;border:none;border-radius:4px;font-size:12px;font-weight:600;cursor:pointer}
-      .foot{border-top:1px solid #2a2a2a;margin-top:12px;padding:8px 20px;display:flex;justify-content:space-between;font-size:10px;color:#555}
+      .foot{border-top:3px solid #e11d2e;margin-top:12px;padding:8px 20px;display:flex;justify-content:space-between;font-size:10px;color:#777;text-transform:uppercase;letter-spacing:.08em}
     ` },
   { id:"blog", name:"Minimal Blog", structure: {layout:"single", sidebar:null, showCrawl:false, showPoll:false, showQuiz:false, showStats:false, showSubscribe:true, footer:"minimal"}, css: `
       body{background:#fafafa;color:#333;font-family:Inter,sans-serif}
@@ -536,6 +538,17 @@ export function applyTheme(t: Theme): void {
     el.id = "nexus-theme-css";
     document.head.appendChild(el);
   }
+  // Theme-specific web fonts (loaded only for the active theme).
+  const FONTS: Record<string, string> = {
+    crawler: "family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;600",
+  };
+  let fl = document.getElementById("nexus-theme-font") as HTMLLinkElement | null;
+  const fq = FONTS[t.id];
+  if (fq) {
+    if (!fl) { fl = document.createElement("link"); fl.id = "nexus-theme-font"; fl.rel = "stylesheet"; document.head.appendChild(fl); }
+    const href = "https://fonts.googleapis.com/css2?" + fq + "&display=swap";
+    if (fl.href !== href) fl.href = href;
+  } else if (fl) { fl.remove(); }
   el.textContent =
     "a.card{text-decoration:none;color:inherit;display:block} " +
     ".themesel{display:block;width:100%;margin-top:6px;padding:5px 8px;font-size:12px;background:transparent;color:inherit;border:1px solid rgba(127,127,127,0.25);border-radius:6px;cursor:pointer} " +

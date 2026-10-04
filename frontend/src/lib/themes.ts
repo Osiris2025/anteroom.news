@@ -192,7 +192,7 @@ export const themes: Theme[] = [
       @media (min-width:901px){
         .mz-ed-grid{grid-template-columns:1fr !important;grid-auto-rows:auto !important;max-width:690px;margin:0 auto;gap:0 !important}
         .mz-ed-wrap{grid-column:1 !important;grid-row:auto !important}
-      }
+  }
       .mz-ed-cell{background:transparent !important;border:0 !important;border-bottom:1px solid #e6e1d6 !important;box-shadow:none !important;padding:26px 0 !important;overflow:visible !important}
       .mz-ed-cell:hover{transform:none !important}
       .mz-ed-cell:hover .mz-ed-title{color:#b4491f;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:4px}
@@ -751,7 +751,14 @@ function renderTemplate(st){
   // skipped (the magazine name header lives in ThemeRenderer; only its content shows).
   var scoped = !!st.magScope;
 
-  if(layout==="sidebar-left"){
+  // Scoped pages (every magazine page and the homepage) already show real stories,
+  // so layouts that would print the built-in sample stories and Support/Subscribe
+  // buttons skip them. The Catboy poll still shows where a theme asks for it.
+  var skipSample = scoped && ["grid","list","masonry","feed","single","split","spread","full"].indexOf(layout) >= 0;
+  if(skipSample){
+    if(st.showPoll){ s += '<div class="grid">' + renderPoll() + '</div>'; }
+  }
+  else if(layout==="sidebar-left"){
     // Build the sidebar content first. Only render a left column if it has real
     // content (nav/subscribe are now owned by the global hamburger + footer, so on
     // the homepage this is usually empty -> drop the column and center the main).
@@ -853,7 +860,6 @@ function renderTemplate(st){
       s += '<div class="card"'+(a.href? ' data-href="'+a.href+'"':'')+'><div class="loc" style="background:'+cols[i%6]+'22;color:'+cols[i%6]+'">&#x1F4CD;</div><div><div class="k" style="color:'+cols[i%6]+'">'+loc+'</div><h3>'+(a.title||"")+'</h3></div></div>';
     });
     s += '</div><div class="mapbox"><div style="text-align:center"><div style="font-size:40px">&#x1F5FA;&#xFE0F;</div><p style="font-size:13px;color:#5a6a8a">Interactive Map</p><p style="font-size:11px;color:#3a4a6a">'+mapStories.length+' pinned stories</p></div></div></div>';
-    s += '<div class="foot-row"><div class="panel"><a class="btn" href="/support" data-href="/support" style="display:block;text-align:center">Support</a></div><div class="panel"><a class="btn" href="/subscribe" data-href="/subscribe" style="display:block;text-align:center">Subscribe</a></div></div>';
   }
   else if(layout==="split"){
     s += '<div class="split"><div class="list">';
@@ -886,7 +892,7 @@ function renderTemplate(st){
 
 function renderSections(st, showStats, full){
   var s = "";
-  if(showStats){
+  if(showStats && !st.magScope){
     s += '<div class="stats"><div class="stat"><b>11</b><span>Articles</span></div><div class="stat"><b>187</b><span>Comments</span></div><div class="stat"><b>7</b><span>Magazines</span></div></div>';
   }
   var scoped = !!st.magScope;

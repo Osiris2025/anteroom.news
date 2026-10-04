@@ -16,7 +16,7 @@ type Hit = {
  * title/headline/summary). If we're not on a magazine page, searches across
  * all live articles. Selecting a result opens the article.
  */
-export default function MagazineSearch({ vertical = false }: { vertical?: boolean }) {
+export default function MagazineSearch({ vertical = false, fluid = false }: { vertical?: boolean; fluid?: boolean }) {
   const pathname = usePathname();
   const router = useRouter();
   const [q, setQ] = useState("");
@@ -54,7 +54,7 @@ export default function MagazineSearch({ vertical = false }: { vertical?: boolea
   }, []);
 
   return (
-    <div ref={box} style={{ position: "relative", marginRight: vertical ? 0 : 14, width: vertical ? "100%" : "min(220px, 20vw)", marginBottom: vertical ? 6 : 0 }}>
+    <div ref={box} style={{ position: "relative", marginRight: vertical || fluid ? 0 : 14, width: vertical || fluid ? "100%" : "min(220px, 20vw)", marginBottom: vertical ? 6 : 0 }}>
       <input
         value={q}
         onChange={(e) => { setQ(e.target.value); setOpen(true); }}

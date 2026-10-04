@@ -48,9 +48,9 @@ export default function ProfilePage() {
       const r: any = await fn();
       if (r?.error) { setMsg({ t: friendly(r.error.message), k: "err" }); }
       else {
-        setMsg({ t: r?.data?.session?.user?.email ? `Signed in — welcome! Redirecting…` : "Done ✔", k: "ok" });
+        setMsg({ t: (r?.data?.user || r?.data?.token) ? `Signed in — welcome! Redirecting…` : "Done ✔", k: "ok" });
         if (!opts?.skipRefresh) { try { refetch(); } catch {} }
-        if (r?.data?.session?.user) { setTimeout(() => { window.location.href = "/"; }, 600); }
+        if (r?.data?.user || r?.data?.token) { setTimeout(() => { window.location.href = "/"; }, 600); }
       }
     }
     catch (e: any) { setMsg({ t: friendly(e?.message), k: "err" }); }

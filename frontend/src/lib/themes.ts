@@ -436,12 +436,15 @@ export const themes: Theme[] = [
     ` },
   { id:"water", name:"Watercolor Art", structure: {layout:"center", sidebar:null, showCrawl:false, showPoll:false, showQuiz:false, showStats:false, showSupport:true, footer:"minimal"}, css: `
       :root{--accent:#6b8fd6;--card-bg:rgba(255,255,255,.62);--border:rgba(120,140,190,.25)}
-      body{background-color:#fbf7ef;background-image:radial-gradient(circle at 12% 8%,rgba(147,197,253,.42),transparent 38%),radial-gradient(circle at 88% 14%,rgba(251,207,232,.5),transparent 36%),radial-gradient(circle at 70% 85%,rgba(187,247,208,.45),transparent 40%),radial-gradient(circle at 8% 78%,rgba(253,230,138,.38),transparent 34%);background-attachment:fixed;color:#3a3550;font-family:'Nunito','Avenir',sans-serif}
+      body{background-color:#fbf7ef;background-image:radial-gradient(ellipse 55% 40% at 12% 10%,rgba(147,197,253,.55),transparent 70%),radial-gradient(ellipse 45% 38% at 90% 14%,rgba(251,207,232,.6),transparent 70%),radial-gradient(ellipse 50% 42% at 72% 88%,rgba(187,247,208,.55),transparent 72%),radial-gradient(ellipse 40% 34% at 6% 80%,rgba(253,230,138,.5),transparent 70%),radial-gradient(ellipse 30% 22% at 45% 45%,rgba(196,181,253,.28),transparent 70%);background-size:140% 140%,140% 140%,140% 140%,140% 140%,140% 140%;background-attachment:fixed;animation:wcDrift 40s ease-in-out infinite alternate;color:#3a3550;font-family:'Nunito','Avenir',sans-serif}
+      @keyframes wcDrift{from{background-position:0 0,100% 0,100% 100%,0 100%,50% 50%}to{background-position:8% 6%,92% 8%,90% 94%,6% 90%,55% 40%}}
+      @media (prefers-reduced-motion:reduce){body{animation:none !important}}
+      body::before{content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.35;mix-blend-mode:multiply;background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='220' height='220'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .5  0 0 0 0 .45  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
       h1,h2,h3,.mz-ed-title,.mz-ed-h2{font-family:'Cormorant Garamond',Georgia,serif !important}
       h1{font-style:italic;font-weight:600}
       h2,.mz-ed-h2{font-style:italic;text-transform:none !important;letter-spacing:0 !important;font-size:24px !important;font-weight:600 !important}
       main [style*="border-radius"]{border-radius:22px 28px 20px 26px !important}
-      .mz-ed-cell{background:rgba(255,255,255,.66) !important;border:0 !important;border-radius:24px 30px 22px 28px !important;box-shadow:0 10px 30px rgba(120,140,200,.18),0 2px 6px rgba(240,170,200,.18) !important}
+      .mz-ed-cell{background:rgba(255,255,255,.66) !important;border:0 !important;border-radius:24px 30px 22px 28px !important;box-shadow:0 10px 30px rgba(120,140,200,.18),0 2px 6px rgba(240,170,200,.18),inset 0 0 22px rgba(147,197,253,.28),inset 10px -8px 26px rgba(251,207,232,.4) !important;outline:1px solid rgba(90,110,170,.28);outline-offset:-5px;backdrop-filter:blur(3px)}
       .mz-ed-cell:nth-child(3n+2){border-radius:30px 22px 28px 24px !important}
       .mz-ed-cell:nth-child(3n+3){border-radius:22px 28px 30px 20px !important}
       .mz-ed-cell:hover{transform:translateY(-3px) !important;box-shadow:0 14px 34px rgba(120,140,200,.28) !important}

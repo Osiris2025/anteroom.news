@@ -6,6 +6,7 @@ import { renderTemplate, MAGAZINES } from "@/lib/themes";
 import LiveFeed from "@/components/LiveFeed";
 import MagazineTopStories from "@/components/MagazineTopStories";
 import HomeHero from "@/components/HomeHero";
+import LiveCrawl from "@/components/LiveCrawl";
 import MagazineEditorial from "@/components/MagazineEditorial";
 import FollowButton from "@/components/FollowButton";
 import DefaultMagazineButton from "@/components/DefaultMagazineButton";
@@ -142,6 +143,7 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
 
   return (
     <div>
+      {currentTheme.id === "crawler" && <LiveCrawl />}
       {/* Magazine/stream pages: header row with the Explore control (opens the
           right-side popover with Browse subcats + AI Frontier on every screen),
           then full-width editorial content. No persistent sidebar — all width

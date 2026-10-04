@@ -66,11 +66,20 @@ def _build_prompts(article: dict, stream_config: dict) -> dict:
 def _parse_response(text: str, source_url: str = "") -> dict:
     result = {"summary": "", "commentary": "", "ai_thoughts": "{}"}
 
-    summary_match = re.search(r"<summary>\s*(.*?)\s*</summary>", text, re.DOTALL)
+    # Tolerant of a missing closing tag (the model sometimes forgets it or gets cut off):
+    # a section ends at its own closing tag, the next section's opening tag, or the end.
+    def _section(name: str):
+        m = re.search(
+            rf"<{name}>\s*(.*?)\s*(?:</{name}>|<(?:summary|commentary|ai_thoughts)>|\Z)",
+            text, re.DOTALL | re.IGNORECASE,
+        )
+        return m
+
+    summary_match = _section("summary")
     if summary_match:
         result["summary"] = summary_match.group(1).strip()
 
-    commentary_match = re.search(r"<commentary>\s*(.*?)\s*</commentary>", text, re.DOTALL)
+    commentary_match = _section("commentary")
     if commentary_match:
         result["commentary"] = commentary_match.group(1).strip()
 
@@ -83,7 +92,7 @@ def _parse_response(text: str, source_url: str = "") -> dict:
             result["ai_thoughts"] = json.dumps({"raw": thoughts_match.group(1).strip()[:200]})
 
     if not result["summary"]:
-        result["summary"] = text[:300].strip()
+        result["summary"] = re.sub(r"<[^>]+>", "", text)[:300].strip()
 
     if not result["commentary"]:
         remaining = text
@@ -118,7 +127,7 @@ def summarize_article(article: dict, stream_config: dict) -> Optional[dict]:
                 {"role": "user", "content": prompts["user"]},
             ],
             temperature=0.7,
-            max_tokens=1500,
+            max_tokens=4000,
         )
 
         text = response.choices[0].message.content or ""

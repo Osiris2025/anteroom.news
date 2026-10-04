@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import ArticleComments from "./ArticleComments";
 import ArticleEfx from "./ArticleEfx";
 import ThreadModal from "./ThreadModal";
+import AdminCardTools from "./AdminCardTools";
+import { useAdmin } from "./AdminProvider";
 import { hostOf, sourceLabel } from "@/lib/sourceUtil";
 
 type ReaderArticle = {
@@ -52,6 +54,52 @@ function palette(themeId: string) {
     split:     { box: "#ffffff", border: "#e0e0e0", ink: "#1a1a1a", body: "#555", accent: "#fbbf24", img: "linear-gradient(135deg,#fcf8ec,#fff)" },
   };
   return light[themeId] || { box: "#f5f5f7", border: "#dedfe3", ink: "#1a1a1a", body: "#444", accent: "#666", img: "linear-gradient(135deg,#eee,#fff)" };
+}
+
+const DEFAULT_SUBCATS = ["Features", "Analysis", "Explainers", "Briefs"];
+
+// Admin-only bar shown right under the summary: the same editorial tools that
+// appear on article cards, themed to match the page.
+function ArticleAdminBar({ article, magazine, C, backFallback }: { article: ReaderArticle; magazine: ReaderMag; C: ReturnType<typeof palette>; backFallback: string }) {
+  const { isAdmin, magazines } = useAdmin();
+  const router = useRouter();
+  const [info, setInfo] = useState<{ status?: string; featured?: boolean; socialRepeat?: boolean; magazineId?: string | null; subcategory?: string | null } | null>(null);
+  const [pinned, setPinned] = useState(false);
+  const [version, setVersion] = useState(0);
+
+  useEffect(() => {
+    if (!isAdmin) return;
+    fetch(`/api/admin/article/${article.id}`).then(async (r) => {
+      if (r.status === 404) { router.push(backFallback); return; }
+      const j = await r.json();
+      if (j.article) setInfo(j.article);
+    }).catch(() => {});
+    fetch("/api/admin/pins").then((r) => r.json()).then((j) => {
+      setPinned(!!(j.pins || []).find((x: any) => x.article?.id === article.id));
+    }).catch(() => {});
+  }, [isAdmin, article.id, version]);
+
+  if (!isAdmin || !info) return null;
+  return (
+    <div style={{ background: C.box, border: `1px solid ${C.border}`, borderLeft: `4px solid ${C.accent}`, borderRadius: 10, padding: "8px 12px 6px", marginBottom: 22 }}>
+      <div style={{ fontSize: 10, letterSpacing: 2, textTransform: "uppercase", fontWeight: 800, color: C.accent, padding: "2px 0 0 10px" }}>
+        Admin tools{info.status ? ` · ${info.status}` : ""}
+      </div>
+      <AdminCardTools
+        key={version}
+        articleId={article.id}
+        currentMag={info.magazineId || magazine?.id || ""}
+        currentSubcat={info.subcategory || article.subcategory}
+        featured={info.featured === true}
+        socialRepeat={info.socialRepeat === true}
+        pinned={pinned}
+        magazines={magazines}
+        subcats={article.subcategory ? [article.subcategory, ...DEFAULT_SUBCATS.filter((x) => x !== article.subcategory)] : DEFAULT_SUBCATS}
+        pal={C}
+        onChanged={() => { setVersion((v) => v + 1); router.refresh(); }}
+      />
+    </div>
+  );
 }
 
 export default function ArticleReader({ article, magazine, themeId }: { article: ReaderArticle; magazine: ReaderMag; themeId: string }) {
@@ -175,6 +223,8 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
           {summary}
         </div>
       )}
+
+      <ArticleAdminBar article={article} magazine={magazine} C={C} backFallback={backFallback} />
 
       {/* AI commentary by the magazine's named agent */}
       <div style={{ border: `1px solid ${C.border}`, borderTop: `3px solid ${C.accent}`, borderRadius: 10, padding: "18px 20px 20px" }}>

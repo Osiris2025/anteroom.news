@@ -12,13 +12,14 @@ type Props = {
   magazines: { id: string; name: string }[];
   subcats: string[];
   onChanged: () => void; // reload cards after an admin action
+  pal?: { box: string; border: string; ink: string; body: string; accent: string }; // optional theme colours
 };
 
 // Inline editorial toolbar — revealed on hover of the LOWER EDGE of an article
 // card in the regular magazine view (admin only). Mirrors the Dispatch queue's
 // tools: approve/reject/draft, move magazine, move subcategory, regenerate
 // commentary, pin. Reuses the same admin article/generate-commentary endpoints.
-export default function AdminCardTools({ articleId, currentMag, currentSubcat, featured, pinned, socialRepeat: socialRepeatProp, magazines, subcats, onChanged }: Props) {
+export default function AdminCardTools({ articleId, currentMag, currentSubcat, featured, pinned, socialRepeat: socialRepeatProp, magazines, subcats, onChanged, pal }: Props) {
   const [mag, setMag] = useState(currentMag || "");
   const [subcat, setSubcat] = useState(currentSubcat || "");
   const [busy, setBusy] = useState(false);
@@ -28,6 +29,12 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
   const [delOpen, setDelOpen] = useState(false);
   const [delReason, setDelReason] = useState("other");
   const [social, setSocial] = useState(!!socialRepeatProp);
+
+  const bt = (bg: string, fg: string, fs: number) =>
+    pal && bg === "#202020"
+      ? { ...btn("transparent", pal.ink, fs), border: `1px solid ${pal.border}` }
+      : btn(bg, fg, fs);
+  const sl = () => (pal ? { ...sel(), background: pal.box, color: pal.ink, border: `1px solid ${pal.border}` } : sel());
 
   const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(""), 2200); };
 
@@ -82,7 +89,7 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
 
   const statusBtn = (label: string, status: string, bg: string, fg: string) => (
     <button onClick={() => act(() => patch({ status }))} disabled={busy}
-      style={btn(bg, fg, 10)}>{label}</button>
+      style={bt(bg, fg, 10)}>{label}</button>
   );
 
   return (
@@ -90,54 +97,54 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
       {statusBtn("✓ Approve", "approved", "#00331f", "#34d399")}
       {statusBtn("↥ Publish", "live", "#0b1f33", "#58a6ff")}
       {statusBtn("✕ Reject", "rejected", "#3a0d0d", "#f57b7b")}
-      <button onClick={() => act(() => patch({ status: "draft" }))} disabled={busy} style={btn("#202020", "#ccc", 10)}>↩ Draft</button>
-      <button onClick={() => act(async () => { const ok = await patch({ socialRepeat: !social }); if (ok) setSocial(!social); return ok; })} disabled={busy} style={btn(social ? "#0b1f33" : "#202020", social ? "#58a6ff" : "#ccc", 10)}> {social ? "\u21bb Social \u2713" : "\u21bb Social"} </button>
+      <button onClick={() => act(() => patch({ status: "draft" }))} disabled={busy} style={bt("#202020", "#ccc", 10)}>↩ Draft</button>
+      <button onClick={() => act(async () => { const ok = await patch({ socialRepeat: !social }); if (ok) setSocial(!social); return ok; })} disabled={busy} style={bt(social ? "#0b1f33" : "#202020", social ? "#58a6ff" : "#ccc", 10)}> {social ? "\u21bb Social \u2713" : "\u21bb Social"} </button>
 
       {/* Delete — ask WHY (drives troublesome-source stats). */}
       {!delOpen ? (
-        <button onClick={() => setDelOpen(true)} disabled={busy} style={btn("#3a0d0d", "#f87171", 10)}>🗑 Del</button>
+        <button onClick={() => setDelOpen(true)} disabled={busy} style={bt("#3a0d0d", "#f87171", 10)}>🗑 Del</button>
       ) : (
         <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
-          <select value={delReason} onChange={(e) => setDelReason(e.target.value)} autoFocus style={sel()}>
+          <select value={delReason} onChange={(e) => setDelReason(e.target.value)} autoFocus style={sl()}>
             {DELETION_REASONS.map((r) => <option key={r.code} value={r.code}>{r.label}</option>)}
           </select>
-          <button onClick={() => act(delArticle)} disabled={busy} style={btn("#7f1d1d", "#fff", 10)}>Confirm</button>
-          <button onClick={() => setDelOpen(false)} disabled={busy} style={btn("#202020", "#aaa", 10)}>✕</button>
+          <button onClick={() => act(delArticle)} disabled={busy} style={bt("#7f1d1d", "#fff", 10)}>Confirm</button>
+          <button onClick={() => setDelOpen(false)} disabled={busy} style={bt("#202020", "#aaa", 10)}>✕</button>
         </span>
       )}
 
       {/* Star = flagship feature */}
       <button onClick={() => act(() => patch({ featured: !featured }))} disabled={busy}
-        style={btn(featured ? "#3b2f00" : "#202020", featured ? "#ffd700" : "#ccc", 10)}>
+        style={bt(featured ? "#3b2f00" : "#202020", featured ? "#ffd700" : "#ccc", 10)}>
         {featured ? "★ Starred" : "☆ Star"}
       </button>
 
       {/* Pin = FLASH/hero article */}
       <button onClick={() => act(pinArticle)} disabled={busy}
-        style={btn(pinned ? "#3a0d0d" : "#202020", pinned ? "#ff4444" : "#ccc", 10)}>
+        style={bt(pinned ? "#3a0d0d" : "#202020", pinned ? "#ff4444" : "#ccc", 10)}>
         📌 {pinned ? "Pinned" : "Pin"}
       </button>
 
       {/* Move magazine */}
       {editMag ? (
         <select value={mag} onChange={(e) => { setMag(e.target.value); act(() => patch({ magazineId: e.target.value || null })); setEditMag(false); }}
-          autoFocus style={sel()}>
+          autoFocus style={sl()}>
           <option value="">— move to —</option>
           {magazines.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
         </select>
       ) : (
-        <button onClick={() => setEditMag(true)} disabled={busy} style={btn("#202020", "#ccc", 10)}>⇄ Mag</button>
+        <button onClick={() => setEditMag(true)} disabled={busy} style={bt("#202020", "#ccc", 10)}>⇄ Mag</button>
       )}
 
       {/* Move subcategory */}
       {editSub ? (
         <select value={subcat} onChange={(e) => { setSubcat(e.target.value); act(() => patch({ subcategory: e.target.value || null })); setEditSub(false); }}
-          autoFocus style={sel()}>
+          autoFocus style={sl()}>
           <option value="">— subcategory —</option>
           {subcats.filter(Boolean).map((s) => <option key={s} value={s}>{s}</option>)}
         </select>
       ) : (
-        <button onClick={() => setEditSub(true)} disabled={busy} style={btn("#202020", "#ccc", 10)}># Subcat</button>
+        <button onClick={() => setEditSub(true)} disabled={busy} style={bt("#202020", "#ccc", 10)}># Subcat</button>
       )}
 
       {/* Regenerate commentary */}
@@ -148,7 +155,7 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
         const j = await r.json();
         if (!r.ok) { flash("✕ " + (j.error || "failed")); return false; }
         flash("↻ commentary regenerated"); return true;
-      })} disabled={busy} style={btn("#202020", "#ccc", 10)}>↻ Commentary</button>
+      })} disabled={busy} style={bt("#202020", "#ccc", 10)}>↻ Commentary</button>
 
       {msg && <span style={{ fontSize: 11, color: "var(--accent,#ffd700)" }}>{msg}</span>}
     </div>

@@ -24,6 +24,7 @@ export function palette(themeId: string) {
     magazine:  { box: "#f8f9fa", border: "#e6e6e6", ink: "#1a1a1a", body: "#666", accent: "#667eea", img: "linear-gradient(135deg,#e9edfd,#fff)" },
     blog:      { box: "#ffffff", border: "#eee", ink: "#333", body: "#777", accent: "#333", img: "linear-gradient(135deg,#f5f5f5,#fff)" },
     spread:    { box: "#f4eee2", border: "#1b1b1b", ink: "#1b1b1b", body: "#4a4338", accent: "#8a1d24", img: "linear-gradient(135deg,#f0ece4,#faf8f5)" },
+    hemp:      { box: "#f3ead6", border: "#a99a73", ink: "#3e3322", body: "#5f503a", accent: "#6f8450", img: "linear-gradient(135deg,#e2d6bc,#f7f1e3)" },
     water:     { box: "rgba(255,255,255,0.78)", border: "#d9def0", ink: "#2f2a48", body: "#5d5877", accent: "#6b8fd6", img: "linear-gradient(135deg,#fef9ef,#e8f0fe)" },
     cardwall:  { box: "#ffffff", border: "#e5e7eb", ink: "#1a1a2e", body: "#5a5a6a", accent: "#667eea", img: "linear-gradient(135deg,#eef1fb,#fff)" },
     split:     { box: "#ffffff", border: "#e0e0e0", ink: "#1a1a1a", body: "#555", accent: "#fbbf24", img: "linear-gradient(135deg,#fcf8ec,#fff)" },

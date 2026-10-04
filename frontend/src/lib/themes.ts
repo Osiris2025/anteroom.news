@@ -458,6 +458,32 @@ export const themes: Theme[] = [
       .btn{padding:10px 24px;background:linear-gradient(120deg,#8fb3ee,#f2a7c7);color:#fff;border:none;border-radius:999px;font-family:'Nunito',sans-serif;font-weight:700;font-size:13px;cursor:pointer}
       .foot{border-top:1px solid rgba(120,140,190,.25);margin-top:16px;padding:10px 16px;display:flex;justify-content:space-between;font-size:12px;color:#8a85a5}
     ` },
+  { id:"hemp", name:"Natural Hemp", structure: {layout:"center", sidebar:null, showCrawl:false, showPoll:false, showQuiz:false, showStats:false, showSupport:true, footer:"minimal"}, css: `
+      :root{--accent:#6f8450;--card-bg:#f3ead6;--border:#a99a73}
+      body{background-color:#efe6d3;background-image:radial-gradient(rgba(120,90,50,.08) 1px,transparent 1.5px),radial-gradient(rgba(255,255,255,.4) 1px,transparent 2px);background-size:7px 7px,11px 11px;background-attachment:fixed;color:#4a3b2a;font-family:'Nunito','Avenir',sans-serif}
+      h1,h2,h3,.mz-ed-title,.mz-ed-h2{font-family:Papyrus,'Almendra','Herculanum',fantasy !important;color:#3e3322}
+      h1{font-weight:700;letter-spacing:.04em}
+      h2,.mz-ed-h2{text-transform:uppercase;letter-spacing:.2em !important;color:#5b6b47 !important;font-size:17px !important;font-weight:700 !important}
+      main [style*="border-radius"]{border-radius:8px 14px 9px 13px !important}
+      .mz-ed-cell{background:#f3ead6 !important;border:1.5px solid #a99a73 !important;border-radius:10px 6px 12px 7px !important;box-shadow:3px 4px 0 #cdbd94 !important}
+      .mz-ed-cell:nth-child(2n){border-radius:7px 12px 6px 10px !important}
+      .mz-ed-cell:hover{transform:translateY(-3px) rotate(-.3deg) !important;border-color:#6f8450 !important;box-shadow:4px 7px 0 #c3b184 !important}
+      .mz-ed-thumb{border-radius:8px 5px 0 0 !important;filter:sepia(.18) saturate(.9)}
+      .mz-ed-kicker{color:#6f8450 !important;font-weight:800 !important;letter-spacing:.16em !important}
+      .mz-ed-title{font-weight:700 !important;font-size:21px !important;line-height:1.12 !important;letter-spacing:.03em !important;color:#3e3322}
+      .mz-ed-cell-wide .mz-ed-title{font-size:30px !important}
+      .mz-ed-summary{opacity:.8 !important}
+      .mz-ed-pin{background:#a5663d;color:#fbf6e8;border:0 !important}
+      .mz-ed-moreblock,.mz-ed-moreblock-card{background:#f3ead6 !important;border:1.5px dashed #a99a73 !important}
+      main [style*="linear-gradient(120deg"]{background:#f7f1e3 !important;color:#3e3322 !important;border:2px solid #8a7a55 !important;border-radius:6px 14px 8px 12px !important;box-shadow:4px 5px 0 #c9b98f}
+      .mz-leader [style*="linear-gradient(135deg"]{background:linear-gradient(135deg,#5b6b47 0%,#33391f 100%) !important}
+      .mz-leader span[style*="border-radius"]{background:#a5663d !important;color:#fbf6e8 !important}
+      .mz-leader [style*="border-color"]{border-color:#e6d9b5 !important;color:#f3e9c9 !important}
+      .panel{background:#f3ead6;border:1.5px solid #a99a73;border-radius:10px 6px 12px 7px;padding:14px;text-align:center;box-shadow:3px 4px 0 #cdbd94}
+      .panel h4{font-family:Papyrus,'Almendra',fantasy;font-size:18px;color:#5b6b47;letter-spacing:.1em;text-transform:uppercase}
+      .btn{padding:9px 22px;background:#6f8450;color:#fbf6e8;border:none;border-radius:999px;font-family:Papyrus,'Almendra',fantasy;font-size:15px;letter-spacing:.08em;cursor:pointer;box-shadow:2px 3px 0 #4f6038}
+      .foot{border-top:2px dashed #a99a73;margin-top:16px;padding:10px 20px;display:flex;justify-content:space-between;font-size:12px;color:#8a7a55}
+    ` },
 ] as Theme[];
 
 // Shared article data consumed by the template renderer
@@ -503,7 +529,7 @@ export const MAGAZINES: Magazine[] = [
   { id:"just-the-news-thats-fit-to-print", name:"Just the News", short:"Just the News", tagline:"Just the news that fit to print.", description:"Straight reporting, the full spectrum of current events.", color:"#475569", accent:"#94a3b8", theme:"vercel", realm:"Pulse", tags:["alert","ticker"] },
   // MYSTERIES
   { id:"weekly-weird-news", name:"Weekly Weird News", short:"Weird News", tagline:"The Weirdest Reliable News™", description:"Cryptids, UFOs, and strange cases — the creepy door.", color:"#8B4513", accent:"#FFD700", theme:"tabloid", realm:"Mysteries", tags:["anecdote","puzzle","crosspost","alert"] },
-  { id:"the-veil", name:"The Veil", short:"The Veil", tagline:"Backstage of the unseen.", description:"Chakras, crystals, auras, energy healing, consciousness — the seeker door.", color:"#4c1d95", accent:"#c084fc", theme:"glass", realm:"Mysteries", tags:["anecdote","puzzle","alert"] },
+  { id:"the-veil", name:"The Veil", short:"The Veil", tagline:"Backstage of the unseen.", description:"Chakras, crystals, auras, energy healing, consciousness — the seeker door.", color:"#4c1d95", accent:"#c084fc", theme:"hemp", realm:"Mysteries", tags:["anecdote","puzzle","alert"] },
   // POP
   { id:"the-green-room", name:"The Green Room", short:"Green Room", tagline:"Backstage of fame.", description:"Celebrity, culture, music — who's about to step into the spotlight.", color:"#065f46", accent:"#34d399", theme:"magazine", realm:"Pop", tags:["crosspost","anecdote","alert"] },
 ];
@@ -521,7 +547,7 @@ export const magazineTheme: Record<string, string> = {
   "neural-hardware": "linear",
   "dark-matter": "glass",
   "just-the-news-thats-fit-to-print": "vercel",
-  "the-veil": "glass",
+  "the-veil": "hemp",
   "the-green-room": "magazine",
 };
 
@@ -552,6 +578,7 @@ export function applyTheme(t: Theme): void {
     magazine: "family=Sora:wght@600;700;800&family=DM+Sans:wght@400;500;700",
     cardwall: "family=Poppins:wght@500;600;700;800",
     blog: "family=Source+Serif+4:ital,wght@0,400;0,600;1,400&family=Inter:wght@500;600",
+    hemp: "family=Almendra:wght@400;700&family=Nunito:wght@400;600;700",
     water: "family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=Nunito:wght@400;600;700",
   };
   let fl = document.getElementById("nexus-theme-font") as HTMLLinkElement | null;

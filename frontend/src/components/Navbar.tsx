@@ -6,6 +6,8 @@ import MagazineSearch from '@/components/MagazineSearch';
 import NotificationBell from '@/components/NotificationBell';
 import { useSession } from '@/lib/auth-client';
 import ProfileMenu from '@/components/ProfileMenu';
+import { useTheme } from '@/lib/ThemeContext';
+import { palette, isDarkTheme } from '@/lib/themePalette';
 
 // The two hamburger triggers live INSIDE the navbar as normal in-flow elements
 // (never `position:fixed` overlaying the sticky bar). This sidesteps a WebKit/iOS
@@ -40,9 +42,29 @@ function Toggle({
 
 export default function Navbar() {
   const { data: session } = useSession();
+  const { currentTheme } = useTheme();
+  const C = palette(currentTheme.id);
+  const dark = isDarkTheme(currentTheme.id);
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md">
+    <nav
+      className={`sticky top-0 z-50 backdrop-blur-md ${dark ? 'nx-dark' : ''}`}
+      style={{
+        background: C.box,
+        color: C.ink,
+        borderBottom: `1px solid ${C.border}`,
+        borderTop: `3px solid ${C.accent}`,
+        boxShadow: dark ? '0 2px 14px rgba(0,0,0,.45)' : '0 2px 10px rgba(0,0,0,.08)',
+      }}
+    >
+      {dark && (
+        <style>{`
+          .nx-dark .text-amber-600{color:#fbbf24} .nx-dark .text-purple-600{color:#c084fc}
+          .nx-dark .text-yellow-600{color:#facc15} .nx-dark .text-sky-600{color:#38bdf8}
+          .nx-dark .text-teal-600{color:#2dd4bf} .nx-dark .text-pink-600{color:#f472b6}
+          .nx-dark .text-emerald-600{color:#34d399} .nx-dark .text-gray-500{color:#9ca3af}
+        `}</style>
+      )}
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-1 shrink-0">
@@ -52,7 +74,7 @@ export default function Navbar() {
               title="Magazines"
               glyph={<svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z" /></svg>}
             />
-            <Link href="/" className="text-xl font-bold text-gray-900 dark:text-white hover:text-tech dark:hover:text-tech-light transition-colors shrink-0" style={{ marginLeft: 4 }}>
+            <Link href="/" className="text-xl font-bold transition-colors shrink-0" style={{ marginLeft: 4, color: C.ink }}>
               Anteroom
             </Link>
           </div>

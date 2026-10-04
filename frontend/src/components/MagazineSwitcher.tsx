@@ -1,6 +1,7 @@
 "use client";
 
 import SidebarAccount from "./SidebarAccount";
+import SidebarThemeSelect from "./SidebarThemeSelect";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { MAGAZINES } from "@/lib/themes";
@@ -103,6 +104,7 @@ export default function MagazineSwitcher() {
         <div className="nexus-switch-top" style={{ padding: "8px 10px 2px", borderBottom: "1px solid rgba(255,255,255,.1)", marginBottom: 4 }}>
           <SidebarAccount onNavigate={onSelect} />
           <MagazineSearch vertical />
+          <SidebarThemeSelect />
           <TopNavItems vertical />
         </div>
       )}

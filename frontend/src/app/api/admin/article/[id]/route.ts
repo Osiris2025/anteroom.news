@@ -112,6 +112,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
       }).where(and(eq(source.name, row.sourceName), eq(source.magazineId, row.magazineId)));
     }
   }
+  await db.execute(sql`delete from notification where reference_type = 'article' and reference_id = ${id}`);
   await db.delete(article).where(eq(article.id, id));
   return Response.json({ ok: true, id, reason });
 }

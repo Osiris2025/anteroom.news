@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { MAGAZINES } from "@/lib/themes";
 import TopNavItems from "@/components/TopNavItems";
 import MagazineSearch from "@/components/MagazineSearch";
+import SidebarDefaultMagazine from "@/components/SidebarDefaultMagazine";
 
 /**
  * Global magazine-switcher — hamburger + left drawer + pinnable rail.
@@ -98,11 +99,13 @@ export default function MagazineSwitcher() {
   const list = (onSelect: () => void, showTopItems: boolean) => (
     <>
       {showTopItems && (
-        <div className="nexus-switch-top" style={{ padding: "10px 10px 4px", borderBottom: "1px solid rgba(255,255,255,.1)", marginBottom: 4 }}>
+        <div className="nexus-switch-top" style={{ padding: "8px 10px 2px", borderBottom: "1px solid rgba(255,255,255,.1)", marginBottom: 4 }}>
           <MagazineSearch vertical />
           <TopNavItems vertical />
         </div>
       )}
+      {showTopItems && <div className="nexus-switch-section">Magazines</div>}
+      <SidebarDefaultMagazine onNavigate={onSelect} />
       <nav className="nexus-switch-list">
         {MAGAZINES.map((m) => (
           <Link
@@ -121,7 +124,7 @@ export default function MagazineSwitcher() {
 
   const head = (isRail: boolean) => (
     <div className="nexus-switch-head">
-      <span className="nexus-switch-brand">Magazines</span>
+      <span className="nexus-switch-brand">{isRail ? "Magazines" : "Menu"}</span>
       <div className="nexus-switch-head-actions">
         {isDesktop && (
           <button
@@ -230,7 +233,8 @@ export default function MagazineSwitcher() {
           cursor:pointer;font-size:14px;line-height:20px;color:#cdd3dd;padding:2px 6px;
         }
         .nexus-switch-ico:hover{background:rgba(255,255,255,.1);}
-        .nexus-switch-list{overflow-y:auto;padding:10px;flex:1 1 auto;}
+        .nexus-switch-section{padding:8px 16px 4px;font-size:11px;font-weight:800;letter-spacing:1px;text-transform:uppercase;color:#8d96a6;}
+        .nexus-switch-list{overflow-y:auto;padding:4px 10px 10px;flex:1 1 auto;}
         .nexus-switch-item{
           display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;
           text-decoration:none;color:#e7e9ee;font-weight:600;font-size:14px;line-height:1.3;

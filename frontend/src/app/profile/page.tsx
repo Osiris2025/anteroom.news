@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { useTheme } from "@/lib/ThemeContext";
 import { authClient, useSession } from "@/lib/auth-client";
+import DefaultMagazineSelect from "@/components/DefaultMagazineSelect";
 
 /** Resolve readable colors for the active theme (dark/light aware). */
 function palette(themeId: string | undefined) {
@@ -212,6 +213,7 @@ function SignedInView({ theme, onSignOut }: { theme: { box: string; ink: string;
           <input value={displayName} onChange={(e) => setDisplayName(e.target.value)} placeholder="Display name" style={{ ...s.input, maxWidth: 260 }} />
           <button onClick={saveName} disabled={avatarBusy} className="px-4 py-2 rounded-lg font-semibold" style={{ border: `1px solid ${accent}`, color: accent, background: "transparent", cursor: "pointer" }}>{avatarBusy ? "…" : "Save name"}</button>
         </div>
+        <DefaultMagazineSelect ink={ink} body={body} accent={accent} />
         <p className="text-sm" style={{ color: body, marginTop: 8, opacity: 0.7 }}>ID: {user?.id}</p>
         {avatarMsg && <p className="text-sm mt-2" style={{ color: avatarMsg.k === "ok" ? "#22c55e" : "#ef4444" }}>{avatarMsg.t}</p>}
         <div className="mt-4 flex flex-wrap gap-3">

@@ -61,6 +61,8 @@ export default function ProfileMenu() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const [mags, setMags] = useState<{ id: string; name: string }[]>([]);
+  const [defId, setDefId] = useState<string | null>(null);
   const user = session?.user as any;
 
   useEffect(() => {
@@ -76,6 +78,19 @@ export default function ProfileMenu() {
       document.removeEventListener('keydown', onEsc);
     };
   }, [open]);
+
+  useEffect(() => {
+    if (!open || !session?.user) return;
+    (async () => {
+      try {
+        const [f, p] = await Promise.all([fetch('/api/follows').then((r) => r.json()), fetch('/api/preferences').then((r) => r.json())]);
+        const list: { id: string; name: string }[] = (f.follows || []).map((x: any) => ({ id: x.magazineId, name: x.magazineName }));
+        if (p.defaultMagazineId && !list.some((o) => o.id === p.defaultMagazineId)) list.push({ id: p.defaultMagazineId, name: p.defaultMagazineName || p.defaultMagazineId });
+        list.sort((a, b) => (a.id === p.defaultMagazineId ? -1 : b.id === p.defaultMagazineId ? 1 : a.name.localeCompare(b.name)));
+        setMags(list); setDefId(p.defaultMagazineId || null);
+      } catch { /* noop */ }
+    })();
+  }, [open, session?.user]);
 
   const signOut = async () => {
     setOpen(false);
@@ -118,6 +133,16 @@ export default function ProfileMenu() {
                   </div>
                 </div>
               </div>
+              {mags.length > 0 && (
+                <div style={{ borderBottom: '1px solid rgba(150,150,150,.2)', padding: '6px 0' }}>
+                  <div style={{ padding: '4px 14px', fontSize: 11, letterSpacing: '.6px', textTransform: 'uppercase', opacity: 0.55 }}>My magazines</div>
+                  {mags.map((m) => (
+                    <Link key={m.id} href={`/magazines/${m.id}`} style={itemStyle} onClick={() => setOpen(false)}>
+                      {m.id === defId ? '⌂ ' : ''}{m.name}
+                    </Link>
+                  ))}
+                </div>
+              )}
               <Link href="/profile" style={itemStyle} onClick={() => setOpen(false)}>Profile &amp; settings</Link>
               <Link href="/bookmarks" style={itemStyle} onClick={() => setOpen(false)}>Bookmarks</Link>
               <Link href="/my-feed" style={itemStyle} onClick={() => setOpen(false)}>My Feed</Link>

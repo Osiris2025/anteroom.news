@@ -22,6 +22,12 @@ export default function DefaultMagazineButton({ magazineId, magazineName, accent
     })();
   }, [uid, magazineId]);
 
+  useEffect(() => {
+    const on = (e: Event) => setCurrent((e as CustomEvent).detail?.id ?? null);
+    window.addEventListener("nexus:default-magazine", on);
+    return () => window.removeEventListener("nexus:default-magazine", on);
+  }, []);
+
   if (!uid || current === undefined) return null;
   const isDefault = current === magazineId;
   const color = accent || "#0072f5";
@@ -35,7 +41,7 @@ export default function DefaultMagazineButton({ magazineId, magazineName, accent
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ defaultMagazineId: next }),
       });
-      if (r.ok) setCurrent(next);
+      if (r.ok) { setCurrent(next); window.dispatchEvent(new CustomEvent("nexus:default-magazine", { detail: { id: next } })); }
     } catch (e) { console.error("Default magazine change failed", e); }
     setLoading(false);
   };

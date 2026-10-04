@@ -11,10 +11,14 @@ export async function GET(_req: NextRequest) {
   const uid = session?.user?.id;
   if (!uid) return Response.json({ error: "Sign in required" }, { status: 401 });
   const [row] = await db
-    .select({ defaultMagazineId: userPreference.defaultMagazineId })
+    .select({ defaultMagazineId: userPreference.defaultMagazineId, defaultMagazineName: magazine.name })
     .from(userPreference)
+    .leftJoin(magazine, eq(userPreference.defaultMagazineId, magazine.id))
     .where(eq(userPreference.userId, uid));
-  return Response.json({ defaultMagazineId: row?.defaultMagazineId ?? null });
+  return Response.json({
+    defaultMagazineId: row?.defaultMagazineId ?? null,
+    defaultMagazineName: row?.defaultMagazineName ?? null,
+  });
 }
 
 // PUT /api/preferences  { defaultMagazineId: string | null }

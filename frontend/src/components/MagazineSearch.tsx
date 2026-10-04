@@ -54,7 +54,7 @@ export default function MagazineSearch({ vertical = false }: { vertical?: boolea
   }, []);
 
   return (
-    <div ref={box} style={{ position: "relative", marginRight: vertical ? 0 : 14, width: vertical ? "100%" : "min(260px, 30vw)", marginBottom: vertical ? 10 : 0 }}>
+    <div ref={box} style={{ position: "relative", marginRight: vertical ? 0 : 14, width: vertical ? "100%" : "min(260px, 30vw)", marginBottom: vertical ? 6 : 0 }}>
       <input
         value={q}
         onChange={(e) => { setQ(e.target.value); setOpen(true); }}

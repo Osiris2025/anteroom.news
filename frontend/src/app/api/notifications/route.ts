@@ -6,6 +6,11 @@ import { db } from "@/lib/db";
 import { notification } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 
+// Only show notifications whose article still exists (and wasn't rejected).
+// Notifications are created when an article is first collected, so ones for
+// articles that were later deleted or rejected would otherwise point nowhere.
+const visible = sql`(${notification.referenceType} is distinct from 'article' or exists (select 1 from article a where a.id = ${notification.referenceId} and a.status <> 'rejected'))`;
+
 // GET /api/notifications — list the current user's notifications.
 // Unread first, then by created_at desc. Supports limit/offset pagination.
 // Query params: ?limit=20&offset=0
@@ -21,21 +26,21 @@ export async function GET(_req: NextRequest) {
   const [totalResult] = await db
     .select({ count: sql<number>`count(*)` })
     .from(notification)
-    .where(eq(notification.userId, uid));
+    .where(and(eq(notification.userId, uid), visible));
 
   const total = Number(totalResult?.count ?? 0);
 
   const [unreadResult] = await db
     .select({ count: sql<number>`count(*)` })
     .from(notification)
-    .where(and(eq(notification.userId, uid), eq(notification.read, false)));
+    .where(and(eq(notification.userId, uid), eq(notification.read, false), visible));
 
   const unreadCount = Number(unreadResult?.count ?? 0);
 
   const rows = await db
     .select()
     .from(notification)
-    .where(eq(notification.userId, uid))
+    .where(and(eq(notification.userId, uid), visible))
     .orderBy(notification.read, desc(notification.createdAt))
     .limit(limit)
     .offset(offset);

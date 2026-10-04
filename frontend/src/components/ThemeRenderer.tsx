@@ -144,6 +144,7 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
   return (
     <div>
       {currentTheme.id === "crawler" && <LiveCrawl />}
+      {currentTheme.id === "ticker" && <LiveCrawl variant="ticker" label="NEWS WIRE" />}
       {/* Magazine/stream pages: header row with the Explore control (opens the
           right-side popover with Browse subcats + AI Frontier on every screen),
           then full-width editorial content. No persistent sidebar — all width

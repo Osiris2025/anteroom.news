@@ -49,7 +49,11 @@ export const auth = betterAuth({
     },
   },
   session: {
-    cookieCache: { enabled: true, maxAge: 60 * 60 },
+    // Cookie cache disabled: it copies the whole user record (including the
+    // profile photo, stored as a ~40 KB data URL) into the browser cookie, which
+    // exceeds cookie size limits and made the site render a blank page for
+    // anyone with a profile picture. The session is now looked up in the DB.
+    cookieCache: { enabled: false },
   },
   advanced: {
     useSecureCookies: isHttps,

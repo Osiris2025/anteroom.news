@@ -65,7 +65,7 @@ export default function Navbar() {
           .nx-dark .text-emerald-600{color:#34d399} .nx-dark .text-gray-500{color:#9ca3af}
         `}</style>
       )}
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-1 shrink-0">
             <Toggle
@@ -78,24 +78,18 @@ export default function Navbar() {
               Anteroom
             </Link>
           </div>
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 min-w-0">
             {/* Search + site actions on lg+ */}
-            <div className="hidden lg:flex items-center justify-end gap-3" style={{ marginRight: 8 }}>
+            <div className="hidden xl:flex items-center justify-end gap-3" style={{ marginRight: 8 }}>
               <MagazineSearch />
-              <Link
-                href="/search"
-                className="text-sm font-medium text-emerald-600 dark:text-emerald-400 hover:text-emerald-500 dark:hover:text-emerald-300 transition-colors"
-              >
-                Search
-              </Link>
-              <div className="hidden lg:flex items-center">
+              <div className="hidden xl:flex items-center">
                 <TopNavItems />
               </div>
             </div>
             {session?.user && (
               <Link
                 href="/dms"
-                className="hidden md:inline text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
+                className="hidden 2xl:inline text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors"
               >
                 💬 Messages
               </Link>

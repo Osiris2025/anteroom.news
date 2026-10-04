@@ -66,7 +66,7 @@ export default function Navbar() {
         `}</style>
       )}
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
+        <div className="flex items-center gap-3 h-16">
           <div className="flex items-center gap-1 shrink-0">
             <Toggle
               ariaLabel="Open magazine menu"
@@ -78,11 +78,13 @@ export default function Navbar() {
               Anteroom
             </Link>
           </div>
-          <div className="flex items-center gap-2 shrink-0 min-w-0">
+          <div className="flex items-center justify-end gap-2 flex-1 min-w-0">
             {/* Search + site actions on lg+ */}
-            <div className="hidden xl:flex items-center justify-end gap-3" style={{ marginRight: 8 }}>
-              <MagazineSearch />
-              <div className="hidden xl:flex items-center">
+            <div className="hidden xl:flex items-center gap-4 flex-1 min-w-0" style={{ marginRight: 8 }}>
+              <div style={{ flex: "1 1 160px", minWidth: 120 }}>
+                <MagazineSearch fluid />
+              </div>
+              <div className="hidden xl:flex items-center shrink-0">
                 <TopNavItems />
               </div>
             </div>

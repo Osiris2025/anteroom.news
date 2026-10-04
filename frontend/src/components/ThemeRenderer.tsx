@@ -97,7 +97,7 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
   const structure = {
     ...currentTheme.structure,
     hideHeader: true,
-    magScope: magazine ? magazine.name : "",
+    magScope: magazine ? (magazine.name || magazine.id || "magazine") : "",
     // Catboy poll is a Weekly Weird News feature (Todd, 2026-09-06): only render
     // on the WWN magazine page, never on the homepage or other magazines, even
     // if the active theme's structure has showPoll:true.

@@ -733,7 +733,8 @@ function renderMagSideNav(){
 function renderTemplate(st){
   var s = "";
   // Crawl bar
-  if(st.showCrawl){
+  // Built-in sample headlines are leftover filler; real pages never print them.
+  if(st.showCrawl && !st.magScope){
     s += '<div class="crawl">';
     var items = (st.crawlText||"CATBOY RETURNS").split(" - ");
     items.forEach(function(t){ s += '<span style="margin-right:44px">'+t+'</span>'; });

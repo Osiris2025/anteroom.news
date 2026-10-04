@@ -262,10 +262,8 @@ export async function GET(request: Request) {
                 width={420}
                 height={300}
                 style={{
-                  width: "100%",
-                  maxWidth: "420px",
-                  height: "auto",
-                  maxHeight: "340px",
+                  width: "420px",
+                  height: "300px",
                   objectFit: "cover",
                   borderRadius: "16px",
                   border: `2px solid ${accent}30`,

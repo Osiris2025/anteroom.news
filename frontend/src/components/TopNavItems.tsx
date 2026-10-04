@@ -35,17 +35,17 @@ export default function TopNavItems({ vertical = false }: { vertical?: boolean }
 
   if (vertical) {
     return (
-      <div className="nexus-topitems" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      <div className="nexus-topitems" style={{ display: 'flex', flexDirection: 'column', gap: 0 }}>
         {rows.map((r) => (
           <Link key={r.href} href={r.href} onClick={() => { window.__nexusCloseDrawer?.(); }}
             className={r.cls}
-            style={{ display: 'flex', alignItems: 'center', padding: '10px 12px', borderRadius: 8, fontWeight: 600, fontSize: 14, textDecoration: 'none', color: '#e7e9ee' }}>
+            style={{ display: 'flex', alignItems: 'center', padding: '5px 12px', borderRadius: 8, fontWeight: 600, fontSize: 14, textDecoration: 'none', color: '#e7e9ee' }}>
             {r.label}
           </Link>
         ))}
         {isAdmin && (
           <Link href="/admin" onClick={() => { window.__nexusCloseDrawer?.(); }}
-            style={{ display: 'flex', alignItems: 'center', padding: '10px 12px', borderRadius: 8, fontWeight: 700, fontSize: 14, textDecoration: 'none', color: '#ffd75e', background: 'rgba(255,215,94,.08)', border: '1px solid rgba(255,215,94,.3)', marginTop: 2 }}>
+            style={{ display: 'flex', alignItems: 'center', padding: '5px 12px', borderRadius: 8, fontWeight: 700, fontSize: 14, textDecoration: 'none', color: '#ffd75e', background: 'rgba(255,215,94,.08)', border: '1px solid rgba(255,215,94,.3)', marginTop: 2 }}>
             🗞️ Admin
           </Link>
         )}

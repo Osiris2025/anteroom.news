@@ -80,11 +80,11 @@ export default function Navbar() {
           </div>
           <div className="flex items-center justify-end gap-2 flex-1 min-w-0">
             {/* Search + site actions on lg+ */}
-            <div className="hidden xl:flex items-center gap-4 flex-1 min-w-0" style={{ marginRight: 8 }}>
-              <div style={{ flex: "1 1 160px", minWidth: 120 }}>
+            <div className="hidden md:flex items-center gap-3 flex-1 min-w-0" style={{ marginRight: 8 }}>
+              <div style={{ flex: "1 1 120px", minWidth: 90 }}>
                 <MagazineSearch fluid />
               </div>
-              <div className="hidden xl:flex items-center shrink-0">
+              <div className="hidden lg:flex items-center shrink-0">
                 <TopNavItems />
               </div>
             </div>

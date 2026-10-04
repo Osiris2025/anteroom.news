@@ -55,7 +55,7 @@ export default function TopNavItems({ vertical = false }: { vertical?: boolean }
 
   return (
     <div className="flex items-center gap-3">
-      <div className="hidden md:flex items-center gap-4">
+      <div className="hidden md:flex items-center gap-3 xl:gap-4">
         {rows.map((r) => (
           <Link key={r.href} href={r.href} className={`text-sm font-medium transition-colors ${r.cls}`}>{r.label}</Link>
         ))}

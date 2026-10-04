@@ -8,6 +8,7 @@ import MagazineTopStories from "@/components/MagazineTopStories";
 import HomeHero from "@/components/HomeHero";
 import MagazineEditorial from "@/components/MagazineEditorial";
 import FollowButton from "@/components/FollowButton";
+import DefaultMagazineButton from "@/components/DefaultMagazineButton";
 
 /**
  * ThemeRenderer
@@ -154,6 +155,7 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
             </h1>
             <span style={{ fontSize: 12, opacity: 0.7, fontStyle: "italic" }}>{magazine.tagline}</span>
             <FollowButton magazineId={magazine.id} magazineName={magazine.name} />
+            <DefaultMagazineButton magazineId={magazine.id} magazineName={magazine.name} accent={magazine.accent} />
           </div>
           <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />
           <LiveFeed magazine={magazine.id} />

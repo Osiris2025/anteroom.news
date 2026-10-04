@@ -50,7 +50,15 @@ export default function ProfilePage() {
       else {
         setMsg({ t: (r?.data?.user || r?.data?.token) ? `Signed in — welcome! Redirecting…` : "Done ✔", k: "ok" });
         if (!opts?.skipRefresh) { try { refetch(); } catch {} }
-        if (r?.data?.user || r?.data?.token) { setTimeout(() => { window.location.href = "/"; }, 600); }
+        if (r?.data?.user || r?.data?.token) {
+          // Go to the user's default magazine if they set one, otherwise the home page (magazine chooser).
+          let dest = "/";
+          try {
+            const pr = await fetch("/api/preferences");
+            if (pr.ok) { const pj = await pr.json(); if (pj?.defaultMagazineId) dest = `/magazines/${encodeURIComponent(pj.defaultMagazineId)}`; }
+          } catch {}
+          setTimeout(() => { window.location.href = dest; }, 600);
+        }
       }
     }
     catch (e: any) { setMsg({ t: friendly(e?.message), k: "err" }); }

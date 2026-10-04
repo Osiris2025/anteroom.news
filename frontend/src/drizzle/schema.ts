@@ -454,3 +454,14 @@ export const pageView = pgTable("page_view", {
 
 export type PageView = typeof pageView.$inferSelect;
 export type NewPageView = typeof pageView.$inferInsert;
+
+
+// Per-user preferences (currently: which magazine to open after sign in).
+// Table is created with: CREATE TABLE IF NOT EXISTS user_preference (...) — see PR description.
+export const userPreference = pgTable("user_preference", {
+  userId: text("user_id")
+    .primaryKey()
+    .references(() => user.id, { onDelete: "cascade" }),
+  defaultMagazineId: text("default_magazine_id").references(() => magazine.id, { onDelete: "set null" }),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});

@@ -50,7 +50,7 @@ export default function SidebarShade({ children }: { children: ReactNode }) {
     if (!start.current) return;
     const dy = e.clientY - start.current.y;
     if (Math.abs(dy) > 4) dragged.current = true;
-    setDragY(Math.max(-8, Math.min(14, dy)));
+    setDragY(Math.max(-8, Math.min(8, dy)));
   };
   const endDrag = (e: React.PointerEvent<HTMLButtonElement>) => {
     if (!start.current) return;
@@ -80,7 +80,6 @@ export default function SidebarShade({ children }: { children: ReactNode }) {
         <div className="nexus-shade-inner">{children}</div>
       </div>
       <div className="nexus-shade-pull">
-        <span className="nexus-shade-rail" aria-hidden />
         <button
           type="button"
           className="nexus-shade-btn"
@@ -95,9 +94,13 @@ export default function SidebarShade({ children }: { children: ReactNode }) {
           onPointerUp={endDrag}
           onPointerCancel={endDrag}
         >
-          <span className="nexus-shade-cord" aria-hidden style={{ height: 8 + Math.max(0, dragY) }} />
+          <span className="nexus-shade-cord" aria-hidden style={{ height: 4 + Math.max(0, dragY) }} />
           <span className="nexus-shade-ring" aria-hidden style={{ transform: `translateY(${dragY > 0 ? 0 : dragY}px)` }}>
-            <span className="nexus-shade-chev">{collapsed ? "▾" : "▴"}</span>
+            {/* triangle = the direction the shade will travel next:
+                up when expanded (tap to roll up), down when collapsed (tap to roll down) */}
+            <svg className="nexus-shade-tri" viewBox="0 0 20 20" width="20" height="20" aria-hidden focusable="false">
+              {collapsed ? <polygon points="2,5 18,5 10,17" /> : <polygon points="2,15 18,15 10,3" />}
+            </svg>
           </span>
         </button>
       </div>
@@ -115,38 +118,40 @@ export default function SidebarShade({ children }: { children: ReactNode }) {
           .nexus-shade.is-collapsed .nexus-shade-inner{
             opacity:0;visibility:hidden;transition:opacity .2s ease, visibility 0s .28s;
           }
+          /* the shade strip: a clear double gold rule on top, a fine linen-like
+             texture (lighter slats over a slightly darker base) and a closing hairline */
           .nexus-shade-pull{
-            display:flex;justify-content:center;position:relative;
-            height:42px;margin-bottom:2px;
-          }
-          /* the bottom slat of the shade */
-          .nexus-shade-rail{
-            position:absolute;left:10px;right:10px;top:0;height:4px;border-radius:0 0 4px 4px;
-            background:linear-gradient(to bottom,rgba(255,255,255,.32),rgba(255,255,255,.12));
-            box-shadow:0 1px 3px rgba(0,0,0,.5);
+            display:flex;justify-content:center;position:relative;box-sizing:border-box;
+            height:57px;margin-bottom:2px;
+            border-top:3px double rgba(255,215,94,.6);
+            border-bottom:1px solid rgba(255,215,94,.28);
+            background:
+              repeating-linear-gradient(to bottom,rgba(255,255,255,.07) 0,rgba(255,255,255,.07) 1px,rgba(0,0,0,.18) 1px,rgba(0,0,0,.18) 3px),
+              linear-gradient(to bottom,rgba(255,215,94,.07),rgba(255,215,94,.02));
+            box-shadow:inset 0 3px 4px -2px rgba(0,0,0,.45);
           }
           .nexus-shade-btn{
             position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
-            width:64px;height:42px;padding:0;margin:0;border:none;background:none;cursor:grab;
+            width:64px;height:53px;padding:0;margin:0;border:none;background:none;cursor:grab;
             color:#ffd75e;touch-action:none;-webkit-tap-highlight-color:transparent;
             font-family:inherit;
           }
           .nexus-shade-btn:active{cursor:grabbing;}
           .nexus-shade-cord{
-            display:block;width:2px;margin-top:4px;background:rgba(255,255,255,.4);
+            display:block;width:3px;margin-top:0;background:rgba(255,215,94,.7);
             border-radius:1px;transition:height .12s ease;flex:none;
           }
           .nexus-shade-ring{
             display:inline-flex;align-items:center;justify-content:center;
-            width:24px;height:24px;border-radius:50%;box-sizing:border-box;
-            border:2px solid #ffd75e;background:rgba(255,215,94,.14);
-            box-shadow:0 2px 5px rgba(0,0,0,.5), inset 0 0 0 2px rgba(0,0,0,.25);
+            width:42px;height:42px;border-radius:50%;box-sizing:border-box;
+            border:3px solid #ffd75e;background:rgba(20,16,4,.88);
+            box-shadow:0 2px 6px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,215,94,.18);
             transition:transform .15s ease, background .15s;flex:none;
           }
-          .nexus-shade-btn:hover .nexus-shade-ring{background:rgba(255,215,94,.26);}
+          .nexus-shade-btn:hover .nexus-shade-ring{background:rgba(70,56,12,.95);}
           .nexus-shade-btn:focus-visible{outline:none;}
           .nexus-shade-btn:focus-visible .nexus-shade-ring{outline:2px solid #fff;outline-offset:2px;}
-          .nexus-shade-chev{font-size:11px;line-height:1;}
+          .nexus-shade-tri{display:block;fill:#ffd75e;stroke:#ffd75e;stroke-width:2.5;stroke-linejoin:round;}
         }
         @media (prefers-reduced-motion:reduce){
           .nexus-shade-clip,.nexus-shade-inner,.nexus-shade-cord,.nexus-shade-ring{transition:none !important;}

@@ -41,16 +41,33 @@ function isUsableImageUrl(url: string): boolean {
          lower.includes(".png") || lower.includes(".gif");
 }
 
+// The font is bundled in /public/fonts so card images never depend on a live
+// download from Google (a failed download made the card image fail to render,
+// so shared links showed no picture). Kept in memory after the first read.
+let cachedFont: ArrayBuffer | null = null;
+
 async function loadFont(): Promise<ArrayBuffer | null> {
+  if (cachedFont) return cachedFont;
   try {
-    const cssUrl = "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap";
-    const css = await fetch(cssUrl).then((r) => r.text());
-    const match = css.match(/url\(([^)]+)\)/);
-    if (!match) return null;
-    const fontUrl = match[1].replace(/['"]/g, "");
-    return await fetch(fontUrl).then((r) => r.arrayBuffer());
+    const { readFile } = await import("fs/promises");
+    const path = await import("path");
+    const buf = await readFile(path.join(process.cwd(), "public", "fonts", "Inter-Regular.ttf"));
+    cachedFont = buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.byteLength) as ArrayBuffer;
+    return cachedFont;
   } catch {
-    return null;
+    // Fall back to downloading it (old behaviour) if the bundled file is missing.
+    try {
+      const cssUrl = "https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap";
+      const css = await fetch(cssUrl).then((r) => r.text());
+      const match = css.match(/url\(([^)]+)\)/);
+      if (!match) return null;
+      const fontUrl = match[1].replace(/['"]/g, "");
+      const data = await fetch(fontUrl).then((r) => r.arrayBuffer());
+      if (data.byteLength > 40) cachedFont = data;
+      return data;
+    } catch {
+      return null;
+    }
   }
 }
 

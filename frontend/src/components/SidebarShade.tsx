@@ -4,10 +4,11 @@ import { useEffect, useRef, useState, type ReactNode } from "react";
 
 /**
  * "Window shade" for the top of the slide-out sidebar (profile, Messages,
- * Notifications, Search, Theme). On phones (< 768px) a little pull-cord with a
- * ring hangs from the bottom edge of that section; tap it (or drag it up/down)
- * to roll the section up or down so the magazine list gets the room.
- * On >= 768px the handle is hidden and the section is always fully shown.
+ * Notifications, Search, Theme). A pull-cord with a ring hangs from the bottom
+ * edge of that section; tap it (or drag it up/down) to roll the section up or
+ * down so the magazine list gets the room. Works at every viewport width where
+ * the overlay/drawer sidebar appears (phone, iPad, desktop). The permanently
+ * pinned magazine rail does not use this component — it has no top section.
  * State is remembered in localStorage.
  */
 
@@ -111,48 +112,44 @@ export default function SidebarShade({ children }: { children: ReactNode }) {
           transition:grid-template-rows .28s cubic-bezier(.4,0,.2,1);
         }
         .nexus-shade-inner{min-height:0;overflow:hidden;transition:opacity .22s ease, visibility 0s;}
-        /* the pull handle only exists on phones */
-        .nexus-shade-pull{display:none;}
-        @media (max-width:767px){
-          .nexus-shade.is-collapsed .nexus-shade-clip{grid-template-rows:0fr;}
-          .nexus-shade.is-collapsed .nexus-shade-inner{
-            opacity:0;visibility:hidden;transition:opacity .2s ease, visibility 0s .28s;
-          }
-          /* the shade strip: a clear double gold rule on top, a fine linen-like
-             texture (lighter slats over a slightly darker base) and a closing hairline */
-          .nexus-shade-pull{
-            display:flex;justify-content:center;position:relative;box-sizing:border-box;
-            height:57px;margin-bottom:2px;
-            border-top:3px double rgba(255,215,94,.6);
-            border-bottom:1px solid rgba(255,215,94,.28);
-            background:
-              repeating-linear-gradient(to bottom,rgba(255,255,255,.07) 0,rgba(255,255,255,.07) 1px,rgba(0,0,0,.18) 1px,rgba(0,0,0,.18) 3px),
-              linear-gradient(to bottom,rgba(255,215,94,.07),rgba(255,215,94,.02));
-            box-shadow:inset 0 3px 4px -2px rgba(0,0,0,.45);
-          }
-          .nexus-shade-btn{
-            position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
-            width:64px;height:53px;padding:0;margin:0;border:none;background:none;cursor:grab;
-            color:#ffd75e;touch-action:none;-webkit-tap-highlight-color:transparent;
-            font-family:inherit;
-          }
-          .nexus-shade-btn:active{cursor:grabbing;}
-          .nexus-shade-cord{
-            display:block;width:3px;margin-top:0;background:rgba(255,215,94,.7);
-            border-radius:1px;transition:height .12s ease;flex:none;
-          }
-          .nexus-shade-ring{
-            display:inline-flex;align-items:center;justify-content:center;
-            width:42px;height:42px;border-radius:50%;box-sizing:border-box;
-            border:3px solid #ffd75e;background:rgba(20,16,4,.88);
-            box-shadow:0 2px 6px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,215,94,.18);
-            transition:transform .15s ease, background .15s;flex:none;
-          }
-          .nexus-shade-btn:hover .nexus-shade-ring{background:rgba(70,56,12,.95);}
-          .nexus-shade-btn:focus-visible{outline:none;}
-          .nexus-shade-btn:focus-visible .nexus-shade-ring{outline:2px solid #fff;outline-offset:2px;}
-          .nexus-shade-tri{display:block;fill:#ffd75e;stroke:#ffd75e;stroke-width:2.5;stroke-linejoin:round;}
+        .nexus-shade.is-collapsed .nexus-shade-clip{grid-template-rows:0fr;}
+        .nexus-shade.is-collapsed .nexus-shade-inner{
+          opacity:0;visibility:hidden;transition:opacity .2s ease, visibility 0s .28s;
         }
+        /* the shade strip: a clear double gold rule on top, a fine linen-like
+           texture (lighter slats over a slightly darker base) and a closing hairline */
+        .nexus-shade-pull{
+          display:flex;justify-content:center;position:relative;box-sizing:border-box;
+          height:57px;margin-bottom:2px;
+          border-top:3px double rgba(255,215,94,.6);
+          border-bottom:1px solid rgba(255,215,94,.28);
+          background:
+            repeating-linear-gradient(to bottom,rgba(255,255,255,.07) 0,rgba(255,255,255,.07) 1px,rgba(0,0,0,.18) 1px,rgba(0,0,0,.18) 3px),
+            linear-gradient(to bottom,rgba(255,215,94,.07),rgba(255,215,94,.02));
+          box-shadow:inset 0 3px 4px -2px rgba(0,0,0,.45);
+        }
+        .nexus-shade-btn{
+          position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;
+          width:64px;height:53px;padding:0;margin:0;border:none;background:none;cursor:grab;
+          color:#ffd75e;touch-action:none;-webkit-tap-highlight-color:transparent;
+          font-family:inherit;
+        }
+        .nexus-shade-btn:active{cursor:grabbing;}
+        .nexus-shade-cord{
+          display:block;width:3px;margin-top:0;background:rgba(255,215,94,.7);
+          border-radius:1px;transition:height .12s ease;flex:none;
+        }
+        .nexus-shade-ring{
+          display:inline-flex;align-items:center;justify-content:center;
+          width:42px;height:42px;border-radius:50%;box-sizing:border-box;
+          border:3px solid #ffd75e;background:rgba(20,16,4,.88);
+          box-shadow:0 2px 6px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,215,94,.18);
+          transition:transform .15s ease, background .15s;flex:none;
+        }
+        .nexus-shade-btn:hover .nexus-shade-ring{background:rgba(70,56,12,.95);}
+        .nexus-shade-btn:focus-visible{outline:none;}
+        .nexus-shade-btn:focus-visible .nexus-shade-ring{outline:2px solid #fff;outline-offset:2px;}
+        .nexus-shade-tri{display:block;fill:#ffd75e;stroke:#ffd75e;stroke-width:2.5;stroke-linejoin:round;}
         @media (prefers-reduced-motion:reduce){
           .nexus-shade-clip,.nexus-shade-inner,.nexus-shade-cord,.nexus-shade-ring{transition:none !important;}
         }

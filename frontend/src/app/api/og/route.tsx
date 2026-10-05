@@ -22,23 +22,122 @@ const MAGAZINE_BRANDING: Record<string, { color: string; accent: string; name: s
 
 export const runtime = "nodejs";
 
-// Satori only supports JPEG, PNG, GIF, SVG — not WebP
-function isUsableImageUrl(url: string): boolean {
-  if (!url) return false;
-  // Must be absolute
-  if (!url.startsWith("http://") && !url.startsWith("https://")) return false;
+function isAbsoluteHttpUrl(url: string): boolean {
+  return url.startsWith("http://") || url.startsWith("https://");
+}
+
+/** True when the URL path or query clearly indicates WebP (Satori cannot draw WebP). */
+function urlLooksLikeWebp(url: string): boolean {
   const lower = url.toLowerCase();
-  // WebP extension = skip
-  if (lower.endsWith(".webp")) return false;
-  // Check for webp in query params (Reddit uses auto=webp)
-  if (lower.includes("auto=webp") || lower.includes("format=webp")) return false;
-  // Must have jpg/jpeg/png/gif/svg extension OR no extension (might still work)
-  const hasKnownExt = lower.endsWith(".jpg") || lower.endsWith(".jpeg") ||
-                      lower.endsWith(".png") || lower.endsWith(".gif") ||
-                      lower.endsWith(".svg");
-  // Allow URLs that look like image URLs even without extension (CDN proxy URLs)
-  return hasKnownExt || lower.includes(".jpg") || lower.includes(".jpeg") ||
-         lower.includes(".png") || lower.includes(".gif");
+  try {
+    const pathname = new URL(url).pathname.toLowerCase();
+    if (pathname.endsWith(".webp")) return true;
+  } catch {
+    if (lower.split("?")[0].endsWith(".webp")) return true;
+  }
+  // Reddit / CDN force-webp query params
+  return lower.includes("auto=webp") || lower.includes("format=webp");
+}
+
+/** JPEG / PNG / GIF / SVG — pass through to Satori unchanged. */
+function isSatoriNativeUrl(url: string): boolean {
+  if (!isAbsoluteHttpUrl(url)) return false;
+  if (urlLooksLikeWebp(url)) return false;
+  const lower = url.toLowerCase();
+  const hasKnownExt =
+    lower.endsWith(".jpg") ||
+    lower.endsWith(".jpeg") ||
+    lower.endsWith(".png") ||
+    lower.endsWith(".gif") ||
+    lower.endsWith(".svg") ||
+    lower.includes(".jpg") ||
+    lower.includes(".jpeg") ||
+    lower.includes(".png") ||
+    lower.includes(".gif");
+  return hasKnownExt;
+}
+
+function isWebpBuffer(buf: Buffer): boolean {
+  // RIFF....WEBP
+  return (
+    buf.length >= 12 &&
+    buf[0] === 0x52 &&
+    buf[1] === 0x49 &&
+    buf[2] === 0x46 &&
+    buf[3] === 0x46 &&
+    buf[8] === 0x57 &&
+    buf[9] === 0x45 &&
+    buf[10] === 0x42 &&
+    buf[11] === 0x50
+  );
+}
+
+/**
+ * Resolve an article image for Satori.
+ * WebP (by extension, query, content-type, or magic bytes) is downloaded and
+ * converted to a PNG data URL via sharp. JPEG/PNG/GIF/SVG URLs are kept as-is.
+ */
+async function resolveImageForSatori(rawUrl: string): Promise<string> {
+  if (!rawUrl || !isAbsoluteHttpUrl(rawUrl)) return "";
+
+  const needsWebpConvert = urlLooksLikeWebp(rawUrl);
+
+  if (!needsWebpConvert && isSatoriNativeUrl(rawUrl)) {
+    return rawUrl;
+  }
+
+  if (!needsWebpConvert) {
+    // Unknown / extensionless URL — skip (same as previous allowlist behaviour)
+    return "";
+  }
+
+  try {
+    const res = await fetch(rawUrl, {
+      headers: { Accept: "image/*,*/*;q=0.8" },
+      signal: AbortSignal.timeout(10_000),
+      redirect: "follow",
+    });
+    if (!res.ok) return "";
+
+    const contentType = (res.headers.get("content-type") || "").toLowerCase();
+    const buf = Buffer.from(await res.arrayBuffer());
+    if (buf.byteLength < 12) return "";
+
+    const isWebp =
+      contentType.includes("image/webp") ||
+      isWebpBuffer(buf) ||
+      needsWebpConvert;
+
+    if (!isWebp) {
+      // Query said webp but body isn't — if it's a native format, use original URL
+      if (
+        contentType.includes("image/jpeg") ||
+        contentType.includes("image/png") ||
+        contentType.includes("image/gif") ||
+        contentType.includes("image/svg")
+      ) {
+        return rawUrl;
+      }
+      return "";
+    }
+
+    const sharp = (await import("sharp")).default;
+    // Cap size so the data URL stays within ImageResponse asset limits
+    const png = await sharp(buf)
+      .rotate()
+      .resize({
+        width: 840,
+        height: 600,
+        fit: "inside",
+        withoutEnlargement: true,
+      })
+      .png()
+      .toBuffer();
+
+    return `data:image/png;base64,${png.toString("base64")}`;
+  } catch {
+    return "";
+  }
 }
 
 // The font is bundled in /public/fonts so card images never depend on a live
@@ -102,9 +201,8 @@ export async function GET(request: Request) {
   const title = (a.headline || a.title || "Anteroom").substring(0, 200);
   const description = (a.summary || "").substring(0, 250);
 
-  // Only use image if Satori supports the format AND URL is absolute
-  const rawUrl = a.imageUrl || "";
-  const imageUrl = isUsableImageUrl(rawUrl) ? rawUrl : "";
+  // WebP → PNG data URL; JPEG/PNG/GIF/SVG stay as remote URLs
+  const imageUrl = await resolveImageForSatori(a.imageUrl || "");
 
   const darkThemes = ["glass", "dashboard", "terminal", "crt", "linear"];
   const isDark = branding ? darkThemes.includes(branding.theme) : true;

@@ -5,6 +5,7 @@ import MagazineSwitcher from "@/components/MagazineSwitcher";
 import RightExploreDrawer from "@/components/RightExploreDrawer";
 import { ThemeProvider } from "@/lib/ThemeContext";
 import TrackPageView from "@/components/TrackPageView";
+import UmamiScript from "@/components/UmamiScript";
 import { AdminProvider } from "@/components/AdminProvider";
 import { SITE_URL } from "@/lib/site";
 
@@ -18,6 +19,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="min-h-screen">
+        <UmamiScript />
         <ThemeProvider>
           <AdminProvider>
             <Navbar />

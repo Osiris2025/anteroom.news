@@ -544,7 +544,7 @@ export const MAGAZINES: Magazine[] = [
   // HEALTH
   { id:"vital-sign", name:"Vital Signs", short:"Vital Signs", tagline:"The inner cosmos, decoded.", description:"Supplements, peptides, longevity, and discoveries that may change outcomes.", color:"#0b5563", accent:"#2dd4bf", theme:"dashboard", realm:"Health", tags:["ticker","alert","puzzle","anecdote"] },
   // SFF
-  { id:"starfall-weekly", name:"The Chart Room", short:"Chart Room", tagline:"Backstage of other worlds.", description:"Science fiction & fantasy — books, movies, gaming. (Starfall = the release column.)", color:"#0f380f", accent:"#00ff40", theme:"crt", realm:"SFF", tags:["ticker","alert","crosspost","puzzle"] },
+  { id:"starfall-weekly", name:"The Chart Room", short:"Chart Room", tagline:"Backstage of other worlds.", description:"Science fiction & fantasy — books, movies, gaming. (Starfall = the release column.)", color:"#0f380f", accent:"#00ff40", theme:"terminal", realm:"SFF", tags:["ticker","alert","crosspost","puzzle"] },
   // PULSE
   { id:"poli-split", name:"Political Picture", short:"Political", tagline:"Both Sides, One Feed", description:"Red. Blue. Facts. Balanced political coverage.", color:"#7c3aed", accent:"#a78bfa", theme:"vercel", realm:"Pulse", tags:["alert","ticker","crosspost"] },
   { id:"climate-watch", name:"Watch Tower", short:"Watch Tower", tagline:"The planet's sentinel.", description:"Climate science, energy transition, environmental policy.", color:"#059669", accent:"#34d399", theme:"dashboard", realm:"Pulse", tags:["ticker","alert","game","anecdote"] },
@@ -564,7 +564,7 @@ export const magazineTheme: Record<string, string> = {
   "startup-signal": "magazine",
   "oss-report": "terminal",
   "local-lens": "blog",
-  "starfall-weekly": "crt",
+  "starfall-weekly": "terminal",
   "vital-sign": "dashboard",
   "neural-hardware": "linear",
   "dark-matter": "glass",

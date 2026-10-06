@@ -28,10 +28,6 @@ ingestion:
     - type: rss
       url: "https://www.odditycentral.com/feed"
       name: "Oddity Central"
-    - type: reddit
-      subreddit: "weird"
-      sort: "hot"
-      limit: 25
 
 social:
   accounts:

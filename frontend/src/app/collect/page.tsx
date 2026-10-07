@@ -35,11 +35,14 @@ export default function CollectPage() {
   }).catch(e=>alert("Anteroom error: "+e.message));
 })();`;
 
+  const [dup, setDup] = useState<{ url: string; title: string; status: string; magazineName?: string | null } | null>(null);
+
   const handleCollect = async () => {
     if (!url.trim()) return;
     setLoading(true);
     setResult(null);
     setErr("");
+    setDup(null);
 
     try {
       const r = await fetch("/api/collect", {
@@ -49,7 +52,10 @@ export default function CollectPage() {
         body: JSON.stringify({ url: url.trim() }),
       });
       const data = await r.json();
-      if (data.error) {
+      if (data.duplicate) {
+        setDup(data.duplicate);
+        setResult({ ok: false, message: data.error });
+      } else if (data.error) {
         setErr(data.error);
         setResult({ ok: false, message: data.error });
       } else {
@@ -174,6 +180,22 @@ export default function CollectPage() {
           {err && (
             <div style={{ padding: 14, borderRadius: 8, background: "#3a0a0a", marginBottom: 14, fontSize: 13, color: "#f87171" }}>
               ⚠ {err}
+            </div>
+          )}
+
+          {/* Already on the site */}
+          {dup && (
+            <div style={{ padding: 14, borderRadius: 8, background: "rgba(88,166,255,.08)", border: "1px solid rgba(88,166,255,.3)", marginBottom: 14, fontSize: 13, color: "#9ecbff", lineHeight: 1.5 }}>
+              <div style={{ fontWeight: 700 }}>ℹ Already on the site</div>
+              <div style={{ marginTop: 4 }}>
+                <a href={dup.url} target="_blank" rel="noopener noreferrer" style={{ color: "#58a6ff", textDecoration: "underline" }}>
+                  {dup.title}
+                </a>
+              </div>
+              <div style={{ marginTop: 4, fontSize: 12, opacity: 0.75 }}>
+                Status: {dup.status}
+                {dup.magazineName ? ` · ${dup.magazineName}` : ""}
+              </div>
             </div>
           )}
 

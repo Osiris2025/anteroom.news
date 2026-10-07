@@ -20,7 +20,6 @@ export default function CollectPage() {
     suitabilityOk?: boolean;
   } | null>(null);
   const [err, setErr] = useState("");
-  const [dup, setDup] = useState<{ url: string; title: string; status: string; magazineName?: string | null } | null>(null);
 
   // Bookmarklet JavaScript code
   const bookmarkletCode = `javascript:(function(){
@@ -35,6 +34,8 @@ export default function CollectPage() {
     else alert("Anteroom: \\""+(d.article?.title||"Saved")+"\\" saved as draft"+(d.magazine?" in "+d.magazine.name:"")+"!");
   }).catch(e=>alert("Anteroom error: "+e.message));
 })();`;
+
+  const [dup, setDup] = useState<{ url: string; title: string; status: string; magazineName?: string | null } | null>(null);
 
   const handleCollect = async () => {
     if (!url.trim()) return;

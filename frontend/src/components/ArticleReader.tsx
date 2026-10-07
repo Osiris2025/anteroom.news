@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import ArticleComments from "./ArticleComments";
 import ArticleEfx from "./ArticleEfx";
 import ThreadModal from "./ThreadModal";
+import ShareButton from "./ShareButton";
 import AdminCardTools from "./AdminCardTools";
 import { useAdmin } from "./AdminProvider";
 import { hostOf, sourceLabel } from "@/lib/sourceUtil";
@@ -270,6 +271,22 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
           >
             ⌗ Share on X
           </button>
+          <ShareButton
+            title={displayTitle}
+            text={summary}
+            url={`https://anteroom.news/articles/${article.id}?utm_source=share&utm_medium=social&utm_campaign=share-button`}
+            style={{
+              background: "transparent",
+              border: `1px solid ${C.border}`,
+              color: C.body,
+              fontWeight: 700,
+              padding: "12px 20px",
+              borderRadius: 10,
+              fontSize: 14,
+              cursor: "pointer",
+              fontFamily: "inherit",
+            }}
+          />
           <span style={{ alignSelf: "center", fontSize: 12, color: C.body, opacity: 0.8 }}>
             via {sourceLabel(sourceUrl, undefined, sourceName)} <span style={{ opacity: 0.6 }}>· {sourceName || hostOf(sourceUrl)}</span>
           </span>

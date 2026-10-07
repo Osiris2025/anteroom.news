@@ -25,15 +25,19 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   const a = r.article;
   const mag = r.magazine;
   const title = a.headline || a.title || "Anteroom";
-  const description = a.summary || a.commentary || `Read on ${mag?.name || "Anteroom"}`;
+  const rawDesc = a.summary || a.commentary || `Read on ${mag?.name || "Anteroom"}`;
+  // Plain text for previews: strip markdown markers and keep it to ~200 chars.
+  const plain = String(rawDesc).replace(/[*_`#>]+/g, "").replace(/\s+/g, " ").trim();
+  const description = plain.length > 200 ? plain.slice(0, 197).replace(/\s+\S*$/, "") + "…" : plain;
   const imageUrl = a.imageUrl || "";
   const canonicalUrl = `${SITE_URL}/articles/${id}`;
   const brandedOgUrl = `${SITE_URL}/api/og?articleId=${encodeURIComponent(id)}`;
 
-  const ogImages = [{ url: brandedOgUrl, width: 1200, height: 630, alt: title }];
+  const ogImages: { url: string; width?: number; height?: number; alt: string }[] = [{ url: brandedOgUrl, width: 1200, height: 630, alt: title }];
   // Fallback to source image if branded OG fails
   if (imageUrl) {
-    ogImages.push({ url: imageUrl, width: 1200, height: 630, alt: title });
+    // Real size unknown, so don't claim 1200x630 for the publisher's photo.
+    ogImages.push({ url: imageUrl, alt: title });
   }
 
   return {
@@ -46,6 +50,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
       url: canonicalUrl,
       siteName: "Anteroom",
       type: "article",
+      ...(a.publishedAt ? { publishedTime: new Date(a.publishedAt).toISOString() } : {}),
       images: ogImages,
       ...(mag ? { tags: [mag.name] } : {}),
     },

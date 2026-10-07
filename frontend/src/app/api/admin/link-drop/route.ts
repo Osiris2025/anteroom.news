@@ -1,10 +1,10 @@
 import { NextRequest } from "next/server";
 import { headers } from "next/headers";
-import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 import crypto from "crypto";
+import { duplicateResponse, insertErrorResponse } from "@/lib/articleDuplicate";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
@@ -26,40 +26,6 @@ async function guard(): Promise<{ denied: Response } | { denied: null; userId: s
   } catch {
     return { denied: Response.json({ error: "Forbidden — admin only" }, { status: 403 }) };
   }
-}
-
-/** If an article with this source URL already exists, build a friendly 409 response. */
-async function duplicateResponse(sourceUrl: string): Promise<Response | null> {
-  const rows = await db
-    .select({
-      id: article.id,
-      title: article.title,
-      headline: article.headline,
-      status: article.status,
-      magazineName: magazine.name,
-    })
-    .from(article)
-    .leftJoin(magazine, eq(article.magazineId, magazine.id))
-    .where(eq(article.sourceUrl, sourceUrl))
-    .limit(1);
-  const existing = rows[0];
-  if (!existing) return null;
-  const title = existing.headline || existing.title || "Untitled";
-  const where = existing.magazineName ? ` in ${existing.magazineName}` : "";
-  const articleUrl = `/articles/${existing.id}`;
-  return Response.json(
-    {
-      error: `Already on the site: ${title} (${existing.status}${where})`,
-      duplicate: {
-        id: existing.id,
-        title,
-        status: existing.status,
-        magazineName: existing.magazineName,
-        url: articleUrl,
-      },
-    },
-    { status: 409 }
-  );
 }
 
 /** Fetch + extract OpenGraph / meta tags from a URL. */
@@ -187,12 +153,8 @@ export async function POST(req: NextRequest) {
   const explicitMagazineId = body.magazineId || null;
 
   // --- Duplicate check (before any fetch/AI work) ---
-  try {
-    const dup = await duplicateResponse(rawUrl);
-    if (dup) return dup;
-  } catch (e) {
-    console.error("Link-drop duplicate check failed:", e);
-  }
+  const dup = await duplicateResponse(rawUrl);
+  if (dup) return dup;
 
   // --- Fetch + extract ---
   const meta = await extractMeta(rawUrl);
@@ -288,13 +250,6 @@ export async function POST(req: NextRequest) {
       detected_magazine_id: detectedMagazineId,
     });
   } catch (e: any) {
-    console.error("Link-drop insert failed:", e);
-    const code = e?.code || e?.cause?.code;
-    if (code === "23505") {
-      const dup = await duplicateResponse(rawUrl).catch(() => null);
-      if (dup) return dup;
-      return Response.json({ error: "Already on the site: this link has been added before." }, { status: 409 });
-    }
-    return Response.json({ error: "Could not save the article. Please try again." }, { status: 500 });
+    return insertErrorResponse(e, rawUrl, "Link-drop");
   }
 }

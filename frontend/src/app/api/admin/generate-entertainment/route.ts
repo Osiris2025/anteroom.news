@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 import crypto from "crypto";
+import { insertErrorResponse } from "@/lib/articleDuplicate";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
@@ -165,6 +166,6 @@ export async function POST(req: NextRequest) {
       prompt_used: userTopic || "none (random topic)",
     });
   } catch (e: any) {
-    return Response.json({ error: e?.message || "Failed to create article" }, { status: 500 });
+    return insertErrorResponse(e, null, "Generate-entertainment");
   }
 }

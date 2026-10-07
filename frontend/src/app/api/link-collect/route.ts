@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 import crypto from "crypto";
+import { duplicateResponse, insertErrorResponse } from "@/lib/articleDuplicate";
 
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
 
@@ -161,6 +162,10 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Invalid URL" }, { status: 400 });
   }
 
+  // Duplicate check (before any fetch/AI work)
+  const dup = await duplicateResponse(rawUrl);
+  if (dup) return dup;
+
   // Fetch + extract meta
   const meta = await extractMeta(rawUrl);
   if (!meta.title) {
@@ -188,7 +193,7 @@ export async function POST(req: NextRequest) {
         status: "draft",
         magazineId: aiResult?.magazineId || null,
         warnings: aiResult?.warnings || null,
-        submittedBy: session?.user?.id || null,
+        submittedBy: session.user.id,
         submittedAt: new Date(),
       })
       .returning();
@@ -200,10 +205,7 @@ export async function POST(req: NextRequest) {
       warnings: aiResult?.warnings || [],
     });
   } catch (e: any) {
-    return Response.json(
-      { error: e?.message || "Failed to create article" },
-      { status: 500 }
-    );
+    return insertErrorResponse(e, rawUrl, "Link-collect");
   }
 }
 

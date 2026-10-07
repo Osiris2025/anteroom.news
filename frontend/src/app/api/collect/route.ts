@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 import crypto from "crypto";
+import { duplicateResponse, insertErrorResponse } from "@/lib/articleDuplicate";
 
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
 const MODEL = "deepseek/deepseek-v4-flash-0731";
@@ -181,6 +182,10 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Invalid URL" }, { status: 400 });
   }
 
+  // Duplicate check (before any fetch/AI work)
+  const dup = await duplicateResponse(rawUrl);
+  if (dup) return dup;
+
   // Fetch + extract meta
   const meta = await extractMeta(rawUrl);
   if (!meta.title) {
@@ -197,7 +202,9 @@ export async function POST(req: NextRequest) {
   if (!aiResult.suitabilityOk && aiResult.warnings.some((w) => w.level === "block")) {
     // Create article as flagged draft with warnings
     const id = `collect-${crypto.randomBytes(6).toString("hex")}`;
-    const [created] = await db
+    let created: any;
+    try {
+    [created] = await db
       .insert(article)
       .values({
         id,
@@ -215,6 +222,9 @@ export async function POST(req: NextRequest) {
         submittedAt: new Date(),
       })
       .returning();
+    } catch (e: any) {
+      return insertErrorResponse(e, rawUrl, "Collect (flagged)");
+    }
 
     return Response.json({
       ok: true,
@@ -263,9 +273,6 @@ export async function POST(req: NextRequest) {
         : `✅ "${created.title}" saved as draft — magazine needs manual assignment.`,
     });
   } catch (e: any) {
-    return Response.json(
-      { error: e?.message || "Failed to create article" },
-      { status: 500 }
-    );
+    return insertErrorResponse(e, rawUrl, "Collect");
   }
 }

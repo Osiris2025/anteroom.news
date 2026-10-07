@@ -3,6 +3,7 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { customSession } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
 import { db } from "@/lib/db";
+import { sendEmail } from "@/lib/email";
 import * as schema from "@/drizzle/schema";
 
 const authUrl = process.env.AUTH_URL || "http://localhost:3001";
@@ -25,6 +26,23 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    // "Forgot password": email a one-time link to /reset-password?token=...
+    resetPasswordTokenExpiresIn: 60 * 60, // 1 hour
+    revokeSessionsOnPasswordReset: true,
+    sendResetPassword: async ({ user, url }) => {
+      const name = (user.name || "").replace(/[<>&"]/g, "");
+      const html = `<div style="font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;max-width:480px;margin:0 auto;padding:24px;color:#1a1a1a">
+  <h2 style="margin:0 0 12px">Reset your Anteroom password</h2>
+  <p>Hi${name ? " " + name : ""}, someone (hopefully you) asked to reset the password for your Anteroom account.</p>
+  <p style="margin:24px 0"><a href="${url}" style="background:#0072f5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none;font-weight:600">Choose a new password</a></p>
+  <p style="font-size:13px;color:#666">This link works once and expires in 1 hour. If you didn't ask for this, you can ignore this email and your password won't change.</p>
+</div>`;
+      const text = `Reset your Anteroom password:\n${url}\n\nThis link works once and expires in 1 hour. If you didn't ask for this, ignore this email.`;
+      // Don't await: keeps response timing the same whether or not the email exists.
+      void sendEmail({ to: user.email, subject: "Reset your Anteroom password", html, text }).then((r) => {
+        if (!r.sent) console.error("[auth] password reset email not sent:", r.reason);
+      });
+    },
   },
   user: {
     additionalFields: {

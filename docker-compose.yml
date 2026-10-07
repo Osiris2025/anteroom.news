@@ -62,7 +62,7 @@ services:
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USER: ${SMTP_USER}
       SMTP_PASS: ${SMTP_PASS}
-      SMTP_FROM: ${SMTP_FROM:-digests@nexus.osiris2025.com}
+      SMTP_FROM: ${SMTP_FROM:-Anteroom <no-reply@anteroom.news>}
       # External ingress reaches the app on port 3000 inside the container (EXPOSE 3000)
     restart: unless-stopped
     networks:

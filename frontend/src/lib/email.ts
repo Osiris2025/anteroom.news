@@ -10,13 +10,14 @@ interface SendEmailOptions {
   to: string;
   subject: string;
   html: string;
+  text?: string;
 }
 
 const smtpHost = process.env.SMTP_HOST || "";
 const smtpPort = parseInt(process.env.SMTP_PORT || "587", 10);
 const smtpUser = process.env.SMTP_USER || "";
 const smtpPass = process.env.SMTP_PASS || "";
-const smtpFrom = process.env.SMTP_FROM || "digests@nexus.osiris2025.com";
+const smtpFrom = process.env.SMTP_FROM || "Anteroom <no-reply@anteroom.news>";
 
 const isConfigured = !!(smtpHost && smtpUser && smtpPass);
 
@@ -53,6 +54,7 @@ export async function sendEmail(
       to: opts.to,
       subject: opts.subject,
       html: opts.html,
+      ...(opts.text ? { text: opts.text } : {}),
     });
     return { sent: true };
   } catch (err: any) {

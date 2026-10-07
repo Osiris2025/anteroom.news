@@ -3,26 +3,8 @@ import Link from "next/link";
 import { useState } from "react";
 import { useTheme } from "@/lib/ThemeContext";
 import { authClient, useSession } from "@/lib/auth-client";
+import { palette } from "@/lib/authPalette";
 import DefaultMagazineSelect from "@/components/DefaultMagazineSelect";
-
-/** Resolve readable colors for the active theme (dark/light aware). */
-function palette(themeId: string | undefined) {
-  const dark = ["linear", "terminal", "crt", "glass", "dashboard", "crawler", "ticker", "board", "audio", "social", "map", "deco"];
-  if (themeId && dark.includes(themeId)) {
-    const p: Record<string, [string, string, string, string]> = {
-      linear:   ["#0f1011", "#f7f8f8", "#aab6c8", "#7170ff"],
-      dashboard:["#111826", "#e8edf5", "#aab6c8", "#38bdf8"],
-      terminal: ["#001100", "#00ff00", "#00aa00", "#00ff00"],
-      glass:    ["rgba(255,255,255,0.08)", "#fff", "#a5b4fc", "#818cf8"],
-      audio:    ["#161b22", "#c9d1d9", "#a5b0bd", "#58a6ff"],
-    };
-    return p[themeId] || ["#1c1e26", "#e7e9ea", "#aab", "#7aa2f7"];
-  }
-  const l: Record<string, [string, string, string, string]> = {
-    tabloid: ["#fbf5e9", "#2a2216", "#6b5b47", "#8B4513"],
-  };
-  return l[themeId || ""] || ["#f5f5f7", "#1a1a1a", "#666", "#0072f5"];
-}
 
 export default function ProfilePage() {
   const { currentTheme } = useTheme();
@@ -89,6 +71,7 @@ export default function ProfilePage() {
                 <span style={{ marginRight: 4 }}>&#128272;</span> {busy ? "…" : "Sign in with Passkey"}
               </button>
             </div>
+            <p className="mt-3 text-sm"><Link href="/forgot-password" style={{ color: accent }}>Forgot password?</Link></p>
             {msg && <p className="mt-3 text-sm" style={{ color: msg.k === "ok" ? "#22c55e" : "#ef4444" }}>{msg.t}</p>}
           </section>
 

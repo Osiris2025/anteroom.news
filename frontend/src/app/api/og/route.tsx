@@ -1,19 +1,20 @@
 import { renderCard, loadCoverPhoto } from "@/lib/ogCard";
+import { MAGAZINES } from "@/lib/themes";
 import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
 import { eq } from "drizzle-orm";
 
 const MAGAZINE_BRANDING: Record<string, { color: string; accent: string; name: string; theme: string }> = {
   "weekly-weird-news": { color: "#8B4513", accent: "#FFD700", name: "Weekly Weird News", theme: "tabloid" },
-  "weird-and-wild":     { color: "#302b63", accent: "#667eea", name: "New Frontiers in Science", theme: "glass" },
+  "weird-and-wild":     { color: "#302b63", accent: "#667eea", name: "Science Frontiers", theme: "glass" },
   "tech-pulse":         { color: "#1e3a5f", accent: "#58a6ff", name: "Tech Pulse", theme: "linear" },
   "poli-split":         { color: "#7c3aed", accent: "#a78bfa", name: "Political Picture", theme: "vercel" },
-  "climate-watch":      { color: "#059669", accent: "#34d399", name: "Climate Watch", theme: "dashboard" },
+  "climate-watch":      { color: "#059669", accent: "#34d399", name: "Watch Tower", theme: "dashboard" },
   "startup-signal":     { color: "#d97706", accent: "#fbbf24", name: "Startup Signal", theme: "magazine" },
   "oss-report":         { color: "#dc2626", accent: "#f87171", name: "Open Source Report", theme: "terminal" },
-  "starfall-weekly":    { color: "#0f380f", accent: "#00ff40", name: "Starfall Weekly", theme: "crt" },
+  "starfall-weekly":    { color: "#0f380f", accent: "#00ff40", name: "The Chart Room", theme: "crt" },
   "vital-sign":         { color: "#0b5563", accent: "#2dd4bf", name: "Vital Signs", theme: "dashboard" },
-  "neural-hardware":    { color: "#00cc88", accent: "#00fa9a", name: "Neural Hardware", theme: "linear" },
+  "neural-hardware":    { color: "#00cc88", accent: "#00fa9a", name: "AI Frontier", theme: "linear" },
   "dark-matter":        { color: "#6b21a8", accent: "#a855f7", name: "Dark Matter", theme: "glass" },
   "the-veil":           { color: "#7c3aed", accent: "#c084fc", name: "The Veil", theme: "glass" },
   "the-green-room":     { color: "#059669", accent: "#34d399", name: "The Green Room", theme: "magazine" },
@@ -78,7 +79,9 @@ export async function GET(request: Request) {
   const branding = MAGAZINE_BRANDING[magId];
   const color = branding?.color || "#1e3a5f";
   const accent = branding?.accent || "#58a6ff";
-  const magName = mag?.name || branding?.name || "Anteroom";
+  // Public display name, same list the header/sidebar use (DB names can be stale).
+  const pub = MAGAZINES.find((m: { id: string }) => m.id === magId);
+  const magName = pub?.name || mag?.name || branding?.name || "Anteroom";
 
   const title = (a.headline || a.title || "Anteroom").replace(/\s+/g, " ").trim();
 

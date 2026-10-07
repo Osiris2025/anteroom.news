@@ -31,6 +31,7 @@ export default function AdminLinkDrop() {
     detected_magazine_id?: string | null;
   } | null>(null);
   const [err, setErr] = useState("");
+  const [dup, setDup] = useState<{ url: string; title: string; status: string; magazineName?: string | null } | null>(null);
 
   // Load magazine list once on mount
   useEffect(() => {
@@ -47,6 +48,7 @@ export default function AdminLinkDrop() {
     setLoading(true);
     setResult(null);
     setErr("");
+    setDup(null);
 
     try {
       const r = await fetch("/api/admin/link-drop", {
@@ -58,7 +60,10 @@ export default function AdminLinkDrop() {
         }),
       });
       const data = await r.json();
-      if (data.error) {
+      if (data.duplicate) {
+        setDup(data.duplicate);
+        setResult({ ok: false, message: data.error });
+      } else if (data.error) {
         setErr(data.error);
         setResult({ ok: false, message: data.error });
       } else {
@@ -164,6 +169,32 @@ export default function AdminLinkDrop() {
           >
             <span style={{ fontSize: 18 }}>🔍</span>
             <span>Fetching the URL, extracting content, and running AI analysis (magazine detection + summary + commentary)…</span>
+          </div>
+        )}
+
+        {dup && (
+          <div
+            style={{
+              marginTop: 14,
+              padding: 12,
+              background: "rgba(88,166,255,.08)",
+              border: "1px solid rgba(88,166,255,.3)",
+              borderRadius: 8,
+              fontSize: 13,
+              color: "#9ecbff",
+              lineHeight: 1.5,
+            }}
+          >
+            <div style={{ fontWeight: 700 }}>ℹ Already on the site</div>
+            <div style={{ marginTop: 4 }}>
+              <a href={dup.url} target="_blank" rel="noopener noreferrer" style={{ color: "#58a6ff", textDecoration: "underline" }}>
+                {dup.title}
+              </a>
+            </div>
+            <div style={{ marginTop: 4, fontSize: 12, opacity: 0.75 }}>
+              Status: {dup.status}
+              {dup.magazineName ? ` · ${dup.magazineName}` : ""}
+            </div>
           </div>
         )}
 

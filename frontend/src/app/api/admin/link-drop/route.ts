@@ -14,18 +14,52 @@ const FALLBACK_MODEL = "deepseek/deepseek-v4-flash-0731";
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Guard: admins only, returns 403 Response or null. */
-async function guard(): Promise<Response | null> {
+/** Guard: admins only. Returns { denied } (403) or { userId }. */
+async function guard(): Promise<{ denied: Response } | { denied: null; userId: string }> {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
     const role = (session?.user as any)?.role || "";
-    if (!ADMIN_ROLES.includes(role)) {
-      return Response.json({ error: "Forbidden — admin only" }, { status: 403 });
+    if (!session?.user?.id || !ADMIN_ROLES.includes(role)) {
+      return { denied: Response.json({ error: "Forbidden — admin only" }, { status: 403 }) };
     }
+    return { denied: null, userId: session.user.id };
   } catch {
-    return Response.json({ error: "Forbidden — admin only" }, { status: 403 });
+    return { denied: Response.json({ error: "Forbidden — admin only" }, { status: 403 }) };
   }
-  return null;
+}
+
+/** If an article with this source URL already exists, build a friendly 409 response. */
+async function duplicateResponse(sourceUrl: string): Promise<Response | null> {
+  const rows = await db
+    .select({
+      id: article.id,
+      title: article.title,
+      headline: article.headline,
+      status: article.status,
+      magazineName: magazine.name,
+    })
+    .from(article)
+    .leftJoin(magazine, eq(article.magazineId, magazine.id))
+    .where(eq(article.sourceUrl, sourceUrl))
+    .limit(1);
+  const existing = rows[0];
+  if (!existing) return null;
+  const title = existing.headline || existing.title || "Untitled";
+  const where = existing.magazineName ? ` in ${existing.magazineName}` : "";
+  const articleUrl = `/articles/${existing.id}`;
+  return Response.json(
+    {
+      error: `Already on the site: ${title} (${existing.status}${where})`,
+      duplicate: {
+        id: existing.id,
+        title,
+        status: existing.status,
+        magazineName: existing.magazineName,
+        url: articleUrl,
+      },
+    },
+    { status: 409 }
+  );
 }
 
 /** Fetch + extract OpenGraph / meta tags from a URL. */
@@ -126,8 +160,9 @@ async function callLLM(
 // POST /api/admin/link-drop — paste a URL → AI interrogates → drops as draft
 // ---------------------------------------------------------------------------
 export async function POST(req: NextRequest) {
-  const denied = await guard();
-  if (denied) return denied;
+  const g = await guard();
+  if (g.denied) return g.denied;
+  const userId = g.userId;
 
   const apiKey = process.env.OPENROUTER_API_KEY;
   if (!apiKey) {
@@ -150,6 +185,14 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: "Invalid URL" }, { status: 400 });
   }
   const explicitMagazineId = body.magazineId || null;
+
+  // --- Duplicate check (before any fetch/AI work) ---
+  try {
+    const dup = await duplicateResponse(rawUrl);
+    if (dup) return dup;
+  } catch (e) {
+    console.error("Link-drop duplicate check failed:", e);
+  }
 
   // --- Fetch + extract ---
   const meta = await extractMeta(rawUrl);
@@ -234,7 +277,7 @@ export async function POST(req: NextRequest) {
         aiThoughts: JSON.stringify(aiThoughts),
         status: "draft",
         magazineId: detectedMagazineId,
-        submittedBy: null,
+        submittedBy: userId,
         submittedAt: new Date(),
       })
       .returning();
@@ -245,6 +288,13 @@ export async function POST(req: NextRequest) {
       detected_magazine_id: detectedMagazineId,
     });
   } catch (e: any) {
-    return Response.json({ error: e?.message || "Failed to create article" }, { status: 500 });
+    console.error("Link-drop insert failed:", e);
+    const code = e?.code || e?.cause?.code;
+    if (code === "23505") {
+      const dup = await duplicateResponse(rawUrl).catch(() => null);
+      if (dup) return dup;
+      return Response.json({ error: "Already on the site: this link has been added before." }, { status: 409 });
+    }
+    return Response.json({ error: "Could not save the article. Please try again." }, { status: 500 });
   }
 }

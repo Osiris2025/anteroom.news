@@ -32,3 +32,18 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0,0,0,0.12);
 }
+
+/* Header wordmark: the A-Doorway glyph stands in for the leading "A".
+   Height = the active font's cap height (1cap), so it matches every theme font;
+   older browsers fall back to 0.72em. Sits on the text baseline. */
+.ar-wordmark { white-space: nowrap; }
+.ar-doorway-a {
+  display: inline-block;
+  height: 0.72em;
+  height: 1cap;
+  width: 0.7376em;            /* 0.72em × (336 / 328) */
+  width: calc(1cap * 1.0244); /* keep the glyph's own proportions */
+  vertical-align: baseline;
+  margin-right: 0.035em;      /* a little side-bearing before the "n" */
+  overflow: visible;
+}

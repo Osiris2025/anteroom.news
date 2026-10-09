@@ -158,6 +158,27 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
   const [delReason, setDelReason] = useState("other");
   const parentMagId = a.magazine?.id || "none";
   const subcats = subcatsByMag[parentMagId] || [];
+  // "↻ Summary": AI re-reads the source and rewrites the summary, shown in place.
+  const [summary, setSummary] = useState<string | null>(a.summary ?? null);
+  useEffect(() => { setSummary(a.summary ?? null); }, [a.summary]);
+  const [sumBusy, setSumBusy] = useState(false);
+  const [sumMsg, setSumMsg] = useState("");
+  const [sumUndo, setSumUndo] = useState(false);
+  const resummarize = async (undo = false) => {
+    if (sumBusy) return;
+    setSumBusy(true); setSumMsg(undo ? "Restoring the old summary…" : "Writing a new summary…");
+    try {
+      const r = await fetch("/api/admin/resummarize", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ articleId: a.id, undo }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { setSumMsg("✕ " + (j.error || "Re-summarize failed")); return; }
+      setSummary(j.summary ?? null);
+      setSumUndo(!undo);
+      setSumMsg(undo ? "↶ Old summary restored" : j.usedSource === "page" ? "✓ New summary written" : "✓ New summary (source site blocked reading; rewrote the old one)");
+    } catch { setSumMsg("✕ Network error"); }
+    finally { setSumBusy(false); }
+  };
 
   const applySubcat = (v: string) => {
     const val = (v && v.trim()) || null;
@@ -185,7 +206,8 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
         <div style={{ fontSize: 10, color: "var(--accent, #ffd700)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
           {magazines.find((m) => m.id === a.magazine?.id)?.name || "Unassigned"}{a.subcategory ? ` / ${a.subcategory}` : ""}
         </div>
-        {a.summary && <p style={{ fontSize: 13, opacity: 0.8, margin: "0 0 8px", lineHeight: 1.45 }}>{a.summary}</p>}
+        {summary && <p style={{ fontSize: 13, opacity: sumBusy ? 0.4 : 0.8, margin: "0 0 8px", lineHeight: 1.45, transition: "opacity .2s" }}>{summary}</p>}
+        {sumMsg && <div style={{ fontSize: 11, color: sumMsg.startsWith("✕") ? "#f87171" : "#34d399", margin: "0 0 8px" }}>{sumMsg}</div>}
         {a.siteName && <div style={{ fontSize: 10, color: "#58a6ff", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>{a.siteName}</div>}
       </div>
       <div style={{ padding: "8px 10px", borderTop: "1px solid rgba(150,150,150,.12)", display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -244,6 +266,13 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
             ? { ...btn, color: "#34d399", borderColor: "rgba(52,211,153,.45)" }
             : { ...btn, color: "#fbbf24", borderColor: "rgba(251,191,36,.4)" }}
         >⚙ Commentary{hasCommentary ? " ✓" : ""}</button>
+        <button title="Have the AI re-read the article and write a fresh summary" onClick={() => resummarize(false)} disabled={sumBusy}
+          style={{ ...btn, color: "#7fb3ff", borderColor: "rgba(127,179,255,.4)", opacity: sumBusy ? 0.6 : 1, cursor: sumBusy ? "progress" : "pointer" }}>
+          {sumBusy ? "… Summarizing" : "↻ Summary"}
+        </button>
+        {sumUndo && !sumBusy && (
+          <button title="Put the previous summary back" onClick={() => resummarize(true)} style={{ ...btn, color: "#aaa" }}>↶ Undo</button>
+        )}
         {hasCommentary && showCommentary && (
           <div style={{ width: "100%", marginTop: 8, padding: "10px 12px", background: "rgba(52,211,153,.06)", border: "1px solid rgba(52,211,153,.3)", borderRadius: 8, fontSize: 12.5, lineHeight: 1.5, display: "block", whiteSpace: "pre-wrap" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>

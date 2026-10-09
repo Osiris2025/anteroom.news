@@ -13,13 +13,16 @@ type Props = {
   subcats: string[];
   onChanged: () => void; // reload cards after an admin action
   pal?: { box: string; border: string; ink: string; body: string; accent: string }; // optional theme colours
+  // Called with the new summary after "↻ Summary" (or its Undo) so the page can
+  // show it in place. When omitted, onChanged() is used to reload the cards.
+  onSummary?: (summary: string | null) => void;
 };
 
 // Inline editorial toolbar — revealed on hover of the LOWER EDGE of an article
 // card in the regular magazine view (admin only). Mirrors the Dispatch queue's
 // tools: approve/reject/draft, move magazine, move subcategory, regenerate
 // commentary, pin. Reuses the same admin article/generate-commentary endpoints.
-export default function AdminCardTools({ articleId, currentMag, currentSubcat, featured, pinned, socialRepeat: socialRepeatProp, magazines, subcats, onChanged, pal }: Props) {
+export default function AdminCardTools({ articleId, currentMag, currentSubcat, featured, pinned, socialRepeat: socialRepeatProp, magazines, subcats, onChanged, pal, onSummary }: Props) {
   const [mag, setMag] = useState(currentMag || "");
   const [subcat, setSubcat] = useState(currentSubcat || "");
   const [busy, setBusy] = useState(false);
@@ -29,6 +32,8 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
   const [delOpen, setDelOpen] = useState(false);
   const [delReason, setDelReason] = useState("other");
   const [social, setSocial] = useState(!!socialRepeatProp);
+  const [summarizing, setSummarizing] = useState(false);
+  const [canUndo, setCanUndo] = useState(false);
 
   const bt = (bg: string, fg: string, fs: number) =>
     pal && bg === "#202020"
@@ -36,7 +41,25 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
       : btn(bg, fg, fs);
   const sl = () => (pal ? { ...sel(), background: pal.box, color: pal.ink, border: `1px solid ${pal.border}` } : sel());
 
-  const flash = (m: string) => { setMsg(m); setTimeout(() => setMsg(""), 2200); };
+  const flash = (m: string, ms = 2200) => { setMsg(m); setTimeout(() => setMsg(""), ms); };
+
+  // Re-write the summary with AI (or undo the last re-write). Admin-only route.
+  async function resummarize(undo = false) {
+    if (summarizing || busy) return;
+    setSummarizing(true); setBusy(true); setMsg(undo ? "↶ restoring old summary…" : "✎ writing a new summary…");
+    try {
+      const r = await fetch("/api/admin/resummarize", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ articleId, undo }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { flash("✕ " + (j.error || "failed"), 6000); return; }
+      setCanUndo(!undo);
+      if (undo) flash("↶ old summary restored");
+      else flash(j.usedSource === "page" ? "✓ new summary written" : "✓ new summary (source site blocked reading; rewrote the old one)", j.usedSource === "page" ? 3000 : 6000);
+      if (onSummary) onSummary(j.summary ?? null); else onChanged();
+    } catch { flash("✕ network error"); }
+    finally { setSummarizing(false); setBusy(false); }
+  }
 
   async function patch(body: any) {
     setBusy(true);
@@ -156,6 +179,15 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
         if (!r.ok) { flash("✕ " + (j.error || "failed")); return false; }
         flash("↻ commentary regenerated"); return true;
       })} disabled={busy} style={bt("#202020", "#ccc", 10)}>↻ Commentary</button>
+
+      {/* Re-summarize: AI re-reads the source and writes a fresh summary */}
+      <button onClick={() => resummarize(false)} disabled={busy} title="Have the AI re-read the article and write a fresh summary"
+        style={{ ...bt("#202020", "#ccc", 10), opacity: summarizing ? 0.7 : 1, cursor: summarizing ? "progress" : "pointer" }}>
+        {summarizing ? "… Summarizing" : "↻ Summary"}
+      </button>
+      {canUndo && !summarizing && (
+        <button onClick={() => resummarize(true)} disabled={busy} title="Put the previous summary back" style={bt("#202020", "#ccc", 10)}>↶ Undo summary</button>
+      )}
 
       {msg && <span style={{ fontSize: 11, color: "var(--accent,#ffd700)" }}>{msg}</span>}
     </div>

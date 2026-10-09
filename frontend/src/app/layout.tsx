@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import MagazineSwitcher from "@/components/MagazineSwitcher";
@@ -13,6 +13,10 @@ export const metadata: Metadata = {
   title: "Anteroom",
   metadataBase: new URL(SITE_URL),
   description: "Anteroom — a house of rooms. Cross the threshold.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0f1011",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

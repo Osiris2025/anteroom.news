@@ -6,6 +6,7 @@ import MagazineSearch from '@/components/MagazineSearch';
 import NotificationBell from '@/components/NotificationBell';
 import { useSession } from '@/lib/auth-client';
 import ProfileMenu from '@/components/ProfileMenu';
+import AnteroomWordmark from '@/components/AnteroomWordmark';
 import { useTheme } from '@/lib/ThemeContext';
 import { palette, isDarkTheme } from '@/lib/themePalette';
 
@@ -75,7 +76,7 @@ export default function Navbar() {
               glyph={<svg width="21" height="21" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M3 6h18v2H3zM3 11h18v2H3zM3 16h18v2H3z" /></svg>}
             />
             <Link href="/" className="text-xl font-bold transition-colors shrink-0" style={{ marginLeft: 4, color: C.ink }}>
-              Anteroom
+              <AnteroomWordmark />
             </Link>
           </div>
           <div className="flex items-center justify-end gap-2 flex-1 min-w-0">

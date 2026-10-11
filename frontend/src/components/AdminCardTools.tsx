@@ -17,13 +17,16 @@ type Props = {
   // Called with the new summary after "↻ Summary" (or its Undo) so the page can
   // show it in place. When omitted, onChanged() is used to reload the cards.
   onSummary?: (summary: string | null) => void;
+  // Same for "↻ Commentary": called with the new commentary so the page can show
+  // it in place. When omitted the card has no commentary on screen to refresh.
+  onCommentary?: (commentary: string | null) => void;
 };
 
 // Inline editorial toolbar — revealed on hover of the LOWER EDGE of an article
 // card in the regular magazine view (admin only). Mirrors the Dispatch queue's
 // tools: approve/reject/draft, move magazine, move subcategory, regenerate
 // commentary, pin. Reuses the same admin article/generate-commentary endpoints.
-export default function AdminCardTools({ articleId, currentMag, currentSubcat, featured, pinned, socialRepeat: socialRepeatProp, magazines, subcats, onChanged, pal, onSummary }: Props) {
+export default function AdminCardTools({ articleId, currentMag, currentSubcat, featured, pinned, socialRepeat: socialRepeatProp, magazines, subcats, onChanged, pal, onSummary, onCommentary }: Props) {
   const [mag, setMag] = useState(currentMag || "");
   const [subcat, setSubcat] = useState(currentSubcat || "");
   const [busy, setBusy] = useState(false);
@@ -35,6 +38,7 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
   const [social, setSocial] = useState(!!socialRepeatProp);
   const [summarizing, setSummarizing] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
+  const [commenting, setCommenting] = useState(false);
 
   const bt = (bg: string, fg: string, fs: number) =>
     pal && bg === "#202020"
@@ -60,6 +64,24 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
       if (onSummary) onSummary(j.summary ?? null); else onChanged();
     } catch { flash("✕ network error"); }
     finally { setSummarizing(false); setBusy(false); }
+  }
+
+  // Re-write the commentary with the magazine's AI agent. The server keeps the old
+  // commentary when the new attempt breaks the style rules ("kept").
+  async function regenerateCommentary() {
+    if (commenting || busy) return;
+    setCommenting(true); setBusy(true); setMsg("✎ writing new commentary…");
+    try {
+      const r = await fetch("/api/admin/generate-commentary", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ articleId }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok) { flash("✕ " + (j.error || j.warning || "failed"), 6000); return; }
+      if (j.kept) { flash("Kept the old commentary (the new one broke the style rules)", 6000); return; }
+      flash("✓ new commentary written", 3000);
+      onCommentary?.(j.commentary ?? null);
+    } catch { flash("✕ network error"); }
+    finally { setCommenting(false); setBusy(false); }
   }
 
   async function patch(body: any) {
@@ -172,15 +194,10 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
       )}
 
       {/* Regenerate commentary */}
-      <button onClick={() => act(async () => {
-        const r = await fetch("/api/admin/generate-commentary", {
-          method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ articleId }),
-        });
-        const j = await r.json();
-        if (!r.ok) { flash("✕ " + (j.error || j.warning || "failed")); return false; }
-        if (j.kept) { flash("Kept the old commentary (new one broke the style rules)"); return false; }
-        flash("↻ commentary regenerated"); return true;
-      })} disabled={busy} style={bt("#202020", "#ccc", 10)}>↻ Commentary</button>
+      <button onClick={regenerateCommentary} disabled={busy} title="Have the magazine's AI agent write fresh commentary"
+        style={{ ...bt("#202020", "#ccc", 10), opacity: commenting ? 0.7 : 1, cursor: commenting ? "progress" : "pointer" }}>
+        {commenting ? "… Writing commentary" : "↻ Commentary"}
+      </button>
 
       {/* Re-summarize: AI re-reads the source and writes a fresh summary */}
       <button onClick={() => resummarize(false)} disabled={busy} title="Have the AI re-read the article and write a fresh summary"

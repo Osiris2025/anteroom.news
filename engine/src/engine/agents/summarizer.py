@@ -17,6 +17,7 @@ from . import has_substance, is_aggregator_link  # quality gate
 from .commentary_style import (
     COMMENTARY_STYLE_RULES,
     ENGINE_MAX_TOKENS,
+    PROBLEM_CUT_OFF,
     REASONING,
     clean_commentary,
     problem_examples,
@@ -142,8 +143,18 @@ def summarize_article(article: dict, stream_config: dict) -> Optional[dict]:
             max_tokens=ENGINE_MAX_TOKENS,
             extra_body={"reasoning": REASONING},
         )
-        text = response.choices[0].message.content or ""
-        return _parse_response(text, article.get("source_url", "")), text
+        choice = response.choices[0]
+        text = choice.message.content or ""
+        parsed = _parse_response(text, article.get("source_url", ""))
+        # Hitting the token limit means the reply was cut off: count it as a failure.
+        parsed["_cut_off"] = getattr(choice, "finish_reason", None) == "length"
+        return parsed, text
+
+    def _problems(parsed: dict) -> list:
+        p = validate_commentary(parsed["commentary"])
+        if parsed.get("_cut_off") and PROBLEM_CUT_OFF not in p:
+            p.append(PROBLEM_CUT_OFF)
+        return p
 
     try:
         parsed, raw = _call(base_messages)
@@ -151,7 +162,7 @@ def summarize_article(article: dict, stream_config: dict) -> Optional[dict]:
         # Style check on the commentary; retry once as a revision of the first
         # draft, quoting the offending lines back. If the retry also misses,
         # keep the better attempt, cleaned up.
-        problems = validate_commentary(parsed["commentary"])
+        problems = _problems(parsed)
         if problems:
             examples = problem_examples(parsed["commentary"])
             feedback = f"That <commentary> breaks the style rules: {'; '.join(problems)}."
@@ -159,6 +170,8 @@ def summarize_article(article: dict, stream_config: dict) -> Optional[dict]:
                 feedback += "\nRewrite these parts in plain, direct sentences:\n" + "\n".join(
                     f'- "{e}"' for e in examples
                 )
+            if PROBLEM_CUT_OFF in problems:
+                feedback += "\nIt stopped mid-sentence. Keep it a little shorter and end on a complete sentence."
             feedback += "\nReturn all three tagged sections again, with the commentary revised to follow every rule."
             retry_messages = (
                 [*base_messages, {"role": "assistant", "content": raw}, {"role": "user", "content": feedback}]
@@ -171,7 +184,7 @@ def summarize_article(article: dict, stream_config: dict) -> Optional[dict]:
                 logger.info("Commentary retry failed for '%s': %s", article.get("title", "?"), exc)
                 second = None
             if second is not None:
-                p2 = validate_commentary(second["commentary"])
+                p2 = _problems(second)
                 if len(p2) <= len(problems):
                     parsed, problems = second, p2
             if problems:

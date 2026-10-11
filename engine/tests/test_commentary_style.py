@@ -4,7 +4,9 @@ from types import SimpleNamespace
 
 from engine.agents import summarizer
 from engine.agents.commentary_style import (
+    PROBLEM_CUT_OFF,
     clean_commentary,
+    ends_incomplete,
     problem_examples,
     validate_commentary,
 )
@@ -85,6 +87,49 @@ def test_prompt_has_style_rules_and_no_source_url():
     assert "No markdown" in prompts["system"]
 
 
+CUT = GOOD.rsplit(" ", 4)[0]  # "...how serious" (cut off mid-sentence)
+
+
+def test_complete_endings_pass():
+    for end in [
+        "It works.",
+        "Does it?",
+        "Finally!",
+        'He called it "a mess."',
+        "He called it “a mess.”",
+        "(Nobody said it would be easy.)",
+        "I'm sure of that.",
+    ]:
+        assert not ends_incomplete(GOOD + "\n\n" + end), end
+    assert PROBLEM_CUT_OFF not in validate_commentary(GOOD)
+
+
+def test_cut_off_endings_fail():
+    for text in [
+        CUT,
+        GOOD[:-1] + "ing",  # mid-word
+        GOOD + "\n\nAnd the rest is",
+        GOOD + "\n\nWe'll see where it goes...",
+        GOOD + "\n\nWe'll see where it goes…",
+        GOOD + "\n\nIt's the kind of thing that happens to the.",
+        GOOD + "\n\nNobody wants to admit it, but",
+    ]:
+        assert ends_incomplete(text), text
+        assert PROBLEM_CUT_OFF in validate_commentary(text), text
+
+
+def test_clean_trims_a_cut_off_last_sentence():
+    assert clean_commentary(CUT) == GOOD.rsplit("\n\n", 1)[0]
+    assert clean_commentary(GOOD + "\n\nAnd the rest is") == GOOD
+    assert clean_commentary("This is the first full sentence here. Then it just stops") == (
+        "This is the first full sentence here."
+    )
+
+
+
+def test_clean_strips_leaked_json_tail():
+    assert clean_commentary(GOOD + '", "confidence": 0.88}\n```') == GOOD
+
 class _FakeClient:
     def __init__(self, replies):
         self.replies = list(replies)
@@ -94,7 +139,10 @@ class _FakeClient:
     def _create(self, **kwargs):
         self.calls.append(kwargs)
         text = self.replies.pop(0)
-        return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=text))])
+        finish = "stop"
+        if isinstance(text, tuple):
+            text, finish = text
+        return SimpleNamespace(choices=[SimpleNamespace(message=SimpleNamespace(content=text), finish_reason=finish)])
 
 
 def _reply(commentary):
@@ -134,3 +182,29 @@ def test_summarizer_no_retry_when_clean(monkeypatch):
 def test_problem_examples_quotes_contrast_lines():
     ex = problem_examples("Reps aren't lazy. They're overwhelmed by tools. The past isn't prologue; it's a mirror.")
     assert ex == ["Reps aren't lazy. They're overwhelmed by tools.", "The past isn't prologue; it's a mirror."]
+
+
+def test_summarizer_retries_when_commentary_is_cut_off(monkeypatch):
+    fake = _FakeClient([_reply(CUT), _reply(GOOD)])
+    monkeypatch.setattr(summarizer, "_make_client", lambda: fake)
+    out = summarizer.summarize_article({"title": "T", "summary": "S", "source_url": "u"}, _stream_cfg())
+    assert out["commentary"] == GOOD
+    assert len(fake.calls) == 2
+    assert "stopped mid-sentence" in fake.calls[1]["messages"][3]["content"]
+
+
+def test_summarizer_treats_finish_reason_length_as_failure(monkeypatch):
+    # Commentary looks complete, but the reply hit the token limit (e.g. ai_thoughts cut off).
+    fake = _FakeClient([(_reply(GOOD), "length"), _reply(GOOD)])
+    monkeypatch.setattr(summarizer, "_make_client", lambda: fake)
+    out = summarizer.summarize_article({"title": "T", "summary": "S", "source_url": "u"}, _stream_cfg())
+    assert len(fake.calls) == 2
+    assert out["commentary"] == GOOD
+
+
+def test_summarizer_saves_trimmed_text_when_both_attempts_cut_off(monkeypatch):
+    fake = _FakeClient([(_reply(CUT), "length"), (_reply(CUT), "length")])
+    monkeypatch.setattr(summarizer, "_make_client", lambda: fake)
+    out = summarizer.summarize_article({"title": "T", "summary": "S", "source_url": "u"}, _stream_cfg())
+    assert len(fake.calls) == 2
+    assert not ends_incomplete(out["commentary"])

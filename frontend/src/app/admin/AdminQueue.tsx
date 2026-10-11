@@ -138,13 +138,12 @@ function PreviewModal({ a, onClose }: { a: QArticle; onClose: () => void }) {
 
 // ArticleCard — magazine change persists immediately (works even for live articles)
 // but updates the card IN PLACE (no re-sort/re-arrange). Status changes reload the list.
-function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDel, onComment, onPin, onSubcat, onStatus, onPublishX }: {
+function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDel, onPin, onSubcat, onStatus, onPublishX }: {
   a: QArticle; magazines: { id: string; name: string }[];
   subcatsByMag: Record<string, string[]>; addSubcat: (magazineId: string | null | undefined, name: string) => void;
   onAct: (id: string, patch: any) => void;
   onMag: (id: string, magazineId: string) => void;
   onDel: (id: string, reason?: string) => void;
-  onComment: (id: string, title: string) => void;
   onPin: (id: string, title: string) => void;
   onSubcat: (id: string, subcategory: string | null) => void;
   onStatus: (id: string, newStatus: string) => void;
@@ -152,7 +151,29 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
 }) {
   const st = STATUS_TPL[a.status] || { label: a.status, bg: "#222", fg: "#aaa" };
   const [showCommentary, setShowCommentary] = useState(false);
-  const hasCommentary = !!a.commentary && a.commentary.trim().length > 0;
+  // "⚙ Commentary" / "↻ regenerate": the magazine's AI agent writes fresh
+  // commentary, shown in place (same pattern as "↻ Summary" below).
+  const [commentary, setCommentary] = useState<string | null>(a.commentary ?? null);
+  useEffect(() => { setCommentary(a.commentary ?? null); }, [a.commentary]);
+  const [comBusy, setComBusy] = useState(false);
+  const [comMsg, setComMsg] = useState("");
+  const hasCommentary = !!commentary && commentary.trim().length > 0;
+  const regenerateCommentary = async () => {
+    if (comBusy) return;
+    setComBusy(true); setComMsg("Writing new commentary…");
+    try {
+      const r = await fetch("/api/admin/generate-commentary", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ article_id: a.id }),
+      });
+      const j = await r.json().catch(() => ({}));
+      if (!r.ok || j.error) { setComMsg("✕ " + (j.error || "Commentary failed")); return; }
+      if (j.kept) { setComMsg("Kept the old commentary (the new one broke the style rules)"); setShowCommentary(true); return; }
+      setCommentary(j.commentary ?? null);
+      setShowCommentary(true);
+      setComMsg(`✓ New commentary written${j.agent ? ` by ${j.agent}` : ""}`);
+    } catch { setComMsg("✕ Network error"); }
+    finally { setComBusy(false); }
+  };
   const [showSubcat, setShowSubcat] = useState(false);
   const [newSubcat, setNewSubcat] = useState("");
   const [delOpen, setDelOpen] = useState(false);
@@ -203,12 +224,13 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
         </span>
       </div>
       <div style={{ padding: 12, flex: 1 }}>
-        <TitlePreview a={a} />
+        <TitlePreview a={{ ...a, summary, commentary }} />
         <div style={{ fontSize: 10, color: "var(--accent, #ffd700)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 6 }}>
           {magazines.find((m) => m.id === a.magazine?.id)?.name || "Unassigned"}{a.subcategory ? ` / ${a.subcategory}` : ""}
         </div>
         {summary && <p style={{ fontSize: 13, opacity: sumBusy ? 0.4 : 0.8, margin: "0 0 8px", lineHeight: 1.45, transition: "opacity .2s" }}>{summary}</p>}
         {sumMsg && <div style={{ fontSize: 11, color: sumMsg.startsWith("✕") ? "#f87171" : "#34d399", margin: "0 0 8px" }}>{sumMsg}</div>}
+        {comMsg && <div style={{ fontSize: 11, color: comMsg.startsWith("✕") ? "#f87171" : comMsg.startsWith("Kept") ? "#fbbf24" : "#34d399", margin: "0 0 8px" }}>{comMsg}</div>}
         {a.siteName && <div style={{ fontSize: 10, color: "#58a6ff", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>{a.siteName}</div>}
       </div>
       <div style={{ padding: "8px 10px", borderTop: "1px solid rgba(150,150,150,.12)", display: "flex", flexWrap: "wrap", gap: 6 }}>
@@ -262,11 +284,15 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
         </select>
         <button
           title={hasCommentary ? "View existing commentary (click to show/hide)" : "Generate AI commentary via the magazine's named agent"}
-          onClick={() => hasCommentary ? setShowCommentary((s) => !s) : onComment(a.id, a.title)}
-          style={hasCommentary
-            ? { ...btn, color: "#34d399", borderColor: "rgba(52,211,153,.45)" }
-            : { ...btn, color: "#fbbf24", borderColor: "rgba(251,191,36,.4)" }}
-        >⚙ Commentary{hasCommentary ? " ✓" : ""}</button>
+          onClick={() => hasCommentary ? setShowCommentary((s) => !s) : regenerateCommentary()}
+          disabled={comBusy}
+          style={{
+            ...(hasCommentary
+              ? { ...btn, color: "#34d399", borderColor: "rgba(52,211,153,.45)" }
+              : { ...btn, color: "#fbbf24", borderColor: "rgba(251,191,36,.4)" }),
+            opacity: comBusy ? 0.6 : 1, cursor: comBusy ? "progress" : "pointer",
+          }}
+        >{comBusy ? "… Writing commentary" : `⚙ Commentary${hasCommentary ? " ✓" : ""}`}</button>
         <button title="Have the AI re-read the article and write a fresh summary" onClick={() => resummarize(false)} disabled={sumBusy}
           style={{ ...btn, color: "#7fb3ff", borderColor: "rgba(127,179,255,.4)", opacity: sumBusy ? 0.6 : 1, cursor: sumBusy ? "progress" : "pointer" }}>
           {sumBusy ? "… Summarizing" : "↻ Summary"}
@@ -278,9 +304,9 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
           <div style={{ width: "100%", marginTop: 8, padding: "10px 12px", background: "rgba(52,211,153,.06)", border: "1px solid rgba(52,211,153,.3)", borderRadius: 8, fontSize: 12.5, lineHeight: 1.5, display: "block" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
               <span style={{ fontWeight: 700, letterSpacing: 1, textTransform: "uppercase", fontSize: 10, color: "#34d399" }}>Existing commentary</span>
-              <button title="Regenerate commentary" onClick={() => onComment(a.id, a.title)} style={{ ...btn, marginLeft: "auto", color: "#fbbf24", borderColor: "rgba(251,191,36,.4)", fontSize: 11, padding: "2px 7px" }}>↻ regenerate</button>
+              <button title="Regenerate commentary" onClick={regenerateCommentary} disabled={comBusy} style={{ ...btn, marginLeft: "auto", color: "#fbbf24", borderColor: "rgba(251,191,36,.4)", fontSize: 11, padding: "2px 7px", opacity: comBusy ? 0.6 : 1, cursor: comBusy ? "progress" : "pointer" }}>{comBusy ? "… Writing commentary" : "↻ regenerate"}</button>
             </div>
-            <CommentaryBody text={a.commentary} />
+            <CommentaryBody text={commentary} style={{ opacity: comBusy ? 0.4 : 1, transition: "opacity .2s" }} />
           </div>
         )}
         <button title="Pin as FLASH/hero article" onClick={() => onPin(a.id, a.title)} style={{ ...btn, color: "#ff4444", borderColor: "rgba(255,68,68,.4)" }}>📌 Pin</button>
@@ -516,7 +542,7 @@ export default function AdminQueue() {
     load();
   };
 
-  // Generate AI commentary via the magazine's named agent (OpenRouter)
+  // Pin an article as FLASH / IMPORTANT
   const onPin = async (id: string, title: string) => {
     const kind = prompt("Pin kind (FLASH / IMPORTANT):", "FLASH");
     if (!kind) return;
@@ -529,18 +555,6 @@ export default function AdminQueue() {
     const j = await r.json();
     if (j.error) setErr("Pin failed: " + j.error);
     else alert("Pinned as " + kind + "!");
-  };
-
-  const onComment = async (id: string, title: string) => {
-    setErr("");
-    const r = await fetch("/api/admin/generate-commentary", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ article_id: id }),
-    });
-    const j = await r.json();
-    if (j.error) { setErr(`Commentary failed: ${j.error}`); return; }
-    if (j.kept) { alert(j.warning || "Kept the existing commentary."); return; }
-    alert(`Commentary generated by ${j.agent}:\n\n${j.commentary}`);
   };
 
   // Post article to X/Twitter
@@ -612,7 +626,7 @@ export default function AdminQueue() {
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(300px,1fr))", gap: 14 }}>
         {data?.articles.map((a) => (
-          <ArticleCard key={a.id} a={a} subcatsByMag={subcatsByMag} addSubcat={addSubcat} magazines={data.magazines} onAct={act} onMag={onMag} onDel={del} onComment={onComment} onPin={onPin} onSubcat={onSubcat} onPublishX={onPublishX} onStatus={onStatus} />
+          <ArticleCard key={a.id} a={a} subcatsByMag={subcatsByMag} addSubcat={addSubcat} magazines={data.magazines} onAct={act} onMag={onMag} onDel={del} onPin={onPin} onSubcat={onSubcat} onPublishX={onPublishX} onStatus={onStatus} />
         ))}
       </div>
 

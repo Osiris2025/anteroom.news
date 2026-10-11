@@ -176,7 +176,8 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
           method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ articleId }),
         });
         const j = await r.json();
-        if (!r.ok) { flash("✕ " + (j.error || "failed")); return false; }
+        if (!r.ok) { flash("✕ " + (j.error || j.warning || "failed")); return false; }
+        if (j.kept) { flash("Kept the old commentary (new one broke the style rules)"); return false; }
         flash("↻ commentary regenerated"); return true;
       })} disabled={busy} style={bt("#202020", "#ccc", 10)}>↻ Commentary</button>
 

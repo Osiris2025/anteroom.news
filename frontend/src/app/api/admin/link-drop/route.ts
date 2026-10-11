@@ -5,6 +5,9 @@ import { article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 import crypto from "crypto";
 import { duplicateResponse, insertErrorResponse } from "@/lib/articleDuplicate";
+import {
+  buildCommentarySystem, buildCommentaryUser, generateCommentary, COMMENTARY_REQUEST_OPTIONS,
+} from "@/lib/commentary";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
@@ -103,6 +106,7 @@ async function callLLM(
     },
     body: JSON.stringify({
       model,
+      ...COMMENTARY_REQUEST_OPTIONS,
       messages: [
         { role: "system", content: system },
         { role: "user", content: user },
@@ -178,7 +182,7 @@ export async function POST(req: NextRequest) {
 
   const system = [
     "You are an AI news curator for Anteroom. You evaluate article URLs and produce structured output.",
-    "Your job: (1) Assign the article to the most relevant magazine, (2) write a concise summary, (3) write a short editorial commentary/thoughts.",
+    "Your job: (1) Assign the article to the most relevant magazine, (2) write a concise summary. (Commentary is written separately by the magazine's own columnist.)",
     "",
     `Available magazines:\n${magList}`,
     "",
@@ -186,7 +190,6 @@ export async function POST(req: NextRequest) {
     JSON.stringify({
       magazine_id: "the best-matching magazine id from the list above, or null if unclear",
       summary: "2-3 sentence summary of the article (max 250 chars)",
-      commentary: "2-3 paragraph editorial commentary in a sharp, engaging voice (120-200 words)",
       suitability_warnings: "any concerns about suitability for publication, or 'none'",
     }),
   ].join("\n");
@@ -209,7 +212,6 @@ export async function POST(req: NextRequest) {
       if (valid) detectedMagazineId = valid.id;
     }
     aiSummary = parsed.summary || meta.description || null;
-    aiCommentary = parsed.commentary || null;
     aiThoughts = {
       agent: "Link Dropper AI",
       model: FALLBACK_MODEL,
@@ -220,6 +222,40 @@ export async function POST(req: NextRequest) {
     // LLM call failed — fall back to meta-only
     console.warn("Link-dropper LLM failed, falling back to meta extraction:", e.message);
     aiSummary = meta.description || null;
+  }
+
+  // --- Commentary: written by the chosen magazine's own columnist, using the
+  // shared style rules (plain paragraphs, no markdown/labels/pitch-deck lines).
+  // Validated and retried once; a cleaned version is saved if both miss.
+  try {
+    const mag = magazines.find((m: any) => m.id === detectedMagazineId) || null;
+    const result = await generateCommentary({
+      apiKey,
+      model: mag?.agentModel,
+      system: buildCommentarySystem({
+        agentName: mag?.agentName || "the Anteroom desk",
+        magazineName: mag?.name || "Anteroom",
+        tone: mag?.tone || "neutral",
+        tagline: mag?.tagline || "",
+        description: mag?.description || "",
+      }),
+      user: buildCommentaryUser({
+        title: meta.title,
+        summary: aiSummary,
+        excerpt: meta.textContent || meta.description || null,
+      }),
+      mode: "new",
+      timeoutMs: 60_000,
+    });
+    aiCommentary = result.text;
+    aiThoughts = {
+      ...aiThoughts,
+      commentaryAgent: mag?.agentName || null,
+      commentaryModel: result.model,
+      styleCheck: result.text ? (result.passed ? "passed" : "cleaned") : "none",
+    };
+  } catch (e: any) {
+    console.warn("Link-dropper commentary failed:", e?.message || e);
   }
 
   // --- Insert draft ---

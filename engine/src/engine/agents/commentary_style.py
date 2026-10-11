@@ -78,6 +78,33 @@ def _paragraphs(text: str) -> list:
     return [re.sub(r"\s+", " ", p).strip() for p in re.split(r"\n\s*\n+", t) if p.strip()]
 
 
+# "Ends with a complete sentence": the last paragraph must finish with . ! or ?
+# (optionally followed by closing quotes/brackets), must not trail off with an
+# ellipsis, and must not end on a word that can't finish a sentence ("the.").
+_RE_TERMINAL_END = re.compile(r"[.!?][\"”’')\]]*$")
+_RE_ELLIPSIS_END = re.compile(r"(?:\.\.\.|…)[\"”’')\]]*$")
+_RE_DANGLING_END = re.compile(
+    r"\b(?:a|an|the|and|or|but|nor|than|because|whether|its|their|our|your|my)[.!?][\"”’')\]]*$",
+    re.IGNORECASE,
+)
+_RE_LAST_SENTENCE_END = re.compile(r"^[\s\S]*[.!?][\"”’')\]]*(?=\s)")
+
+PROBLEM_CUT_OFF = "ends mid-sentence (cut off)"
+
+
+def ends_incomplete(text: str) -> bool:
+    """True when the text stops mid-sentence (cut off, trailing ellipsis, dangling word)."""
+    paras = _paragraphs(text or "")
+    if not paras:
+        return False  # empty is reported as "too short"
+    last = paras[-1]
+    return (
+        not _RE_TERMINAL_END.search(last)
+        or bool(_RE_ELLIPSIS_END.search(last))
+        or bool(_RE_DANGLING_END.search(last))
+    )
+
+
 def validate_commentary(text: str) -> list:
     """Return a list of problems; an empty list means the text passes."""
     t = (text or "").strip()
@@ -105,6 +132,8 @@ def validate_commentary(text: str) -> list:
         problems.append("repeated paragraphs")
     if len(paras) > 6:
         problems.append("too many paragraphs")
+    if t and ends_incomplete(t):
+        problems.append(PROBLEM_CUT_OFF)
     return problems
 
 
@@ -155,6 +184,7 @@ def clean_commentary(raw: str) -> str:
     t = re.sub(r"\s*\(https?://[^)\s]+\)", "", t)
     t = re.sub(r"\b(from|at|via|see|on)\s+https?://[^\s)]+", r"\1 the source", t, flags=re.IGNORECASE)
     t = re.sub(r"<a\b[^>]*$", "", t, flags=re.IGNORECASE)
+    t = re.sub(r'\\?["”]?\s*,\s*\\?"confidence\\?"\s*:\s*[\d.]+\s*\}\s*(?:```)?\s*$', "", t)  # leaked JSON tail
     t = re.sub(r"https?://[^\s)]*", "", t)
     t = re.sub(r"\(\s*\)", "", t)
     t = re.sub(r"[ \t]+([.,;:])", r"\1", t)
@@ -177,4 +207,12 @@ def clean_commentary(raw: str) -> str:
             continue
         seen.add(key)
         out.append(p)
+    # A last paragraph that was cut off mid-sentence: keep it up to its last
+    # complete sentence, or drop it if it has none (never the only paragraph).
+    if out and not _RE_TERMINAL_END.search(out[-1]):
+        m = _RE_LAST_SENTENCE_END.match(out[-1])
+        if m and len(m.group(0).strip()) >= 20:
+            out[-1] = m.group(0).strip()
+        elif len(out) > 1:
+            out.pop()
     return "\n\n".join(out)

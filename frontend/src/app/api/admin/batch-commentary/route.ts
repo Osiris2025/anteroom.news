@@ -4,10 +4,11 @@ import { eq, and, or, isNull, asc, desc } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
+import {
+  buildCommentarySystem, buildCommentaryUser, generateCommentary, COMMENTARY_FALLBACK_MODEL,
+} from "@/lib/commentary";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
-const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
-const FALLBACK_MODEL = "deepseek/deepseek-v4-flash-0731";
 
 // Priority order: worst magazines first (matches live coverage 2026-08-11)
 const PRIORITY = [
@@ -125,73 +126,48 @@ export async function POST(req: NextRequest) {
       const a = row.article;
       const mag = row.magazine;
       const agentName = mag?.agentName || a.magazineId || "the desk";
-      const agentModel = mag?.agentModel || FALLBACK_MODEL;
-      const magName = mag?.name || "Anteroom";
-      const magTone = mag?.tone || "neutral";
-      const magTagline = mag?.tagline || "";
-      const magDesc = mag?.description || "";
+      const agentModel = mag?.agentModel || COMMENTARY_FALLBACK_MODEL;
 
-      const system = [
-        `You are ${agentName}, the featured AI commentator for "${magName}".`,
-        magTagline ? `Tagline: ${magTagline}` : "",
-        magDesc ? `About ${magName}: ${magDesc}` : "",
-        `Write in a ${magTone} editorial voice that is distinctive, sharp, and on-brand for ${magName}.`,
-        `Give readers: (1) your take on why this story matters, (2) what it connects to or signals, and (3) a memorable closer.`,
-        `Do NOT invent facts beyond what is provided. You may reference the source URL. Keep it 3-5 punchy paragraphs (around 120-200 words total).`,
-        `Optionally end with a short JSON "ai_thoughts" block: {"key_insight":"...","confidence":0}`,
-      ].filter(Boolean).join("\n");
-
-      const user = [
-        `Article title: ${a.title}`,
-        a.summary ? `Summary: ${a.summary}` : "",
-        a.sourceUrl ? `Source URL: ${a.sourceUrl}` : "",
-        `\nWrite your commentary now, as ${agentName}.`,
-      ].filter(Boolean).join("\n");
+      const system = buildCommentarySystem({
+        agentName,
+        magazineName: mag?.name || "Anteroom",
+        tone: mag?.tone || "neutral",
+        tagline: mag?.tagline || "",
+        description: mag?.description || "",
+      });
+      const user = buildCommentaryUser({ title: a.title, summary: a.summary });
+      const hadCommentary = !!(a.commentary && a.commentary.trim());
 
       try {
-        const resp = await fetch(`${OPENROUTER_BASE}/chat/completions`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`,
-            "HTTP-Referer": "https://nexus.osiris2025.com",
-            "X-Title": "Anteroom",
-          },
-          body: JSON.stringify({
-            model: agentModel,
-            messages: [
-              { role: "system", content: system },
-              { role: "user", content: user },
-            ],
-          }),
-          signal: AbortSignal.timeout(90_000),
+        const result = await generateCommentary({
+          apiKey, model: agentModel, system, user,
+          mode: hadCommentary ? "replace" : "new",
+          existing: a.commentary,
         });
-
-        if (!resp.ok) {
-          const text = await resp.text().catch(() => "");
-          failed.push({ id: a.id, title: a.title, error: `OpenRouter ${resp.status}: ${text.slice(0, 120)}` });
-          continue;
-        }
-
-        const data: any = await resp.json().catch(() => null);
-        const commentary = data?.choices?.[0]?.message?.content?.trim();
-        if (!commentary) {
-          failed.push({ id: a.id, title: a.title, error: "OpenRouter returned no content" });
-          continue;
-        }
 
         const aiThoughts = JSON.stringify({
           agent: agentName,
           model: agentModel,
           generatedAt: new Date().toISOString(),
+          styleCheck: result.text ? (result.passed ? "passed" : "cleaned") : "kept-existing",
+          attempts: result.attempts,
         });
 
-        await db
-          .update(article)
-          .set({ commentary, aiThoughts })
-          .where(eq(article.id, a.id));
-
-        succeeded.push({ id: a.id, title: a.title, agent: agentName });
+        if (!result.text) {
+          if (hadCommentary) {
+            // Keep the old commentary; record aiThoughts so this row isn't retried forever.
+            await db.update(article).set({ aiThoughts }).where(eq(article.id, a.id));
+            succeeded.push({ id: a.id, title: a.title, agent: agentName, kept: true });
+          } else {
+            failed.push({ id: a.id, title: a.title, error: "AI returned no usable commentary" });
+          }
+        } else {
+          await db
+            .update(article)
+            .set({ commentary: result.text, aiThoughts })
+            .where(eq(article.id, a.id));
+          succeeded.push({ id: a.id, title: a.title, agent: agentName });
+        }
       } catch (e: any) {
         failed.push({ id: a.id, title: a.title, error: e?.message || "Request failed" });
       }

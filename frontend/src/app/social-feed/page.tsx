@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import CommentaryBody from "@/components/CommentaryBody";
 import { useTheme } from "@/lib/ThemeContext";
 
 type SocialArticle = {
@@ -338,13 +339,10 @@ export default function SocialFeedPage() {
                       >
                         AI Commentary
                       </summary>
-                      <div
+                      <CommentaryBody
+                        text={a.commentary}
+                        maxChars={500}
                         style={{ marginTop: 6, paddingLeft: 4 }}
-                        dangerouslySetInnerHTML={{
-                          __html: a.commentary
-                            .replace(/\n/g, "<br/>")
-                            .slice(0, 500) + (a.commentary.length > 500 ? "…" : ""),
-                        }}
                       />
                     </details>
                   )}

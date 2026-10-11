@@ -14,6 +14,14 @@ from openai import OpenAI
 logger = logging.getLogger(__name__)
 
 from . import has_substance, is_aggregator_link  # quality gate
+from .commentary_style import (
+    COMMENTARY_STYLE_RULES,
+    ENGINE_MAX_TOKENS,
+    REASONING,
+    clean_commentary,
+    problem_examples,
+    validate_commentary,
+)
 
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 DEFAULT_MODEL = "deepseek/deepseek-v4-flash-0731"
@@ -46,16 +54,18 @@ def _build_prompts(article: dict, stream_config: dict) -> dict:
         f"Your job is to take a raw news article and produce THREE clearly tagged sections. "
         f"You MUST output ALL three sections, never skip one.\n\n"
         f"1. <summary> - A concise 2-3 sentence summary (100-150 words) in the {tone} tone of {brand_name}.\n"
-        f"2. <commentary> - A thoughtful commentary (3-5 paragraphs) in the distinctive voice of {brand_name}. "
-        f"Connect the story to broader themes, include analysis, and cite the source URL.\n"
+        f"2. <commentary> - Your \"Just my opinion\" column on the story, in your own voice "
+        f"(general outlook: {tone}). Follow the commentary rules below exactly.\n"
         f"3. <ai_thoughts> - A JSON object with keys: key_insight, why_interesting, confidence (0-1).\n\n"
-        f"IMPORTANT: Always cite the source article URL. Do NOT fabricate facts. "
-        f"ALWAYS include the <summary> and <commentary> tags."
+        f"Commentary rules:\n{COMMENTARY_STYLE_RULES}\n\n"
+        f"IMPORTANT: Do NOT fabricate facts. Output only the three tagged sections, with no notes "
+        f"about your process. ALWAYS include the <summary> and <commentary> tags."
     )
 
+    # No source URL here on purpose: the page already links the source, and
+    # giving the model the URL made it paste "Source: https://..." into prose.
     raw_source = article.get("summary", "") or ""
     user_prompt = (
-        f"Source article URL: {article.get('source_url', 'N/A')}\n\n"
         f"Title: {article.get('title', 'N/A')}\n\n"
         f"Raw Summary/Description:\n{raw_source[:2000]}\n\n"
         f"Produce your response with <summary>, <commentary>, and <ai_thoughts> tags."
@@ -105,8 +115,8 @@ def _parse_response(text: str, source_url: str = "") -> dict:
             result["commentary"] = remaining
         else:
             result["commentary"] = (
-                f"This article from {source_url} covers newsworthy developments. "
-                f"Read the full story at the source URL."
+                "This article covers newsworthy developments. "
+                "Read the full story at the source."
             )
 
     return result
@@ -119,26 +129,64 @@ def summarize_article(article: dict, stream_config: dict) -> Optional[dict]:
 
     prompts = _build_prompts(article, stream_config)
 
-    try:
+    base_messages = [
+        {"role": "system", "content": prompts["system"]},
+        {"role": "user", "content": prompts["user"]},
+    ]
+
+    def _call(messages: list) -> tuple:
         response = client.chat.completions.create(
             model=prompts["model"],
-            messages=[
-                {"role": "system", "content": prompts["system"]},
-                {"role": "user", "content": prompts["user"]},
-            ],
+            messages=messages,
             temperature=0.7,
-            max_tokens=4000,
+            max_tokens=ENGINE_MAX_TOKENS,
+            extra_body={"reasoning": REASONING},
         )
-
         text = response.choices[0].message.content or ""
-        parsed = _parse_response(text, article.get("source_url", ""))
+        return _parse_response(text, article.get("source_url", "")), text
+
+    try:
+        parsed, raw = _call(base_messages)
+
+        # Style check on the commentary; retry once as a revision of the first
+        # draft, quoting the offending lines back. If the retry also misses,
+        # keep the better attempt, cleaned up.
+        problems = validate_commentary(parsed["commentary"])
+        if problems:
+            examples = problem_examples(parsed["commentary"])
+            feedback = f"That <commentary> breaks the style rules: {'; '.join(problems)}."
+            if examples:
+                feedback += "\nRewrite these parts in plain, direct sentences:\n" + "\n".join(
+                    f'- "{e}"' for e in examples
+                )
+            feedback += "\nReturn all three tagged sections again, with the commentary revised to follow every rule."
+            retry_messages = (
+                [*base_messages, {"role": "assistant", "content": raw}, {"role": "user", "content": feedback}]
+                if raw.strip()
+                else base_messages
+            )
+            try:
+                second, _ = _call(retry_messages)
+            except Exception as exc:  # noqa: BLE001 - keep the first attempt
+                logger.info("Commentary retry failed for '%s': %s", article.get("title", "?"), exc)
+                second = None
+            if second is not None:
+                p2 = validate_commentary(second["commentary"])
+                if len(p2) <= len(problems):
+                    parsed, problems = second, p2
+            if problems:
+                logger.info(
+                    "Commentary for '%s' still had style problems after retry (%s); saving cleaned version",
+                    article.get("title", "?")[:60], "; ".join(problems),
+                )
+                parsed["commentary"] = clean_commentary(parsed["commentary"])
 
         if not parsed["summary"]:
             parsed["summary"] = article.get("summary", "")[:500]
         if not parsed["commentary"]:
             parsed["commentary"] = (
-                f"From {article.get('source_url', 'the source')}: "
-                f"This article covers notable developments."
+                "This article covers notable developments. "
+                "Read the full story at the source."
             )
 
         return {

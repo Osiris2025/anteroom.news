@@ -1,6 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import CommentaryBody from "@/components/CommentaryBody";
 import { useState, useEffect } from "react";
 import ArticleComments from "./ArticleComments";
 import ArticleEfx from "./ArticleEfx";
@@ -210,7 +211,7 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
           </div>
         </div>
         {commentary ? (
-          <div style={{ fontSize: 15, lineHeight: 1.6, color: C.ink, whiteSpace: "pre-wrap" }}>{commentary}</div>
+          <CommentaryBody text={commentary} style={{ fontSize: 15, lineHeight: 1.6, color: C.ink }} />
         ) : (
           <div style={{ fontSize: 14, color: C.body, fontStyle: "italic" }}>No commentary yet — an editor can generate it from the Dispatch Desk.</div>
         )}

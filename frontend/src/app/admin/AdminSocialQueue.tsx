@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import CommentaryBody from "@/components/CommentaryBody";
 
 // Social Queue tab — what the social publisher has queued, posted, or failed.
 // Consumes /api/admin/social-queue (GET, POST actions, DELETE). DB is the
@@ -160,9 +161,9 @@ function SocialPreviewModal({ target, onClose }: { target: PreviewTarget; onClos
             </div>
           )}
           {art?.commentary && (
-            <div style={{ fontSize: 14, lineHeight: 1.65, color: "#b9c2cf", whiteSpace: "pre-wrap", marginTop: 14, borderTop: "1px solid rgba(150,150,150,.15)", paddingTop: 14 }}>
+            <div style={{ fontSize: 14, lineHeight: 1.65, color: "#b9c2cf", marginTop: 14, borderTop: "1px solid rgba(150,150,150,.15)", paddingTop: 14 }}>
               <b style={{ color: "#8f96a3", fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", display: "block", marginBottom: 4 }}>Commentary</b>
-              {art.commentary}
+              <CommentaryBody text={art.commentary} />
             </div>
           )}
         </div>

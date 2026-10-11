@@ -4,10 +4,11 @@ import { eq } from "drizzle-orm";
 import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
+import {
+  buildCommentarySystem, buildCommentaryUser, generateCommentary, COMMENTARY_FALLBACK_MODEL,
+} from "@/lib/commentary";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
-const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
-const FALLBACK_MODEL = "deepseek/deepseek-v4-flash-0731";
 
 // Strip a trailing AI "thoughts" JSON block off the end of a commentary so the
 // raw JSON never displays to readers. Handles both a ```json ... ``` fenced
@@ -92,79 +93,60 @@ export async function POST(req: NextRequest) {
   const mag = row.magazine;
 
   const agentName = mag?.agentName || a.magazineId || "the desk";
-  const agentModel = mag?.agentModel || FALLBACK_MODEL;
-  const magName = mag?.name || "Anteroom";
-  const magTone = mag?.tone || "neutral";
-  const magTagline = mag?.tagline || "";
-  const magDesc = mag?.description || "";
+  const agentModel = mag?.agentModel || COMMENTARY_FALLBACK_MODEL;
 
-  const system = [
-    `You are ${agentName}, the featured AI commentator for "${magName}".`,
-    magTagline ? `Tagline: ${magTagline}` : "",
-    magDesc ? `About ${magName}: ${magDesc}` : "",
-    `Write in a ${magTone} editorial voice that is distinctive, sharp, and on-brand for ${magName}.`,
-    `Give readers: (1) your take on why this story matters, (2) what it connects to or signals, and (3) a memorable closer.`,
-    `Do NOT invent facts beyond what is provided. You may reference the source URL. Keep it 3-5 punchy paragraphs (around 120-200 words total).`,
-    `Optionally end with a short JSON "ai_thoughts" block: {"key_insight":"...","confidence":0}`,
-  ].filter(Boolean).join("\n");
+  const system = buildCommentarySystem({
+    agentName,
+    magazineName: mag?.name || "Anteroom",
+    tone: mag?.tone || "neutral",
+    tagline: mag?.tagline || "",
+    description: mag?.description || "",
+  });
+  const user = buildCommentaryUser({ title: a.title, summary: a.summary });
 
-  const user = [
-    `Article title: ${a.title}`,
-    a.summary ? `Summary: ${a.summary}` : "",
-    a.sourceUrl ? `Source URL: ${a.sourceUrl}` : "",
-    `\nWrite your commentary now, as ${agentName}.`,
-  ].filter(Boolean).join("\n");
-
-  // Call OpenRouter with global fetch (Node 22)
-  let resp: Response;
+  const hadCommentary = !!(a.commentary && a.commentary.trim());
+  let result;
   try {
-    resp = await fetch(`${OPENROUTER_BASE}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://nexus.osiris2025.com",
-        "X-Title": "Anteroom",
-      },
-      body: JSON.stringify({
-        model: agentModel,
-        messages: [
-          { role: "system", content: system },
-          { role: "user", content: user },
-        ],
-      }),
-      // generous timeout; OpenRouter can be slow for first token
-      signal: AbortSignal.timeout(90_000),
+    result = await generateCommentary({
+      apiKey, model: agentModel, system, user,
+      mode: hadCommentary ? "replace" : "new",
+      existing: a.commentary,
     });
   } catch (e: any) {
     return Response.json({ error: `OpenRouter request failed: ${e?.message || e}` }, { status: 502 });
   }
 
-  if (!resp.ok) {
-    const text = await resp.text().catch(() => "");
-    return Response.json({ error: `OpenRouter ${resp.status}: ${text.slice(0, 300)}` }, { status: resp.status });
+  // Both attempts broke the style rules and there is existing commentary:
+  // keep the old text rather than replace it with something worse.
+  if (!result.text) {
+    return Response.json({
+      kept: true,
+      commentary: a.commentary,
+      ai_thoughts: a.aiThoughts,
+      agent: agentName,
+      article: a,
+      warning: hadCommentary
+        ? `The new commentary didn't meet the style rules after ${result.attempts} tries (${result.problems.join("; ")}), so the existing commentary was kept (it was no worse than the new attempt).`
+        : "The AI didn't return usable commentary. Try again.",
+    }, { status: hadCommentary ? 200 : 502 });
   }
 
-  let data: any;
-  try { data = await resp.json(); } catch { return Response.json({ error: "Invalid response from OpenRouter" }, { status: 502 }); }
-
-  const commentary = data?.choices?.[0]?.message?.content?.trim();
-  if (!commentary) return Response.json({ error: "OpenRouter returned no content" }, { status: 502 });
   // Drop any trailing ai_thoughts JSON block so raw JSON never shows to readers.
-  const cleanCommentary = stripTrailingJson(commentary).trim();
+  const cleanText = stripTrailingJson(result.text).trim();
 
-  // Store into article.commentary + ai_thoughts
   const aiThoughts = JSON.stringify({
     agent: agentName,
     model: agentModel,
     generatedAt: new Date().toISOString(),
+    styleCheck: result.passed ? "passed" : "cleaned",
+    attempts: result.attempts,
   });
 
   const [updated] = await db
     .update(article)
-    .set({ commentary: cleanCommentary, aiThoughts })
+    .set({ commentary: cleanText, aiThoughts })
     .where(eq(article.id, articleId))
     .returning();
 
-  return Response.json({ commentary: cleanCommentary, ai_thoughts: aiThoughts, agent: agentName, article: updated });
+  return Response.json({ commentary: cleanText, ai_thoughts: aiThoughts, agent: agentName, article: updated });
 }

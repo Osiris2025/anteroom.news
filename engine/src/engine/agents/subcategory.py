@@ -16,6 +16,8 @@ Design:
 Add / refine keywords below. Keep slugs kebab-case and single words where possible.
 """
 
+import re
+
 MAGAZINE_TAXONOMY: dict[str, list[tuple[str, list[str]]]] = {
     # ------------------------------------------------------------------ #
     # The Veil — "Backstage of the unseen" (Mysteries realm seeker door)
@@ -56,68 +58,71 @@ MAGAZINE_TAXONOMY: dict[str, list[tuple[str, list[str]]]] = {
         ]),
     ],
     # ------------------------------------------------------------------ #
-    # Neural Hardware — "AI. Cyber. Compute."
+    # AI Frontier (neural-hardware) — "AI. Cyber. Compute."
+    # Order matters (first match wins): security is checked BEFORE agents/tools so
+    # "hackers abuse an AI agent" lands in Security & Attacks, and the broad
+    # catch-all buckets (tools, society) come last. Articles no keyword places
+    # are sent to the cheap LLM fallback (see llm_fallback_subcategories).
+    # Labels/descriptions: frontend/src/lib/subcategories.json.
     # ------------------------------------------------------------------ #
     "neural-hardware": [
-        # Agents / agentic AI (most specific agent-ish terms first)
-        ("agents", [
-            "ai agent", "agentic", "multi-agent", "autonomous agent", "agent platform",
-            "computer use", "tool use", "computer use agent", "agent harness",
-            "mcp ", "model context protocol", "openclaw", "lobster", "hermes agent",
-            "claude agent", "deep research", "browser agent", "agentic ai",
+        ("security-attacks", [
+            "cyberattack", "cyber attack", "cybersecurity", "cybercrim", "hacker", "hacked", "hacking",
+            "breach", "ransomware", "malware", "infostealer", "info stealing", "spyware", "botnet",
+            "phishing", "vulnerabilit", "exploit", "zero-day", "zero day", "cve-", "patch tuesday",
+            "security flaw", "security update", "backdoor", "supply chain attack", "ddos", "data leak",
+            "credential", "privilege escalation", "jailbreak", "prompt injection", "red team",
+            "threat actor", "apt group", "scam", "fraud", "cisa", "trojan", "rootkit",
         ]),
-        # Cybersecurity / security / privacy / threats
-        ("cybersecurity", [
-            "cyber", "hack", "breach", "ransomware", "malware", "vulnerability",
-            "exploit", "zero-day", "zero day", "phishing", "password", "encryption",
-            "security", "privacy", "data leak", "data breach", "threat", "firewall",
-            "red team", "cyberattack", "defense", "sandbox", "privilege escalation",
-            "backdoor", "supply chain attack", "info stealing",
+        ("safety-risk", [
+            "ai safety", "alignment", "misalign", "rogue agent", "rogue ai", "existential", "x-risk",
+            "superintelligence", "superalignment", "preparedness", "too dangerous", "safety research",
+            "safety team", "chain of thought monitoring", "sandbox escape", "escape their sandbox",
+            "deceptive", "scheming", "catastrophic risk",
         ]),
-        # Hardware / chips / datacenters
-        ("hardware-datacenters", [
-            "gpu", "gpus", "h100", "h200", "b200", "a100", "nvidia", "amd",
-            "inference", "datacenter", "data center", "server", "silicon", "chip",
-            "semiconductor", "tsmc", "foundry", "fpga", "asic", "quantum computer",
-            "processor", "cpu", "tpu", "neural processing unit", "npu", "hbm",
-            "power grid", "cooling", "liquid cooling", "power consumption",
-            "compute cluster", "cluster", "energy",
+        ("politics-policy", [
+            "regulation", "regulator", "ai act", "executive order", "congress", "senate", "legislat",
+            "lawmaker", "white house", "trump", "pentagon", "department of defense", "military",
+            "national security", "export control", "sanction", "lawsuit", "sues ", "sued", "court",
+            "judge", "copyright", "attorney general", "subpoena", "ftc", "fcc", "antitrust",
+            "european commission", "eu ", "government", "governor", "election", "policy",
         ]),
-        # Open-source / OSS / licensing
-        ("open-source", [
-            "open source", "opensource", "open-weight", "open weight", "license",
-            "apache 2.0", "mit license", "github", "hugging face", "huggingface",
-            "repo", "open model", "open-llm", "contribute", "community edition",
+        ("chips-hardware", [
+            "gpu", "h100", "h200", "b200", "b300", "blackwell", "rubin", "a100", "nvidia", "amd ",
+            "tsmc", "semiconductor", "chip", "silicon", "foundry", "fpga", "asic", "tpu", "npu", "hbm",
+            "processor", "cpu", "threadripper", "xeon", "epyc", "snapdragon", "datacenter",
+            "data center", "data centre", "server", "workstation", "rack", "cooling", "power grid",
+            "gigawatt", "megawatt", "compute cluster", "supercomputer", "robot", "humanoid",
         ]),
-        # Models / LLMs / foundation models / reasoning
-        ("models", [
-            "llm", "large language model", "foundation model", "gpt-", "gpt ",
-            "claude", "gemini", "llama", "mistral", "deepseek", "qwen", "grok",
-            "phi-", "command r", "model release", "reasoning model", "o1", "o3",
-            "o4", "4o", "benchmark", "hallucination", "context window", "token",
-            "multimodal", "openai", "anthropic", "nvidia ai", "weights",
+        ("reviews", [
+            "review", "hands-on", "hands on", " vs ", " vs. ", "versus", "compared", "comparison",
+            "tested", "we tried", "i tried", "how to ", "guide", "tutorial", "tips", "walkthrough",
+            "getting started", "best practices", "demystified", "explained",
         ]),
-        # Training / research / papers
-        ("research", [
-            "paper", "arxiv", "training", "fine-tune", "fine tune", "rlhf",
-            "reinforcement learning", "dataset", "synthetic data", "alignment",
-            "scaling law", "pruning", "distillation", "inference scaling",
-            "vector database", "embedding", "retrieval", "rag ", "research",
-            "red teaming ai", "superalignment",
+        ("ai-companies", [
+            "funding", "raises", "raised", "valuation", "series a", "series b", "series c", "seed round",
+            "acquisition", "acquire", "acquires", "merger", "ipo", "revenue", "earnings", "investors",
+            "investment", "partnership", "partners with", "ceo", "cfo", "executive", "hires", "hired",
+            "joins", "leaves", "departure", "layoff", "pricing", "price cut", "price reduction",
+            "subscription", "opens office", "office in", "startup", "unicorn",
         ]),
-        # Funding / business / corporate
-        ("business", [
-            "funding", "raises", "raised", "valuation", "round", "seed", "series a",
-            "series b", "acquisition", "acquire", "ipo", "revenue", "billion", "million",
-            "partnership", "partners with", "launches", "announces", "ceo", "startup",
-            "unicorn", "deal", "investment", "openai and microsoft", "merger",
+        ("models-research", [
+            "model", "llm", "large language model", "foundation model", "open-weight", "open weight",
+            "weights", "benchmark", "reasoning", "parameter", "context window", "multimodal",
+            "paper", "arxiv", "research", "researchers", "training", "fine-tun", "rlhf",
+            "reinforcement learning", "dataset", "synthetic data", "distillation", "scaling law",
+            "embedding", "theorem", "conjecture",
         ]),
-        # Policy / regulation / safety / governance
-        ("policy-safety", [
-            "regulation", "regulator", "ai act", "executive order", "congress",
-            "senate", "legislation", "ban", "banned", "policy", "governance",
-            "safety", "responsible ai", "national security", "export control",
-            "copyright", "lawsuit", "court", "fcc", "ftc", "eu ", "white house",
+        ("tools-agents", [
+            "agent", "agentic", "assistant", "chatbot", "copilot", "cursor", "codex", "claude code",
+            "plugin", "extension", "mcp", "model context protocol", "api ", "apis", "sdk", "app ",
+            "apps", "feature", "launch", "introduc", "rolls out", "now available", "integration",
+            "workflow", "tool", "browser",
+        ]),
+        ("society-culture", [
+            "jobs", "workers", "employment", "education", "students", "school", "teacher", "health",
+            "therapy", "relationship", "film", "movie", "actor", "art", "artist", "music", "writer",
+            "ethic", "opinion", "essay", "culture", "society", "public", "survey", "poll",
         ]),
     ],
     # ------------------------------------------------------------------ #
@@ -157,17 +162,40 @@ MAGAZINE_TAXONOMY: dict[str, list[tuple[str, list[str]]]] = {
 }
 
 
+def _kw_regex(kw: str) -> "re.Pattern[str]":
+    """Compile one keyword. A keyword that starts with a letter/digit must start at
+    a word boundary ("ban" no longer matches "urban", "api" no longer matches
+    "capital"), but it may still be a prefix ("vulnerabilit" matches
+    "vulnerability"). Keywords that start with a space/punctuation match as-is."""
+    pat = _KW_CACHE.get(kw)
+    if pat is None:
+        esc = re.escape(kw)
+        pat = re.compile(("(?<![a-z0-9])" + esc) if kw[:1].isalnum() else esc)
+        _KW_CACHE[kw] = pat
+    return pat
+
+
+_KW_CACHE: dict[str, "re.Pattern[str]"] = {}
+
+
+def taxonomy_for(magazine_id: str | None) -> list[tuple[str, list[str]]]:
+    """The active (DB override or built-in) taxonomy for a magazine, or []."""
+    if not magazine_id:
+        return []
+    return _overrides.get(magazine_id) or MAGAZINE_TAXONOMY.get(magazine_id) or []
+
+
 def classify_article(magazine_id: str | None, title: str | None, summary: str | None) -> str | None:
     """Return the best-matching subcategory slug for an article, or None.
 
     Scans the taxonomy of `magazine_id` in order and returns the FIRST category
-    whose any keyword appears in title+summary. Case-insensitive substring match.
-    Uses the data-driven override if present (set via set_taxonomy_overrides);
-    otherwise falls back to the built-in MAGAZINE_TAXONOMY.
+    whose any keyword appears in title+summary (case-insensitive; keywords match
+    from a word start, see _kw_regex). Uses the data-driven override if present
+    (set via set_taxonomy_overrides); otherwise the built-in MAGAZINE_TAXONOMY.
     """
     if not magazine_id or not title:
         return None
-    tax = _overrides.get(magazine_id) or MAGAZINE_TAXONOMY.get(magazine_id)
+    tax = taxonomy_for(magazine_id)
     if not tax:
         return None
     corpus = (title or "").lower()
@@ -175,9 +203,111 @@ def classify_article(magazine_id: str | None, title: str | None, summary: str | 
         corpus += " " + summary.lower()
     for slug, keywords in tax:
         for kw in keywords:
-            if kw in corpus:
+            if kw and _kw_regex(kw.lower()).search(corpus):
                 return slug
     return None
+
+
+# ---------------------------------------------------------------------------
+# Cheap LLM fallback for articles the keywords can't place.
+# One OpenRouter call per batch of up to 25 articles of the same magazine; the
+# model may only answer with one of that magazine's slugs (anything else is
+# ignored and the article stays untagged). Disabled with SUBCAT_LLM_FALLBACK=0.
+# ---------------------------------------------------------------------------
+SUBCAT_LLM_MODEL_DEFAULT = "deepseek/deepseek-v4-flash-0731"
+_SUBCAT_META: dict | None = None
+
+
+def _subcat_meta() -> dict:
+    """Labels/descriptions shared with the frontend (subcategories.json)."""
+    global _SUBCAT_META
+    if _SUBCAT_META is None:
+        import json
+        import os
+        _SUBCAT_META = {}
+        here = os.path.dirname(os.path.abspath(__file__))
+        for p in (os.environ.get("SUBCATEGORIES_PATH"), "/app/subcategories.json",
+                  os.path.join(here, "../../../../frontend/src/lib/subcategories.json")):
+            if p and os.path.exists(p):
+                try:
+                    with open(p) as fh:
+                        _SUBCAT_META = json.load(fh)
+                    break
+                except Exception:
+                    pass
+    return _SUBCAT_META
+
+
+def subcategory_label(magazine_id: str | None, slug: str) -> str:
+    meta = _subcat_meta()
+    m = (meta.get("magazines") or {}).get(magazine_id or "", {}).get(slug)
+    if m and m.get("label"):
+        return m["label"]
+    if slug in (meta.get("labels") or {}):
+        return meta["labels"][slug]
+    return " ".join(w.capitalize() for w in re.split(r"[-_]", slug))
+
+
+def _subcat_description(magazine_id: str, slug: str, keywords: list[str]) -> str:
+    m = (_subcat_meta().get("magazines") or {}).get(magazine_id, {}).get(slug) or {}
+    return m.get("description") or ("keywords: " + ", ".join(keywords[:12]))
+
+
+def llm_fallback_subcategories(items: list[dict], max_items: int | None = None) -> dict[str, str]:
+    """items: [{id, magazine_id, title, summary}] that keywords could not place.
+    Returns {article_id: slug}. Never raises; returns {} when disabled/no key."""
+    import json
+    import os
+    if os.environ.get("SUBCAT_LLM_FALLBACK", "1").strip().lower() in ("0", "false", "off", "no"):
+        return {}
+    key = os.environ.get("OPENROUTER_API_KEY") or os.environ.get("LLM_API_KEY")
+    if not key or not items:
+        return {}
+    limit = max_items if max_items is not None else int(os.environ.get("SUBCAT_LLM_MAX", "150"))
+    model = os.environ.get("SUBCAT_LLM_MODEL", SUBCAT_LLM_MODEL_DEFAULT)
+    try:
+        import httpx
+    except Exception:
+        return {}
+
+    by_mag: dict[str, list[dict]] = {}
+    for it in items[:limit]:
+        if taxonomy_for(it.get("magazine_id")):
+            by_mag.setdefault(it["magazine_id"], []).append(it)
+
+    out: dict[str, str] = {}
+    for mag, arts in by_mag.items():
+        tax = taxonomy_for(mag)
+        slugs = [s for s, _ in tax]
+        system = (
+            "You file news articles into ONE subcategory of a magazine section. Allowed slugs:\n"
+            + "\n".join(f"- {s}: {_subcat_description(mag, s, kw)}" for s, kw in tax)
+            + '\nReply with JSON only: {"results":[{"i":<number>,"sub":"<slug>"}]}, one entry per article.'
+        )
+        for k in range(0, len(arts), 25):
+            batch = arts[k:k + 25]
+            user = "\n\n".join(
+                f"[{i}] {a.get('title') or ''}\n{(a.get('summary') or '')[:300]}" for i, a in enumerate(batch)
+            )
+            try:
+                resp = httpx.post(
+                    "https://openrouter.ai/api/v1/chat/completions",
+                    headers={"Authorization": f"Bearer {key}", "X-Title": "Anteroom subcategories"},
+                    json={"model": model, "temperature": 0, "response_format": {"type": "json_object"},
+                          "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}]},
+                    timeout=60,
+                )
+                resp.raise_for_status()
+                txt = (resp.json()["choices"][0]["message"]["content"] or "").strip()
+                txt = re.sub(r"^```(?:json)?|```$", "", txt).strip()
+                for r in json.loads(txt).get("results", []):
+                    i = int(r.get("i", -1))
+                    sub = str(r.get("sub") or "").strip()
+                    if 0 <= i < len(batch) and sub in slugs:
+                        out[batch[i]["id"]] = sub
+            except Exception:
+                continue
+    return out
 
 
 # Data-driven taxonomy override support. The magazine_taxonomy table (loaded from

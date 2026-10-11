@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { subcatLabel } from "@/lib/subcategories";
 
 type EditorialArticle = {
   id: string;
@@ -48,7 +49,7 @@ export default function MagazineEditorial({
   if (!leader) return null;
 
   const tagColor = accent || "var(--accent, #ffd700)";
-  const kicker = leader.subcategory || magazineName || leader.magazine?.name || "Featured";
+  const kicker = (leader.subcategory ? subcatLabel(leader.subcategory, magazine) : "") || magazineName || leader.magazine?.name || "Featured";
   const hasImage = !!leader.imageUrl;
 
   return (

@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { subcatLabel } from "@/lib/subcategories";
 
 type Subcat = { subcategory: string; n: number };
 
@@ -20,12 +21,11 @@ export default function SubcategoryRail({ magazine }: { magazine: string }) {
   // Nothing to show until a magazine actually has subcategory-tagged content.
   if (!subcats.length) return null;
 
-  const label = (s: string) => s
-    .split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ")
-    .replace(/\bReleases\b/, "Releases");
+  const label = (s: string) => subcatLabel(s, magazine);
 
   return (
     <aside
+      id="explore-topics"
       className="nexus-subcat-rail"
       style={{
         border: "1px solid var(--border, rgba(150,150,150,.2))",

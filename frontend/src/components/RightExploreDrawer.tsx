@@ -28,8 +28,14 @@ export default function RightExploreDrawer() {
   // us via the 'nexus:toggle-explore' event.
   useEffect(() => {
     const onToggle = () => setOpen((o) => !o);
+    // "Explore by topic" invitation on magazine pages opens (never closes) the drawer.
+    const onOpen = () => setOpen(true);
     window.addEventListener("nexus:toggle-explore", onToggle);
-    return () => window.removeEventListener("nexus:toggle-explore", onToggle);
+    window.addEventListener("nexus:open-explore", onOpen);
+    return () => {
+      window.removeEventListener("nexus:toggle-explore", onToggle);
+      window.removeEventListener("nexus:open-explore", onOpen);
+    };
   }, []);
 
   // Detect the current magazine from the URL: /magazines/<id>

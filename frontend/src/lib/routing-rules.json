@@ -1,0 +1,134 @@
+{
+  "version": 1,
+  "_comment": "Shared magazine routing rules. Read by the engine (engine/src/engine/agents/routing.py, mounted read-only at /app/routing-rules.json) and by the frontend (src/lib/routingRules.ts). Patterns must work in BOTH Python re and JavaScript RegExp: no lookbehind, no inline flags, no named groups. Order of evaluation: nasa, then ai, then ai_security.",
+  "magazines": {
+    "ai": "neural-hardware",
+    "science": "weird-and-wild",
+    "news": "just-the-news-thats-fit-to-print",
+    "theory": "dark-matter",
+    "tech": "tech-pulse"
+  },
+  "nasa": {
+    "_comment": "Any NASA story goes to Science Frontiers; purely theoretical/speculative concepts go to Dark Matter; NASA money, contracts and building go to Just the News.",
+    "source_hosts": [
+      "nasa.gov"
+    ],
+    "source_names": [
+      "NASA"
+    ],
+    "title_pattern": "\\bNASA\\b|\\bNASA's\\b",
+    "title_flags": "",
+    "theoretical_pattern": "warp (drive|bubble|field)|wormhole|\\bNIAC\\b|Innovative Advanced Concepts|futuristic|science fiction|sci-fi|speculative|hypothetical|thought experiment|could one day|someday|interstellar (travel|probe|mission)|antimatter|fusion (propulsion|rocket|drive)|solar sail|\\bconcept (study|studies|design)\\b|\\b(new|wild|weird) (idea|ideas|concept|concepts)\\b|\\bidea\\b|\\bwould enable\\b|nuclear spacecraft|aerobots?",
+    "theoretical_flags": "i",
+    "money_pattern": "budget|\\bfund(s|ing|ed)?\\b|-funded|financ|appropriat|\\bbill\\b|authorization act|layoffs?|lay off|job cuts|workforce cuts|\\bcontracts?\\b|\\bawards?\\b.{0,40}\\$|billion-dollar|million-dollar|cost overrun|overruns?|\\bcosts?\\b|spending|procure|\\bbids? (for|on)\\b|\\bbuild(s|ing)? (a |an |the |its |new |next )?(rocket|spacecraft|orbiter|lander|factory|facility|station|telescope|satellite)|construction|\\bconstruct(s|ing|ed)?\\b|factory|facility|manufactur|shutdown|furlough|privatiz|relocat|call to industry|request for proposals|\\bawards\\b(?!.{0,40}(medal|prize|honor))|\\bgrants?\\b|\\bselects? .{0,30}(teams|compan|proposals|technolog|universit)|contractors?\\b|\\bbid\\b|\\bdeal\\b|civil servants?|workforce",
+    "money_flags": "i"
+  },
+  "ai": {
+    "_comment": "Any article from, or naming, an AI model/agent/plugin publisher or product goes to AI Frontier. Exclusions are removed from the headline before matching ('when' = only if this context appears in headline+summary).",
+    "publisher_hosts": [
+      "openai.com",
+      "anthropic.com",
+      "claude.com",
+      "claude.ai",
+      "deepmind.google",
+      "deepmind.com",
+      "ai.meta.com",
+      "ai.google.dev",
+      "mistral.ai",
+      "x.ai",
+      "deepseek.com",
+      "qwenlm.github.io",
+      "qwen.ai",
+      "huggingface.co",
+      "cursor.com",
+      "langchain.com",
+      "langchain.dev",
+      "nousresearch.com",
+      "cohere.com",
+      "perplexity.ai",
+      "stability.ai",
+      "midjourney.com",
+      "elevenlabs.io",
+      "moonshot.ai",
+      "minimax.io",
+      "z.ai",
+      "ollama.com",
+      "openrouter.ai",
+      "windsurf.com",
+      "llamaindex.ai",
+      "crewai.com",
+      "ai21.com",
+      "character.ai",
+      "runwayml.com"
+    ],
+    "publisher_source_names": [
+      "Anthropic News",
+      "Anthropic",
+      "Cohere",
+      "Google DeepMind",
+      "Deepmind",
+      "Meta AI Blog",
+      "Mistral AI",
+      "Mistral",
+      "Hugging Face Blog",
+      "Huggingface",
+      "Perplexity",
+      "Hermes / Nous Research (Google News search)",
+      "Google Research"
+    ],
+    "title_pattern": "OpenAI|ChatGPT|GPT-?[3-9](\\.\\d+)?o?\\b|\\bSora\\b|Sam Altman|\\bAnthropic|\\bClaude\\b|DeepMind|\\bGemini\\b|Meta AI\\b|\\bLlama ?[2-9]|Meta's Llama|\\bMistral|\\bxAI\\b|\\bGrok\\b|DeepSeek|\\bQwen|Hugging ?Face|\\bCursor\\b(?! (key|keys|position|movement|over|hover))|Anysphere|LangChain|LangGraph|LlamaIndex|Nous Research|Hermes Agent|\\bHermes [3-9]\\b|\\bCohere\\b|Perplexity|Stability AI|Stable Diffusion|Midjourney|ElevenLabs|Moonshot AI|\\bKimi\\b|Zhipu|\\bGLM-?\\d|MiniMax|\\bCopilot\\b|Windsurf|\\bOllama\\b|OpenRouter|OpenClaw|\\bManus\\b|CrewAI|AutoGPT|Character\\.ai|Inflection AI|Thinking Machines Lab|Safe Superintelligence|\\bCodex\\b|Nemotron|\\bPhi-\\d",
+    "title_flags": "",
+    "exclusions": [
+      {
+        "remove": "Claude (Monet|Debussy|Van Damme|Shannon|Lelouch|Chabrol|Rains|Levi-Strauss)|Jean-Claude|Claude-Michel",
+        "flags": "i"
+      },
+      {
+        "remove": "(Aztec|Maya|Mayan|ancient|Leonardo|medieval|Florentine|Dresden|Voynich|Borgia) [Cc]odex|[Cc]odex (Gigas|Leicester|Sinaiticus|Seraphinianus|Mendoza)",
+        "flags": ""
+      },
+      {
+        "remove": "\\bCodex\\b",
+        "when": "Aztec|Mayan?\\b|ancient|manuscript|medieval|museum|archaeolog",
+        "flags": ""
+      },
+      {
+        "remove": "\\bGemini\\b",
+        "when": "Winklevoss|crypto|bitcoin|exchange|stablecoin|zodiac|horoscope|Project Gemini|Gemini (capsule|mission|astronaut|program|North|South)",
+        "flags": ""
+      },
+      {
+        "remove": "\\b(an?|the|your|their|our) (AI )?[Cc]opilots?\\b|\\b[Cc]opilots\\b",
+        "flags": ""
+      },
+      {
+        "remove": "\\bKimi (R.ikk.nen|Antonelli)\\b",
+        "flags": ""
+      },
+      {
+        "remove": "\\bSora\\b",
+        "when": "Kingdom Hearts",
+        "flags": ""
+      }
+    ]
+  },
+  "ai_security": {
+    "_comment": "Security-only sources (BleepingComputer) live in Tech Pulse; their AI-related stories go to AI Frontier.",
+    "source_hosts": [
+      "bleepingcomputer.com"
+    ],
+    "source_names": [
+      "BleepingComputer",
+      "Bleepingcomputer"
+    ],
+    "title_pattern": "\\bAI\\b|\\bA\\.I\\.|artificial intelligence|\\bLLMs?\\b|chatbots?|prompt injection|jailbreak|deepfakes?|machine learning|\\bAI agents?\\b|agentic|\\bMCP\\b|model context protocol|\\bGPT\\b|generative",
+    "title_flags": "i",
+    "default_magazine": "tech-pulse"
+  },
+  "prompt_guidance": [
+    "Routing rules (these override your own judgement):",
+    "- Any article from, or about, a publisher of an AI model, an AI agent harness, or a known AI extension/plugin (for example OpenAI/ChatGPT, Anthropic/Claude, Google DeepMind/Gemini, Meta AI/Llama, Mistral, xAI/Grok, DeepSeek, Qwen, Hugging Face, Cursor, LangChain, Nous Research/Hermes Agent, Perplexity, Microsoft/GitHub Copilot) belongs in AI Frontier (neural-hardware).",
+    "- Any NASA story (nasa.gov or about NASA) belongs in Science Frontiers (weird-and-wild), EXCEPT: NASA money, budgets, contracts or building/construction goes in Just the News (just-the-news-thats-fit-to-print), and purely theoretical or speculative NASA concepts (warp drives, far-future propulsion ideas, sci-fi style concepts) go in Dark Matter (dark-matter).",
+    "- General cybersecurity news with no AI angle belongs in Tech Pulse (tech-pulse); security stories about AI belong in AI Frontier."
+  ]
+}

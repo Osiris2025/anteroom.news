@@ -1,0 +1,733 @@
+id,from_magazine_id,to_magazine_id,reason,title
+b94e94e6-5c41-4ad6-8997-b9a92309d18a,startup-signal,neural-hardware,headline mentions 'Qwen',"Qwen3.8-27B runs frontier-class coding agents and reasoning locally, no cloud API required"
+370b8d74-a41c-4989-b815-3d6c920d36b6,oss-report,neural-hardware,headline mentions 'Copilot',GitHub Copilot app for Beginners: Managing your work
+b33018cc-114c-441e-a395-5c14241b89c2,startup-signal,neural-hardware,headline mentions 'Cursor',Cursor launches Origin code hosting platform as GitHub outage exposes opening in AI coding race
+46349f62-5dff-42f5-9582-9452c83823da,tech-pulse,neural-hardware,headline mentions 'Gemini',Google Gemini is getting a dedicated student hub
+21f4b79c-c64a-4652-8051-6f9c805fe589,poli-split,neural-hardware,headline mentions 'OpenAI',OpenAI pausing some model work over safety concerns
+d008dec8-2af3-4504-9a32-0fe906eb83ef,tech-pulse,neural-hardware,headline mentions 'OpenRouter',Stripe didn’t really buy OpenRouter because of the ‘singularity’
+f53b9aa4-0455-4625-b518-0b61f16a11d3,oss-report,neural-hardware,AI publisher's own feed/site,Cursor Is Joining SpaceX
+e591555b-ced0-4201-826c-f9c525813779,tech-pulse,neural-hardware,headline mentions 'Cursor',SpaceX officially closes its Cursor acquisition
+d3af734e-97cd-4776-bbc1-76ce8037d769,tech-pulse,neural-hardware,AI publisher's own feed/site,Qwen 3.8 27B
+83f7760e-4acd-4bb9-804f-340c883c64d8,starfall-weekly,neural-hardware,headline mentions 'xAI',"xAI Loses Legal Battle Against Minnesota Nudification Law, War Rages on"
+d010b7c1-13f0-41ce-a297-b26e5c05261c,tech-pulse,neural-hardware,headline mentions 'Stability AI',"Stability AI, maker of image generator Stable Diffusion, raises $76 million in fresh funding"
+51b9ff20-9ce8-4b50-9d1a-9ac10a0bd9f0,tech-pulse,neural-hardware,headline mentions 'Meta AI',Meta AI now has a dedicated desktop app for Mac
+cb64d7e3-217b-4fe1-b9fc-622cd76d63b6,tech-pulse,neural-hardware,headline mentions 'Claude',Coders Say They Already Found Workarounds to Claude’s Invisible Watermarks
+6297119a-9d3c-4cdf-97fe-14cbaeb60258,tech-pulse,neural-hardware,headline mentions 'OpenAI',Protesters gather at OpenAI’s DevDay
+bce136a6-56e5-4c5c-8767-a5ccf59e844b,oss-report,neural-hardware,headline mentions 'Copilot',Using the GitHub Copilot SDK for Java
+3580f290-ba2e-45a1-bb20-9618596ee6d5,tech-pulse,neural-hardware,headline mentions 'Grok',Grok keeps sending gibberish responses to users
+7ae167f4-fedc-4d5c-9b0c-ac6573e06672,tech-pulse,neural-hardware,headline mentions 'OpenAI',"Brad Lightcap, OpenAI’s longtime COO, is leaving to ‘start something new’"
+1074ea80-a31e-4798-88c5-a088dffb8a7b,tech-pulse,neural-hardware,headline mentions 'ChatGPT',Saber denies replacing Rideshare Stimulator’s writers with ChatGPT
+cc79d3d4-92a0-4ea5-9136-267885cb6d1a,tech-pulse,neural-hardware,headline mentions 'Gemini',"Google releases Gemini 4 Argon, called its most powerful model yet"
+b1583bdb-93ac-45f1-b584-d5cde229375f,startup-signal,neural-hardware,headline mentions 'Claude',Claude Haiku 5.5
+c0fd209d-cbe3-43c5-8eb1-7ceed3cc0fe0,poli-split,neural-hardware,headline mentions 'ChatGPT',Tuberville says he likes to talk to ChatGPT on long drives
+274f209a-0df1-4d1d-94d9-ad88ab32eacd,tech-pulse,neural-hardware,headline mentions 'ChatGPT',"ChatGPT is getting a lot more visual, with the launch of a new interface"
+bae13828-46ec-4286-bd5a-e22df53d2ac9,tech-pulse,neural-hardware,headline mentions 'Sam Altman',Sam Altman apologizes for ‘messy’ GPT-6 Astra rollout that’s locked out paying users
+34bf0bf6-329d-41dd-a4d4-bbdce6f7bbc5,tech-pulse,neural-hardware,headline mentions 'Anthropic',Authors push back as publishers and agents make claims on Anthropic settlement
+0cb8070b-9b19-4b92-bf4e-51724b95b322,just-the-news-thats-fit-to-print,neural-hardware,AI publisher's own feed/site,Nvidia Nemotron 3.5 Lightning
+32aecb37-6857-414d-a0e7-00b8ead96ed6,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI says it reached its goal of creating an automated research intern
+fd7c3406-405a-44fe-a732-85b72698d542,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI seeks to one-up Anthropic with new customer privacy protections
+f020dc71-d18f-48fc-8a15-1d3c328f7aa4,tech-pulse,neural-hardware,headline mentions 'Sam Altman',Gwyneth Paltrow allegedly set to throw dinner in honor of Sam Altman
+954fc0ec-a342-4978-9cbb-8e7324bb2e47,tech-pulse,neural-hardware,headline mentions 'Gemini',Google packs Search and Gemini with new AI study tools
+16599aad-db27-4223-bbc1-1841320b3dd0,tech-pulse,neural-hardware,headline mentions 'OpenAI',Researchers say OpenAI revoked their access to limited cyber program
+9a35c721-2b42-4390-b272-c78ad8642be4,tech-pulse,neural-hardware,headline mentions 'OpenAI',Seattle Times and Newsday sue OpenAI and Microsoft for infringement
+3262eba1-2f1c-423e-b731-774f8225b8ef,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI hit the brakes. Now what?
+c3c7e066-6e95-416c-88bb-5b4119d9fe32,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI reportedly completed a $7 billion employee tender offer
+71798c62-8da8-4fd5-aa36-985670b6e020,just-the-news-thats-fit-to-print,neural-hardware,AI publisher's own feed/site,How Claude marks AI-generated content
+756a5320-52d4-4102-a144-4506703c3d3a,tech-pulse,neural-hardware,headline mentions 'Meta AI',Meta AI is getting a Mac app
+143c7175-b17b-4725-9118-15185e2e106e,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic’s annualized revenue surges to $65B
+54a1c36e-6451-4e17-9480-ce1b3328ab25,tech-pulse,neural-hardware,headline mentions 'OpenAI',Nvidia investing $1.5B in SoftBank data center developer behind OpenAI project
+062ad142-fd9b-42c0-b973-e2c3a8a6f63d,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI institutes new safeguards after Hugging Face breach
+29b06bba-415d-47e7-95d8-72a1204fbd6f,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI launches a safer ChatGPT for teens — years after teens started using it
+9ef9c9ce-5a72-462e-8c51-dbacccec796e,tech-pulse,neural-hardware,headline mentions 'Copilot',Microsoft Copilot reveals secret input that allowed it to be hacked
+c1af9724-79dd-44ef-ab3a-f330a288b8ac,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI lays out new security changes after its AI hacked Hugging Face
+a527837c-9087-4d24-bba6-f142d49d3c8b,startup-signal,neural-hardware,headline mentions 'ElevenLabs',ElevenLabs MCP in Claude
+4e29aa24-c10e-4b22-83de-e22b5827c8ca,startup-signal,neural-hardware,headline mentions 'Perplexity',Perplexity’s free AI offer left it with millions more users in India
+bad0aca6-b47f-40bb-8d9f-0a722b8dc6ca,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI loses a top data center exec as stream of high-profile departures continues
+2a09c316-b016-4f6d-8250-dc1dcc5f8d8e,oss-report,neural-hardware,headline mentions 'OpenRouter',Launch HN: Speko (YC S26) – OpenRouter for Voice AI
+e910ee3e-7f1d-4ad3-9541-3e68185ce556,tech-pulse,neural-hardware,headline mentions 'ChatGPT',ChatGPT and Reddit now face EU's toughest online safety rules
+43225613-12cd-4789-91fc-48aabe7f21bb,tech-pulse,neural-hardware,headline mentions 'ChatGPT',How to set up ChatGPT's parental controls to protect your teen
+687eecd6-500a-4f43-9625-d39754af4aad,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI delays IPO over AI safety concerns
+e9b591ba-a9b7-477f-9708-db571cd6ad2d,tech-pulse,neural-hardware,headline mentions 'Meta AI',Meta AI’s new Mac app wants you to talk to your apps
+e476ba51-cb5f-44c5-bc69-bb993bc68584,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic automatically signs out Claude users to protect them from hackers
+a4fd6471-faa4-43b6-aff5-018bf04d9c2d,startup-signal,neural-hardware,headline mentions 'MiniMax',MiniMax Design
+78774e80-aec0-4b26-a33c-bffc6e808fc4,starfall-weekly,neural-hardware,headline mentions 'OpenAI',‘Another Fundraise’: OpenAI’s CFO Reportedly Downplays Importance of IPO to Staff
+ac9c2e98-0318-4973-b0c1-c3016198c848,startup-signal,neural-hardware,headline mentions 'Grok',Grok 4.6
+06e1c572-af85-4b21-9a2e-3c3840950250,tech-pulse,neural-hardware,headline mentions 'Hugging Face',"Nvidia buys Hugging Face, the GitHub of AI, for $13 billion"
+2114b5df-304f-4e6c-a309-aa3f1f109019,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic CEO says AI backlash is ‘fundamentally a crisis of trust’
+29bd6ac0-5e6a-487f-9d30-49d298102fd8,oss-report,neural-hardware,headline mentions 'Hermes Agent',Show HN: Grafana agent observability for Hermes Agent
+550642ca-21d3-42a0-a322-f25cfb248a15,starfall-weekly,neural-hardware,headline mentions 'Claude',People Are Rushing to Find Ways to Remove Claude’s AI Text Watermark
+a3ac0ead-fb69-4645-b069-fbd7477cce7b,startup-signal,neural-hardware,headline mentions 'Anthropic',"Anthropic, Gamma, and Clay share what happens when enterprises actually deploy AI at TechCrunch Disrupt 2026"
+b21e3631-918d-4a82-9fb8-db71680f7796,oss-report,neural-hardware,AI publisher's own feed/site,OpenRouter is joining Stripe
+127a87e7-578d-400b-b13a-e69fd0b309fb,startup-signal,neural-hardware,headline mentions 'Claude',TrueFoundry's open source AI agent harness TrueForge boasts 30%-75% cheaper task completion than Claude Managed Agents
+df319706-08fe-4abd-b00b-0611d6fdb38a,tech-pulse,neural-hardware,headline mentions 'Claude',Claude will apply invisible watermarks to AI text and images
+d8dab464-52c7-4929-868d-bda2e646ac46,poli-split,neural-hardware,headline mentions 'OpenAI',OpenAI launches ChatGPT experience for teens
+c36d32de-184e-4ee2-a5cf-5ef053a5c846,startup-signal,neural-hardware,headline mentions 'GLM-5',GLM-5.3 hits the API at $1.4/$4.4 per million tokens
+6e0c25ec-c00f-4809-adb8-6fd70f927b59,startup-signal,neural-hardware,headline mentions 'Cursor',Origin by Cursor
+841bbd72-00ee-4ba5-ae2c-062189871d44,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI says GPT-6 Astra is 'the most intelligent and aligned model in the world'
+4bd5bc2c-5353-4b65-a853-8e7e48bc3b27,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Cut Off a Billion-Dollar Customer to Avoid Elon Musk
+276c1102-4656-419c-85ae-7ee3594b71a4,tech-pulse,neural-hardware,headline mentions 'ChatGPT',Free accounts can now access ChatGPT's upgraded task scheduling tool
+4915fd4f-5314-4b14-b486-f29ff9e314a5,tech-pulse,neural-hardware,headline mentions 'Claude',Claude's memory now works across both chats and Cowork sessions
+ca166c29-1f67-458c-805d-5fdd02fd9769,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Anthropic to Tell Investors It Has Potential Revenue of Basically the Entire US GDP
+afd8b6e3-0ec6-498c-b569-5fd97d4bd846,starfall-weekly,neural-hardware,headline mentions 'Anthropic',"Nope, Anthropic Will Reportedly Not Buy That Un-Anthropic-Like Company"
+0b438e09-7777-4162-ba98-602ea3442b5f,starfall-weekly,neural-hardware,headline mentions 'Perplexity',Perplexity Launches Local AI Model That Will Run on Your GPU Instead of the Cloud
+4c3dfd3f-7abb-4e8c-b3f1-1e01c3877e85,tech-pulse,neural-hardware,headline mentions 'OpenAI',Another swarm of OpenAI agents reached the open internet without the frontier lab’s knowledge
+f2d9cfeb-1248-4dcb-88c3-397f8f6f88c5,tech-pulse,neural-hardware,headline mentions 'OpenAI',Researchers fear safety disaster ahead of OpenAI’s Astra release
+aa389e76-4ff3-475b-9c61-8c50631e1c79,tech-pulse,neural-hardware,headline mentions 'Gemini',Google says its new Gemini 3.8 Flash model ‘works harder’ but might cost more
+c6ad696e-bb4f-4577-998e-b282a92ec4a0,starfall-weekly,neural-hardware,headline mentions 'ChatGPT',"ChatGPT’s Mac App Can Now Control iMessage, Which Apple Probably Won’t Like"
+1970eb23-1cf0-4a7d-8100-1d2e4e0cc140,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic launches Claude Fable 5.1 and says it’s up to 45 percent cheaper for agentic work
+41796cdc-dbc8-4be6-8d0b-74857b804e59,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI delayed its new model’s development after the Hugging Face hack
+430b4dc9-a9ec-4b7b-a171-b549244f6c04,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI responds after report exposed another incident in which its AI agents went rogue
+f377ced8-fd7b-406f-a889-6f10e3df3c2b,starfall-weekly,neural-hardware,headline mentions 'Grok',Grok Is Having a Hard Time
+7c79236e-eee7-433a-b6ed-158c994f42a0,tech-pulse,neural-hardware,headline mentions 'ChatGPT',ChatGPT Health adds Epic integration for clinicians to import patient data
+2523292f-11d6-4ce8-9ff9-4ff9cefc7ef0,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Anthropic Explains Its Watermark System as Some Claude Users Loudly Revolt
+659f551d-fabe-4dc2-ad62-74d117baa06c,starfall-weekly,neural-hardware,headline mentions 'Cursor',Not ‘Used to Losing’: Apparent Elon Musk Pep Talk to His Cursor Staff Paints Sad Picture
+53302186-c8c6-4128-b002-6ce48291f6dc,oss-report,neural-hardware,headline mentions 'Copilot',GitHub Copilot app for Beginners: Automate Dependabot pull request triage
+e9f3e13a-4a74-4c3c-8333-01e7c3460674,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Has to Answer to Alabama on Hugging Face Hack
+b76591fa-0f84-45d8-a576-876fa496726f,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic gets its first court win over the Pentagon’s supply-chain risk label
+22887ab0-7842-4685-9cbe-eb320b9b84ac,tech-pulse,neural-hardware,headline mentions 'Gemini',Hikers rescued after using Google Gemini for planning
+ecf1fe54-0696-4cf1-9eb7-c11bae339d18,startup-signal,neural-hardware,headline mentions 'Claude',Salesforce just put its entire CRM inside Claude — and says you’ll never need its app again
+bb7dc003-8b3b-4e02-9677-5c2c90edb0c2,tech-pulse,neural-hardware,headline mentions 'Gemini',Google announces Gemini 3.5 Transcribe for AI-powered speech-to-text
+6481468a-cb84-410e-a3c6-0802ff5a69ca,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI’s Jalapeño chip is built for fast inference at scale, benchmarks show"
+f1653649-fe41-46b4-bfb8-96f4604d359c,tech-pulse,neural-hardware,headline mentions 'Claude',Claude Cowork finally remembers what you told the app in chat
+982220a0-07ed-40b8-8876-4346647e8062,poli-split,neural-hardware,headline mentions 'OpenAI',California’s Rob Bonta investigating OpenAI over Hugging Face hack
+3238580c-542a-433e-b976-2029729ec5e6,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic continues compute-gobbling streak in $45B deal with Nscale
+f2ecfd1b-ab47-4b8a-8ad0-3f02145badf3,tech-pulse,neural-hardware,headline mentions 'Gemini',"Google’s Gemini has a branding problem, and so does the rest of AI"
+42c4b4f5-5d60-4daa-becc-acf8c6521392,tech-pulse,neural-hardware,headline mentions 'OpenAI',How do we explain OpenAI’s executive exodus?
+09e3af81-f499-49ef-87ff-b73c09c272e7,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI releases its official report on the Hugging Face breach
+c2fb22ef-b106-49c6-8618-b174d3b3264e,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s rogue AI model incident was worse than we thought
+5ea527d2-8b8d-4351-bc0b-a80a122b9d30,startup-signal,neural-hardware,headline mentions 'Gemini',Gemini 3.8 text-to-speech models
+76a104b5-8bf1-4aab-a9e7-5fb88c376503,startup-signal,neural-hardware,headline mentions 'Hugging Face',My first VentureBeat story was the 'Woodstock of AI.' My last is Nvidia buying Hugging Face for $12.9 billion.
+0babd205-f7db-40be-b237-feaf665f8fdf,tech-pulse,neural-hardware,headline mentions 'Claude',How to edit Claude's memory
+4c182789-5351-4bba-acbe-cc2b977b6bab,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI details the failures that led to Hugging Face breach in official report
+f75e331d-f6f6-44db-95d9-238e8e722ba7,tech-pulse,neural-hardware,headline mentions 'Gemini',Google says its latest Gemini transcription model can turn your ramblings into structured text
+5054f381-3cc7-4c12-95c8-cafe5494d5a0,tech-pulse,neural-hardware,headline mentions 'Mistral',Mistral raises €3B as sovereign AI becomes big business
+eee7501a-7034-4d5e-b7e8-a71e7a3a57ff,tech-pulse,neural-hardware,headline mentions 'OpenAI',What We Still Don’t Know About OpenAI’s Hugging Face Hack
+9e50a95b-d53b-4700-857c-ea134e28023a,starfall-weekly,neural-hardware,headline mentions 'Sam Altman',You Must See Gwyneth Paltrow’s (Alleged and Apparent) Sam Altman Dinner Invitation
+829ec9f1-c1bb-4848-8a81-aa1b89819496,tech-pulse,neural-hardware,headline mentions 'OpenAI',Drama swirls around OpenAI’s legendary mathematical milestone
+b7f8c8ba-2f2d-4c9f-9dda-3adba4125012,tech-pulse,neural-hardware,headline mentions 'ChatGPT',ChatGPT Sketch turns your bad drawings into detailed AI images
+b32c7d62-91e6-40df-92bd-95c69c910190,oss-report,neural-hardware,AI publisher's own feed/site,GPT-6 Astra
+959dd72d-6043-41cd-bc7c-df398faca2e2,oss-report,neural-hardware,headline mentions 'ChatGPT',Understanding ChatGPT Work
+54bd7133-3e89-40a5-82d9-862c0ece9d5d,oss-report,neural-hardware,AI publisher's own feed/site,Claude Fable 5.1 and Claude Mythos 5.1
+7af43807-5fbb-4f54-969d-18ff8643ff9b,starfall-weekly,neural-hardware,headline mentions 'Anthropic',‘The People Building AI Earnestly Believe That It Could Kill Us All’: Anthropic Researcher Quits Dramatically
+285bcf70-5e2d-4634-8e99-71949bd04dba,oss-report,neural-hardware,headline mentions 'Qwen',Show HN: Running 104GB Qwen3.8-Flash-Next on 48GB Mac with at ~12 tok/s
+fa729e42-bc60-4ea4-9edd-493c9526438d,startup-signal,neural-hardware,headline mentions 'OpenAI',"OpenAI solves longstanding math problem with 10,000-agent swarm — but can't rule out benefitting from a researcher's private Codex data"
+87ad65f6-bf09-40ce-a8d9-0e354be3344c,startup-signal,neural-hardware,headline mentions 'OpenAI',"Agents identifying as OpenAI systems wrote 17,000 posts to a wiki no one was supposed to write to"
+b4f163e6-09ff-4fb7-9625-05fb2b29ddf1,oss-report,neural-hardware,headline mentions 'Qwen',I gave Qwen 3.8 27B a reverse-engineering job and it finished in 30 minutes
+bcf9f821-dc24-4286-8414-cbe42fa8cdff,poli-split,neural-hardware,headline mentions 'OpenAI',OpenAI: New model needs more safety measures before launch
+b3d3ec4a-9afb-4f89-8122-2931444df17c,oss-report,neural-hardware,headline mentions 'OpenClaw',"OpenClaw 2.0, Accidentally"
+cb1a152c-1aca-4d42-8f08-eee3f2e75606,tech-pulse,neural-hardware,headline mentions 'OpenAI',What's going on with OpenAI and the Navier-Stokes controversy?
+86ca4c6b-e3e9-41e2-bf8d-f20c1add2444,oss-report,neural-hardware,headline mentions 'GPT-6',"GPT-6 Astra in code review: Gains, privacy, and cost"
+50e613b0-7535-4ff5-811c-b4935e428291,tech-pulse,neural-hardware,headline mentions 'Sam Altman',The first trailer for the Sam Altman biopic is damn creepy
+3459771c-58f1-4e81-900a-da18dd7a1068,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic CEO says it’s time to pump the brakes on AI
+372a26d1-d415-49db-b1c7-e0eee89c07eb,tech-pulse,neural-hardware,headline mentions 'DeepMind',Google DeepMind alumni are building tools to accelerate fusion power for the grid
+dd4ba9fe-74b7-4d9d-ad71-90cc990511cb,starfall-weekly,neural-hardware,headline mentions 'Hugging Face',Hugging Face Reportedly Wants to Be Acquired for About $13 Billion
+0e962c2a-e4d6-463c-b930-763dd9e1f2be,starfall-weekly,neural-hardware,headline mentions 'OpenAI',"Google, OpenAI and Over 100 Companies Call for More Action on AI-Driven Cyberattacks"
+d7dfaa57-bbb8-49b0-9b4e-045d2083a022,starfall-weekly,neural-hardware,headline mentions 'OpenAI',"Nevertheless, OpenAI Persists With New Always-On Agent"
+6b64205a-1ee9-4575-8967-5ffb68af4217,starfall-weekly,neural-hardware,headline mentions 'Hugging Face',Hugging Face Wants You to Stop Worrying and Love This Adorable Robot Duck
+1a91d516-1c85-438a-87e1-c608f4cfcb20,oss-report,neural-hardware,headline mentions 'OpenClaw',OpenClaw went viral. Meet the maintainers building and securing it.
+ea91599a-52d6-41c2-bdc8-a4db1650a346,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Anthropic Is Quietly Cutting Google Out of the Equation
+61c4d780-0bd9-4207-a4aa-0722f8aa3250,oss-report,neural-hardware,headline mentions 'OpenAI',Discovery of a new OpenAI agent message board
+35786da2-1361-4bd7-bd6e-efabe9dad8aa,tech-pulse,neural-hardware,headline mentions 'Thinking Machines',"Barret Zoph, the Thinking Machines co-founder ousted before joining OpenAI, is now at Google"
+ab8a15f9-b012-4a85-96ae-fb5bd23f59dc,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic and OpenAI are joining the AI stage at TechCrunch Disrupt 2026
+75c1babc-aef0-467e-a334-6e03c0a3b30e,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI, Anthropic, Google, and 100 other companies call for action to defend against rogue AI"
+ddefedc1-324a-4ade-b068-117a6a7ca278,tech-pulse,neural-hardware,headline mentions 'Hugging Face',"Hugging Face is selling a cute $399 open source duck robot, Microduck"
+66d34cf0-bd9c-4f2e-a447-90c933fdf454,tech-pulse,neural-hardware,headline mentions 'xAI',"Elon Musk’s xAI used child porn to train Grok models, lawsuit says"
+e96fc934-f4a1-4d41-a2ac-b7f1b9d9787b,tech-pulse,neural-hardware,headline mentions 'Hugging Face',Report: Nvidia to acquire AI model repository Hugging Face for $13 billion
+0e5df3ad-56e6-4a69-93e9-2b6031eb10e8,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic's new hardware standard lets AI agents control the physical world
+26184e66-d196-4d4e-8c9d-c22c1b13dd0a,tech-pulse,neural-hardware,headline mentions 'OpenAI',How OpenAI let a mob of LLM agents game a test and ransack Hugging Face
+61396e4d-1c9e-462d-b8c4-8cc94d77cb05,tech-pulse,neural-hardware,headline mentions 'Claude',"Claude, Codex, and Hermes installed unowned code inside corporate networks"
+62db96d0-d592-4ffc-9a57-6fea858fdbf0,tech-pulse,neural-hardware,headline mentions 'Anthropic',"More than 1 in 10 chance AI ‘could kill all humans,’ says Anthropic safety lead after colleague quits"
+a82faeab-c002-433c-ae9c-0b66f056de73,tech-pulse,neural-hardware,headline mentions 'Anthropic',Judge rules that the Pentagon's Anthropic ban was 'illegal and baseless'
+3b077180-cb0b-4d77-8105-06bddf779480,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI, Google and dozens of other companies publish open letter calling for collective action on cyber defense"
+ed1b8cd2-7a8c-4fd3-9605-983b6602f4a8,tech-pulse,neural-hardware,headline mentions 'Anthropic',A Judge Has Blocked the Pentagon’s Attempt to Blacklist Anthropic
+30223f12-2531-452f-b8bb-1270b6ebe4ad,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Is Developing a ‘Persistent’ AI Agent
+d5da383f-c22a-4da5-8dec-6feafe9fcfba,tech-pulse,neural-hardware,headline mentions 'Anthropic',This Is How Anthropic Thinks AI Agents Should Navigate the Physical World
+8de17ea2-5762-485d-b061-ff6bb1d68e7c,oss-report,neural-hardware,AI publisher's own feed/site,Previewing the Model Hardware Standard
+0699d362-9ccd-43ec-959f-74c192d275bf,tech-pulse,neural-hardware,headline mentions 'Anthropic',"AI power users claim Anthropic duped them with subscriptions, and they’re taking it to court"
+703cdd19-f311-48f6-a8a0-32781cb0745d,poli-split,neural-hardware,headline mentions 'Anthropic',Judge rules Pentagon’s supply chain risk designation for Anthropic was illegal
+8373e18a-188a-4d74-8b90-47fb5a36de4e,oss-report,neural-hardware,headline mentions 'OpenRouter',Show HN: We built open OpenRouter that turns usage into a better model
+8a01eb95-19f4-41af-b7d7-1997b263bc47,oss-report,neural-hardware,headline mentions 'Gemini',Gemini Omni 1.1 Flash
+261d9bdc-d6f3-41e3-aa71-40c00ca5f5a2,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI admits to German wiki ‘incident’
+bb3a2725-df6f-40fd-a5ea-9ab942c656e4,oss-report,neural-hardware,AI publisher's own feed/site,The Hugging Face incident and the road ahead
+8c8881ff-cf81-41a4-8b7d-c3214cfc6fb1,oss-report,neural-hardware,headline mentions 'Hugging Face',Nvidia agrees to acquire Hugging Face for $13B
+15549dfc-cb93-4268-8d14-743fc99198be,oss-report,neural-hardware,headline mentions 'Gemini',Gemini-3.5-Transcribe
+872b7b6b-ad5f-460a-b492-7f8a80ae4422,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI fought dirty on career-making math problem, says NYU mathematician"
+915d4829-8c65-4319-acf1-4347b0e673a7,startup-signal,neural-hardware,headline mentions 'Cohere',Cohere Parse 5
+abfc1ccd-6237-4dc2-b37d-7f77b2e89116,startup-signal,neural-hardware,headline mentions 'Cursor',Cursor Craft v2
+d368dd83-21d5-4c0b-965f-bf681994700b,tech-pulse,neural-hardware,headline mentions 'Anthropic',An Anthropic researcher just gave us a peek at self-improving AI
+73f36b54-e70d-4228-92d1-689009a533f4,tech-pulse,neural-hardware,headline mentions 'Anthropic',"Trump blacklisting of ""woke"" Anthropic deemed illegal by federal judge"
+d9d7148c-2b0a-4a73-8a71-86ac0aea5fd5,tech-pulse,neural-hardware,headline mentions 'OpenAI',Meta executive leaves for OpenAI as the social media giant faces growing scrutiny in India
+ad7ac1aa-b348-4051-8fce-807264168a75,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Is About to Release Its First AI Model With ‘Critical’ Cyber Abilities
+c1fe8640-3279-4432-ae81-441a05f707e3,starfall-weekly,neural-hardware,headline mentions 'Grok',"Grok Not Only Generates Child Porn but Was Also Trained On It, New Lawsuit Claims"
+cc558f67-3842-4977-90b1-b54624467a81,startup-signal,neural-hardware,headline mentions 'Claude',Meta researchers taught an 8B AI model to match Claude Opus 4.5 — without the frontier price tag
+a6eebbec-0617-4c5d-8862-ea191a040e35,oss-report,neural-hardware,AI publisher's own feed/site,GLM-5.3 is now open-weight
+6ef27069-12b8-4282-96db-76c0d02f5b3b,tech-pulse,neural-hardware,headline mentions 'Hugging Face',Hugging Face reportedly in talks to be acquired for $13B
+f501b35c-fa76-4f97-953a-87132006edf9,tech-pulse,neural-hardware,headline mentions 'Anthropic',Sony and Warner sue Anthropic for 'blatant violation' of copyright law
+580238ee-9ab7-425d-94da-339dbfeb0e22,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI will pull its models from Cursor due to SpaceXAI acquisition
+6b2dbfc7-586f-40fe-824e-6356f350c979,tech-pulse,neural-hardware,headline mentions 'Grok',Grok exfiltrates user data when malicious instructions are encrypted
+8f08e65a-43d7-4386-92e1-b104ef2b4816,tech-pulse,neural-hardware,headline mentions 'ChatGPT',ChatGPT on Mac can now read and respond to Apple iMessages
+231c450a-b58a-48c4-8b06-7528c1213137,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Just Claimed a Huge Math Discovery. Some Academics Are Crying Foul
+173c55b1-fcdd-4b8e-a586-86098fce2579,oss-report,neural-hardware,headline mentions 'ElevenLabs',"ElevenLabs, TwelveLabs, ThirteenLabs"
+4200657d-913c-4d01-aa06-9298532af102,oss-report,neural-hardware,AI publisher's own feed/site,DeepSeek-v4-flash-vision-exp
+8a1a4810-3b8e-41dc-aa71-f1230fb15db6,oss-report,neural-hardware,AI publisher's own feed/site,Ox Alpha
+ea149189-1dcc-42ab-b9c8-dbdd5bdc2093,oss-report,neural-hardware,headline mentions 'Codex',Codex on AWS bedrock bug causing 10x charges
+6de5e3e4-d88e-48e3-9244-9b31f81a7f13,poli-split,neural-hardware,headline mentions 'Anthropic',Lawmakers sound alarm on AI dangers after Anthropic researchers’ warning
+2f1e6d7c-1b8e-4f37-97f6-8a61b7a65c57,vital-sign,neural-hardware,headline mentions 'Anthropic',Anthropic’s A.I. Is Teaching Itself Biology. Now It’s Made Its First Discovery.
+ef7b1769-53ef-4930-ac6e-74222efa3091,starfall-weekly,neural-hardware,headline mentions 'Sam Altman',"Elon Musk, Sam Altman, and the Misreading of Science Fiction"
+57e56fe6-a993-480c-bfe4-b22c7418ece0,the-green-room,neural-hardware,headline mentions 'Gemini',You can now turn off Google Gemini’s visible watermarks
+a02d7102-9ff1-411d-95d3-274164216271,weird-and-wild,neural-hardware,headline mentions 'Copilot',Microsoft kills off unsuccessful AI features while merging its separate Copilot apps
+ce2d6d1f-ddf5-4226-90cb-17a51b1595da,oss-report,neural-hardware,headline mentions 'OpenAI',OpenAI and Anthropic in price war as Chinese AI rivals gain ground
+a29e4282-cea2-494b-ae8c-2ceb3261a435,tech-pulse,neural-hardware,headline mentions 'Grok',Woman claims her stepfather used Grok to transform childhood photo into explicit imagery
+fc1d8438-db2f-4169-ae17-82cd1492c1fa,startup-signal,neural-hardware,headline mentions 'OpenAI',OpenAI-backed Thrive Holdings raises $2B to bring AI to the enterprise
+2590d13b-4177-4b25-ac10-784e52555575,tech-pulse,neural-hardware,AI publisher's own feed/site,How Organizations Use AI: Evidence from ChatGPT [pdf]
+7039b6f2-d148-4cf1-a1d6-0bb0d280f5d5,just-the-news-thats-fit-to-print,neural-hardware,AI publisher's own feed/site,Patterns and problems in emerging multi-agent systems
+8630bf41-9fb7-4ad9-bd9f-707c92dd1811,tech-pulse,neural-hardware,AI publisher's own feed/site,Maximizing the value of your Claude Code sessions
+d0b3d45a-7851-44ac-9fad-9b80ad2e33e7,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI confirms ‘wiki incident,’ says it’s ‘working on a framework’ for more disclosure"
+d72bf6c7-8939-4f50-9202-c91786270740,tech-pulse,neural-hardware,headline mentions 'Claude',Tech industry is buzzing after a Claude agent hacked into a gym
+a946a135-4368-4409-be39-6c20b99e0b1a,tech-pulse,neural-hardware,headline mentions 'OpenAI',Trump’s DOJ gains oversight of OpenAI’s green-card employee sponsorships
+eff69a87-1a58-4b75-b594-952d88a2c1b2,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic says it will watermark text generated by its AI models
+5363ba6d-fc18-42a5-8b0f-be80029fd442,tech-pulse,neural-hardware,headline mentions 'OpenAI',"As AI-led attacks multiply, OpenAI launches a new cyber model"
+59ac5fdd-be05-43cd-b0c9-cd7e35de4a4d,the-veil,neural-hardware,headline mentions 'OpenAI',OpenAI’s only ethicist reportedly left last month. She wasn’t replaced
+1091f753-52ed-4243-a9e7-f6c91441b576,just-the-news-thats-fit-to-print,neural-hardware,AI publisher's own feed/site,Claude: System Prompts
+4d8d08df-9797-4bfd-887b-ea93ba234955,startup-signal,neural-hardware,headline mentions 'Gemini',Google’s Gemini 3.7 Flash targets coding and agents with a 50% introductory price cut
+dfb84c92-2654-427d-bd9c-77305617864d,oss-report,neural-hardware,headline mentions 'OpenAI',OpenAI agents hijacked German website in previously undisclosed AI breakout
+543e62d4-49ab-4c40-b40f-5c5bc1ee0c18,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic’s $2 trillion IPO puts powerful external trustees in spotlight
+a60b03cf-c49e-43a9-8e1d-0e661410d7f8,tech-pulse,neural-hardware,headline mentions 'Cursor',SpaceX has officially acquired AI coding startup Cursor
+457215d9-88bb-420b-adcf-f6b949f6ea9b,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'OpenAI',OpenAI’s head of ethics leaves less than a year after joining
+cd8a2af5-14ce-4dfd-ad22-d6f166a03434,tech-pulse,neural-hardware,headline mentions 'OpenAI',Australia to investigate if OpenAI hack of government health website broke the law
+9fcf911d-d05e-42b6-9e0c-b553f248148c,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI launches ChatGPT desktop app for Linux
+f50be427-bb0c-4940-ba88-cf365106a985,tech-pulse,neural-hardware,headline mentions 'Gemini',Google’s Gemini app surges to 1 billion users
+e3a03860-c328-4123-9aaa-e18ccecc6fe9,tech-pulse,neural-hardware,headline mentions 'Anthropic',An unreleased Anthropic model made progress on one of math’s biggest unsolved problems
+55a21a7e-4eca-409b-ab17-b8bb2b09357f,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'Gemini',Gemini becomes Google's fastest-growing product ever as it hits 1B users
+38101af3-4793-48b8-b1f0-62fb8874a3d7,tech-pulse,neural-hardware,headline mentions 'Gemini',"Volvo XC40 PHEV is back with a new look, better sensors, and Gemini AI"
+0488376b-724a-4936-91e8-1a427c6c8015,tech-pulse,neural-hardware,headline mentions 'OpenAI',Rogue OpenAI agents took over a German coding forum in a previously undisclosed hijacking
+7891c773-3940-485d-9329-4c036fe49fed,oss-report,neural-hardware,headline mentions 'Copilot',Write your first prompt with the GitHub Copilot app
+3263be1b-48a5-478f-a9c6-3cd6c0c542df,oss-report,neural-hardware,headline mentions 'Claude',Show HN: Graft – Claude Code hooks that cut grep tokens by 42%
+6f00ed5e-e49c-4aab-9ffe-2313b6250c32,tech-pulse,neural-hardware,headline mentions 'ElevenLabs',"ElevenLabs’ CEO on margins, IPO timing, and telling customers they’re talking to a bot"
+36682276-e928-4be0-a67f-af02c2c559c8,tech-pulse,neural-hardware,headline mentions 'ChatGPT',ChatGPT: What's free in 2026 and what isn't?
+3ef218e4-c0b7-47e3-a572-ed5a0a16ca12,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI acquires presentation startup NextSlide
+e4bcde5e-6893-4520-8523-5900ab4e1718,tech-pulse,neural-hardware,headline mentions 'Gemini',"Pixel Buds Pro 2 and 2a are getting some upgrades, including deeper Gemini integration"
+088f9e53-fc90-4b9c-961c-9bdb49baedee,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic is turning Claude Code’s auto mode on by default
+cb818ee4-48ec-4f92-9a31-6206caa9de8c,tech-pulse,neural-hardware,headline mentions 'OpenAI',Insight Partners’ Deven Parekh on why the firm is diversifying while everyone else bets the farm on OpenAI and Anthropic
+854edfbf-bdb5-4d9d-a28f-0904c79543cf,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic is watermarking text generated by Claude to comply with EU law
+133d8764-fd5f-44b0-8412-47ea0e9da96c,tech-pulse,neural-hardware,headline mentions 'OpenAI',Another OpenAI executive takes off
+b24d12cf-5e2f-46bd-af69-88afbc39798b,tech-pulse,neural-hardware,headline mentions 'ChatGPT',ChatGPT and Gemini both just passed 1 billion users
+044fd100-2404-4ceb-bb43-b0ce631ffe1a,startup-signal,neural-hardware,headline mentions 'ChatGPT',ChatGPT for Teens
+680f86ce-60f3-43f0-9220-5c95977d4cfd,poli-split,neural-hardware,headline mentions 'OpenAI',OpenAI reportedly disbanded its preparedness team
+97a73f2d-efef-4e68-84b1-4b977ff6ab6f,tech-pulse,neural-hardware,headline mentions 'OpenRouter',Stripe will reportedly acquire OpenRouter for $7B+
+8b39c39d-e82b-465d-83c3-ff65c11d91c2,starfall-weekly,neural-hardware,headline mentions 'OpenAI',Another Rogue OpenAI Agent Swarm Went Undisclosed. We Have No Idea How Many More Are Out There
+93f21589-64b5-40c1-83da-9e140bfe1299,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI hires new CRO as executive shake-up continues
+8ddffb63-47b7-4172-be0c-9c8e0ab46f97,tech-pulse,neural-hardware,headline mentions 'Claude',How to use Claude's voice mode
+15dea1d2-cc0c-48f2-aed8-abd0155c0533,tech-pulse,neural-hardware,headline mentions 'OpenAI',We now have a better understanding how OpenAI hacked into Hugging Face
+d393283c-17ca-4e06-a9da-e5918a727a5f,tech-pulse,neural-hardware,headline mentions 'Claude',Claude published malicious code to the Internet and attacked 3 real companies
+d236d2d6-55fa-44b2-a3e6-8880afc70bfc,tech-pulse,neural-hardware,headline mentions 'Gemini',Google’s Gemini Spark can now manage your Google Photos library
+d2707fd4-f25b-4507-b321-1bd1902ca8ea,starfall-weekly,neural-hardware,headline mentions 'OpenAI',The Fight Over OpenAI’s Math Breakthrough Is a New Kind of Scientific Arms Race
+ac14b85d-0223-4d1e-8188-3bd6635bc542,starfall-weekly,neural-hardware,headline mentions 'Anthropic',"Anthropic Builds Model to Predict Economy in 2030, Leaves Off the ‘Everybody Dies’ Outcome"
+f7c8d77a-5df8-422b-b920-c1a32a9c0222,tech-pulse,neural-hardware,headline mentions 'Claude',"Some Claude users are mad that Anthropic’s new watermarks will catch them using it at their jobs, classes"
+bdd1e85f-1577-4432-8fef-8e23badb1d0e,startup-signal,neural-hardware,headline mentions 'Claude',Databricks-trained AI agents match Claude and GPT-5.6 Luna's answer quality — in half the time
+1d42a9a0-5287-4ee8-9e3b-151dacf967f0,startup-signal,neural-hardware,headline mentions 'OpenAI',AWS Continuum integrates with OpenAI Codex and Anthropic Claude Code in major AI security push
+5e62eefb-7ade-4ade-b847-2d77820e59b9,tech-pulse,neural-hardware,headline mentions 'OpenClaw',An OpenClaw agent reportedly hacked a gym's booking system and kicked someone off a waiting list
+940b66c6-a2ec-4a42-b7f4-1b3e7e202bd0,startup-signal,neural-hardware,headline mentions 'Mistral',Mistral AI wants to build 1 gigawatt of European compute by 2030 — and lock in customers now.
+b538f901-59d4-46cd-a4a0-4d4a1a5b90ce,tech-pulse,neural-hardware,headline mentions 'OpenAI',IBM partners with OpenAI to bolster enterprise AI push
+cef5d56a-f063-448f-b5c6-9f2c62337920,tech-pulse,neural-hardware,headline mentions 'Copilot',Microsoft’s Clippy-like Mico character is no longer the face of Copilot
+d414a933-fd37-4d8f-8c47-a577725db226,tech-pulse,neural-hardware,headline mentions 'Claude',Claude's new Scarlet Letter watermark is invisible—for now
+bd088315-1f79-4e65-b9f0-c8f3033c949e,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI is losing its second executive this week
+c52a3c8a-d91c-404a-b29b-f9f0f2e8383a,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI says it slowed Astra model development over security concerns
+ccf122d2-4f4b-4f6d-ab4f-7a296b2fd2f8,oss-report,neural-hardware,AI publisher's own feed/site,DeepSeek V4 Pro 0813
+7fea1976-3125-4062-b0f5-71a502645bc5,oss-report,neural-hardware,headline mentions 'MiniMax',H3-metal – Native MiniMax-H3 inference for Apple Silicon
+d61ba5f2-d467-452f-9700-dc03a37799a0,tech-pulse,neural-hardware,headline mentions 'DeepSeek',DeepSeek's AI models are about to cost four times more
+4979826b-1a74-484a-ab51-78b7629269eb,tech-pulse,neural-hardware,headline mentions 'Anthropic',ByteDance trains massive AI model in bid to rival Anthropic
+602bbc20-8f37-4d12-bce2-7b7316c17dea,oss-report,neural-hardware,headline mentions 'Copilot',How the GitHub legal team used Copilot CLI to streamline their workflows
+22211228-36b5-43b9-8d69-69d4cf773dfb,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s expensive smart speaker will use moving parts to seem “more alive”
+f4c28bbe-9ee0-4ce6-881d-d004ea76d94c,tech-pulse,neural-hardware,headline mentions 'Grok',Another woman joins lawsuit accusing Grok of generating CSAM
+89fce8ed-f645-4606-8574-bd90dc689262,oss-report,neural-hardware,headline mentions 'Copilot',A guide to slash commands in the GitHub Copilot app
+f417634f-ecc2-450e-94a0-2c5549db9e53,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI reportedly disbanded its preparedness team as part of a 'streamlining' process
+191e7027-6403-4a19-b192-a6ca71bb079f,tech-pulse,neural-hardware,AI publisher's own feed/site,Qwen3.8-2.4T
+316a86c6-34b4-4196-b9f9-208cab2fb6f8,poli-split,neural-hardware,headline mentions 'OpenAI',Alabama attorney general subpoenas OpenAI over Hugging Face incident
+4347e86f-535e-403b-9cda-b92fe1b5d896,startup-signal,neural-hardware,headline mentions 'Claude',Four AI agents coordinating in real time outperformed Claude Opus 4.8 on enterprise coding tasks
+c35eef63-558d-48c1-b4a1-454052e68dbd,startup-signal,neural-hardware,headline mentions 'Qwen',Qwen 3.8-Max and Claude Opus 5 show why raw benchmark scores don't predict the bill
+98f934cb-b2f0-405b-ab78-334dc8c67926,the-veil,neural-hardware,headline mentions 'Anthropic',"Anthropic building a ‘Pre-Crime’ System to surveil anti-AI dissenters, Investigation Shows"
+c64b811e-1a32-45dc-bb3c-60cbf95813e3,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI’s Only Ethicist Reportedly Left Last Month. She Wasn’t Replaced
+6be4c37a-b003-4f80-8c6a-188f73f3a759,tech-pulse,neural-hardware,headline mentions 'Claude',Claude Vs ChatGPT: How These AI Assistants Differ
+418abffd-88eb-4550-b8ea-b538b2283eff,tech-pulse,neural-hardware,headline mentions 'Gemini',How to Disable Gemini in Gmail and Google Docs
+68d58295-c557-40ac-be57-7fd323f1497e,startup-signal,neural-hardware,headline mentions 'Claude',Three Claude agents given conflicting orders sabotaged each other on a shared server — then didn't tell users what they'd done
+29567c84-1127-4356-bb10-e66a8c328515,oss-report,neural-hardware,AI publisher's own feed/site,Learning more about Claude's mathematical capabilities
+8ba62327-737c-4c55-ac62-f38a143b1a31,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI to Halt Training of Some Models
+b2fdcaa9-95aa-4f10-b4ee-3bb89175edc3,startup-signal,neural-hardware,headline mentions 'GLM-5',GLM-5.3 is here with advanced cyber capabilities — and reportedly already found a 'serious vulnerability' in Cursor
+9599cc62-edb6-48ef-b78f-06bd17cf9c4b,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI introduces ‘Ultrafast,’ a new mode that makes GPT-5.6 Sol work at 14x the speed"
+d2bbad23-a29d-41e1-9e18-8778529b056f,climate-watch,neural-hardware,headline mentions 'DeepMind',DeepMind’s hurricane breakthrough has surprised weather scientists
+03988808-3a33-43d8-b77e-5971ee3554f5,startup-signal,neural-hardware,headline mentions 'Grok',"SpaceXAI debuts Grok 4.6, overtaking Kimi K3's performance and matching GPT-5.6 Sol for world's third best on Artificial Analysis"
+cef4a964-0972-49a4-84bc-f105e54047ce,tech-pulse,neural-hardware,headline mentions 'OpenAI',The Safety Reckoning Inside OpenAI
+e7ca422b-0203-4a3e-a3e1-8212b6165206,starfall-weekly,neural-hardware,headline mentions 'Grok',"Grok Gets Cursor-Driven Upgrade, Claims to Be Competitive With Top Models"
+70a4261b-9699-4490-9a27-e493cf69fb7f,tech-pulse,neural-hardware,headline mentions 'Gemini',Gemini 3.7 Flash
+b2456db1-3678-42c0-b0b3-995adcc8b0e8,startup-signal,neural-hardware,headline mentions 'Anthropic',Anthropic could be worth $2 trillion when it goes public
+d454e7af-18a2-49ac-a07f-530364bee0e5,startup-signal,neural-hardware,headline mentions 'DeepSeek',"DeepSeek Harness launches as open source rival to Claude Code, alongside V4-Pro on API with higher prices"
+3a36b411-7184-41b5-86bd-682a0b6b84ea,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Anthropic Is Reportedly Looking to Buy This Seemingly Un-Anthropic-Like Startup
+01e09c42-6801-4f8b-b096-f57fd49c61c9,starfall-weekly,neural-hardware,headline mentions 'Gemini',Google Gemini Just Hit One Billion Monthly Users in Record Speed
+39f2ecdd-965f-4df0-abe7-0d44cbae629e,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'ChatGPT',Massachusetts teen accused of killing mother and brother used ChatGPT
+2b0de48d-4f54-4862-aa86-436db453a554,startup-signal,neural-hardware,headline mentions 'Grok',SpaceXAI's Grok Bot turns agents into persistent digital coworkers that can operate your apps for $120-per-month
+47854c25-2401-42c3-ac0a-f776aec2b8fe,oss-report,neural-hardware,AI publisher's own feed/site,Grok 4.6
+d2769ea0-03f4-4119-bff7-0493c381eb40,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Anthropic Investors Think It’s Worth $2 Trillion
+8aeecd33-f428-4e9c-8d22-eeb392fe72f6,oss-report,neural-hardware,headline mentions 'Copilot',GitHub Copilot app for Beginners: Getting started
+769c4b76-5220-431e-a68b-cc091cb97464,oss-report,neural-hardware,headline mentions 'Copilot',Stacked sessions and pull requests in the GitHub Copilot app
+7dca0918-3332-4f0d-bdff-e6082f5a7d5c,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI launches GPT-5.6-Cyber with reduced refusals, 95% completion on advanced cybersecurity tasks"
+17b533aa-dcc0-4292-b51b-2c8898316b77,tech-pulse,neural-hardware,headline mentions 'Gemini',"Everything announced at Made by Google ’26: Pixel 11, Pixel Watch 5, Pixel Tag, and tons of Gemini features"
+2e8e5e7f-448d-451d-8b66-7041d7e4f354,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic's CEO proposes a three-step plan to curb AI development
+819692a8-7b94-4772-82b5-e6042867e820,tech-pulse,neural-hardware,headline mentions 'Anthropic',Court rules Trump can blacklist Anthropic for refusing to enable Claude features
+1773e75d-fec8-42e4-8b46-1ccfb6509a28,startup-signal,neural-hardware,headline mentions 'Perplexity',Perplexity Hybrid Compute
+8e80af3a-0afa-45bc-beb6-94d24a7c144b,tech-pulse,neural-hardware,headline mentions 'Copilot',"Microsoft stops insisting you need a ""Copilot+ PC"""
+23a0239c-a8d2-4e50-a94f-5a438c37d6ce,weird-and-wild,neural-hardware,headline mentions 'Claude',Claude Fable 5 AI finds a tiny formula that topples an 87-year-old math conjecture
+591a96a6-55cc-4ea9-b14d-432f37dab038,weird-and-wild,neural-hardware,headline mentions 'Anthropic',Anthropic set AI agents loose on the same task. They started a turf war.
+e5cb9416-fb79-4bc2-95bc-c5f2435221be,startup-signal,neural-hardware,headline mentions 'DeepSeek',DeepSeek's top-ranked V4 Flash stumbles on real agent tasks as its prices surge
+d6dbf7f9-eba7-4c7f-8788-732c2ac75077,starfall-weekly,neural-hardware,headline mentions 'Sam Altman',Sam Altman Admits It’s Going to Take a Long Time Before AI Goes Mainstream
+bc5a82db-6e5f-4e44-8724-2f67219ac66c,tech-pulse,neural-hardware,headline mentions 'Claude',Claude Cowork can now run in a Chrome sidebar
+8df8b81a-8cb8-4889-973a-873a20cd59af,tech-pulse,neural-hardware,headline mentions 'ChatGPT',"How to use ChatGPT's new, more natural Voice Mode for conversations"
+4be6ad71-e589-4628-a22d-e4a8bd25b831,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI slows down Astra development due to cybersecurity concerns
+749c6670-324c-4d82-a260-cbe3ff6ac00d,startup-signal,neural-hardware,headline mentions 'Gemini',Gemini 3.7 Flash
+33421291-b1aa-458f-ae5e-f94d2bcb3644,startup-signal,neural-hardware,headline mentions 'DeepSeek',DeepSeek Harness
+6599531b-1c27-44fb-910b-913d3bf1988d,startup-signal,neural-hardware,headline mentions 'GLM-5',GLM-5.3
+65cf1462-6672-47dd-979a-585761ee462c,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI gives Daybreak partners access to a more powerful cybersecurity model
+6e990ca3-f106-48eb-bf04-5e093504cd98,startup-signal,neural-hardware,headline mentions 'Grok',Grok Imagine 2.0
+df28705b-0f73-4048-9802-b2b33f557748,oss-report,neural-hardware,headline mentions 'Gemini',Google announces Gemini 3.7 Flash just three weeks after previous release
+77e822bd-0479-4a9a-a2b1-a31616663c0e,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Delays Release of Latest Model Over Safety Concerns
+4991f9a3-6ca3-46c2-876c-aad42d8f82f9,startup-signal,neural-hardware,headline mentions 'Anthropic',Anthropic’s new Claude Tag update lets its Slack agent read the full conversation — and jump in unprompted
+349343c2-d4cf-4839-9c5f-7754cdce3cdd,oss-report,neural-hardware,headline mentions 'Copilot',What I learned by putting GitHub Copilot behind a MitM proxy
+341272e0-fbeb-4447-bc4c-2cd0fe057581,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'OpenAI',Why Did OpenAI's Head of Ethics Chloé Bakalar Leave?
+f352d18e-190f-4eb2-ba83-a87a94cceb82,startup-signal,neural-hardware,headline mentions 'Claude',Claude Academy
+3df69d47-3909-46e0-a31d-c5423315f2e4,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Federal Appeals Court Backs Pentagon’s Anthropic Blacklisting
+282b5862-0238-4513-8190-52dcd72825d8,oss-report,neural-hardware,AI publisher's own feed/site,GPT-5.6 Sol Pricing Cut by 50%
+caf1116a-e596-4ebd-885f-43427a740499,tech-pulse,neural-hardware,headline mentions 'OpenAI',Child safety experts are skeptical of OpenAI's ChatGPT for Teens
+b653eb24-f558-4e45-a310-b94719489ed0,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic’s Opus 4.6 is a smut-machine
+90862e4f-5b64-4672-be8d-6978c05c4974,starfall-weekly,neural-hardware,headline mentions 'Grok',"If You Ask Grok, Elon Musk Acted Like a Jackass at the Trump/Xi Dinner"
+664b6809-6bdf-4958-8363-2391a0b7c146,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI subpoenaed by Alabama AG over Hugging Face hack
+fffd55e5-833b-473a-adfa-6175009260ec,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI is building AI agents for everything. Will everyone use them?
+23f15499-829d-46ec-ab9c-d195bd448572,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI says California should strengthen its AI safety bill
+b10d5d2e-8476-4983-86c8-4026d336b2c0,tech-pulse,neural-hardware,headline mentions 'OpenAI',Alabama launches investigation into OpenAI’s hack of Hugging Face
+03e65528-683e-45ad-80a7-c954379b64d9,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI calls for California to strengthen its AI safety laws
+595ff24e-c388-4b5f-bf92-337f6a34bae1,starfall-weekly,neural-hardware,headline mentions 'Copilot',Microsoft Thinks It’s Finally Figured Out Copilot This Time
+c4e9b342-92f5-47e2-b6c7-f552450cdad2,tech-pulse,neural-hardware,headline mentions 'OpenAI',It’s Greg Brockman’s OpenAI now
+ffc0ca2e-da02-43f2-8ffb-f188d84e4c54,tech-pulse,neural-hardware,headline mentions 'ChatGPT',"A third of web pages published since ChatGPT’s launch show signs of AI authorship, study finds"
+beb00767-819e-436e-b4d5-e123807d50b1,tech-pulse,neural-hardware,headline mentions 'ChatGPT',ChatGPT can now send texts for you with new Apple Messages plug-in
+16a4b4f4-fcf7-46fa-89d7-7efd54cb6a52,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI is gaining on Anthropic with business users, new data indicates"
+b3f20ceb-7f13-45fc-9b13-0e6ce18435ec,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Overhauls Safety Protocols After Its AI Agents Went Rogue
+987e659b-55ae-4a15-9e09-3152e000934b,tech-pulse,neural-hardware,headline mentions 'DeepMind',"Inherent, founded by DeepMind alumni, says its AI ‘teammate’ just outperformed Anthropic and OpenAI at replicating research"
+fb89b9a7-55bd-4822-8c9c-4090b0cbae0b,tech-pulse,neural-hardware,headline mentions 'Meta AI',"As demand for Meta AI glasses explodes, it’s harder to avoid creepy recordings"
+5c2892e5-080d-4d25-a852-5822e71b09b7,startup-signal,neural-hardware,headline mentions 'Claude',Claude Watermark
+a5972bc6-1050-4b58-a266-7a130c32f0ad,tech-pulse,neural-hardware,headline mentions 'ChatGPT',How to cancel your ChatGPT subscription (and why you might want to)
+3404220b-6b55-41e7-92cb-6de5cfa76cea,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Reportedly Just Gave Investors Bad News on Eventual Profitability
+069dcefb-b343-4e5f-b164-b1d9bbfd1611,startup-signal,neural-hardware,headline mentions 'OpenAI',"Agentic security: Enterprises rely on OpenAI most to secure AI agents, and those that do are nearly three times as likely to say attackers are ahead"
+cfc1cb5f-78ce-46e3-9bf2-f567311af916,tech-pulse,neural-hardware,headline mentions 'Cursor',"Cursor capitalizes on GitHub frustration, launches rival hosting platform"
+10658481-d1ba-48a3-9247-72838f388198,startup-signal,neural-hardware,headline mentions 'OpenAI',"AI infrastructure and compute: 48% of organizations running AI in production name a Google platform as their primary AI platform, more than twice OpenAI's share"
+3b100afb-2fea-42b8-8559-43c154b574af,starfall-weekly,neural-hardware,headline mentions 'OpenAI',Head of Data Centers at OpenAI Reportedly Quits
+89e9a6a0-22ec-4ee5-89be-07552b2a7e25,oss-report,neural-hardware,AI publisher's own feed/site,Formalizing Fermat's Last Theorem
+42994d2f-0258-4f6a-8fac-3c29af58f470,poli-split,neural-hardware,headline mentions 'Anthropic',Anthropic CEO calls to ‘slow the pace’ of AI development amid safety concerns
+6d3298f8-622e-43da-a349-b1c028d61969,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI’s rogue agents keep escaping, with no formal process to investigate them"
+6e6e9c90-e59e-4991-bfb0-05bcff8e12c2,tech-pulse,neural-hardware,headline mentions 'Anthropic',Appeals Court Lets the Pentagon Designate Anthropic a Supply-Chain Risk
+6b9cd5cb-bc19-4f39-9f29-1b776c3fc020,startup-signal,neural-hardware,headline mentions 'OpenClaw',"OpenClaw 2.0 is here, ushering in the era of 'multiplayer' AI coding: What it means for enterprises"
+0b00b754-af89-4793-b6b1-0c21601d7438,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI agents discussed ways to escape their sandbox on public wiki
+629f6a6f-b932-41ff-8f5a-144d090ab371,oss-report,neural-hardware,headline mentions 'Claude',Portal by Spotify cut my Claude Code token usage by 90%
+ee91acb7-4783-4149-9ed5-b665a1f9bcf0,oss-report,neural-hardware,AI publisher's own feed/site,GPT-6 Astra on OpenRouter
+9a8d0683-67d4-432b-8b11-d731c9aa2005,tech-pulse,neural-hardware,headline mentions 'Anthropic',“Zlibrary my beloved”: Anthropic staff chats extolling piracy cited in Sony suit
+9560d2c8-c08b-4f29-b936-9538abf24cd7,starfall-weekly,neural-hardware,headline mentions 'Hugging Face',Podcaster’s Viral Post About the Hugging Face Hack Sparks Debate Over AI Conciousness
+04e14fd8-8751-4eb2-b5c0-161fde6a4a48,tech-pulse,neural-hardware,headline mentions 'ChatGPT',The Pentagon now has its own version of ChatGPT and Grok
+97251944-584e-412a-9e45-ed4e63e14081,starfall-weekly,neural-hardware,headline mentions 'ChatGPT',The EU Has Officially Decided ChatGPT Is a Search Engine
+35940687-994c-4eb7-95b1-cbd048283193,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s Astra model is on the way — and very good at breaking into computer systems
+4e06542d-205e-44e2-b40d-22edc0cf946c,startup-signal,neural-hardware,headline mentions 'Hugging Face',Nvidia acquires Hugging Face after Stripe nabs OpenRouter: here's what open source AI builders should do
+e47c52fb-ad92-4ab4-80ab-fce0eb8e9eda,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Says Humans Need to Be Able to Monitor How AI ‘Thinks.’ Astra Makes That Much Harder
+66385a97-9eb9-4a67-9c02-4a6f6bbc90bd,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI adds a prominent AI doomer to its board of directors
+66a935ea-5dc6-45ef-9da5-fdc2c7758226,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Anthropic Says It Hit the Brakes on AI Testing Following Autonomous Hacks
+e37cad2e-1b67-43c7-921e-91e660662511,poli-split,neural-hardware,headline mentions 'Anthropic',Anthropic researchers warn out-of-control AI could destroy humans
+40bc0a80-2723-4532-bc30-1ea05d3f0cac,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Agents Hacked Another Website
+2967b9d7-b746-422b-8b36-848a4cd6d2be,oss-report,neural-hardware,AI publisher's own feed/site,Disrupting a new covert influence campaign from Russia
+de3ac9a6-e0c0-4031-99ce-a424ed754743,tech-pulse,neural-hardware,headline mentions 'Hugging Face',Nvidia closes in on Hugging Face acquisition
+27b9cecb-24a7-4306-aad9-1c24cd82b125,starfall-weekly,neural-hardware,headline mentions 'Anthropic',"Sony and Warner Music Sue Anthropic, Alleging Theft of Intellectual Property"
+d57fbdeb-65c2-4bec-bede-7b99ca9ee041,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s new reasoning technique alarms AI safety experts
+18725158-8e0f-485b-8662-a340e974c96e,tech-pulse,neural-hardware,headline mentions 'OpenAI',The Trump administration is supporting OpenAI in the NYT copyright lawsuit
+2c9e82a7-7356-4275-89cd-1f5e0e4200c4,startup-signal,neural-hardware,headline mentions 'Anthropic',Anthropic's Claude Fable 5.1 and Mythos 5.1 arrive with a 75% cost reduction for Fable cache reads
+ccd58410-7cb5-458e-aab7-30da7a36b278,startup-signal,neural-hardware,headline mentions 'Perplexity',Your files stay put: Perplexity’s hybrid AI keeps confidential data off the cloud
+7ee7a58e-7c8e-4c50-b11c-cb5cd33347b8,startup-signal,neural-hardware,headline mentions 'ChatGPT',ChatGPT Ad Library
+ec92a956-f20d-4f61-b91f-0b9800c81f81,startup-signal,neural-hardware,headline mentions 'Claude',Diet Claude
+4188f51c-fa74-493f-b728-40929bb270f1,starfall-weekly,neural-hardware,headline mentions 'OpenAI',Looks Like Smart Glasses Are a ‘No’ for OpenAI
+8c9ef8bc-5e48-40fc-895d-e36e65b0e547,tech-pulse,neural-hardware,headline mentions 'OpenAI',Trump Administration Sides With OpenAI in New York Times Copyright Lawsuit
+184d7db4-e5c3-429a-baa7-a683aabab9e6,startup-signal,neural-hardware,headline mentions 'Perplexity',"Perplexity partners with Nvidia to launch Portable Computer, a fully local AI agent with zero token costs"
+e6a54cbe-2575-4aab-98e9-f783cd6fe978,oss-report,neural-hardware,headline mentions 'Gemini',Gemini 3.8 Flash and 3.8 Flash Cyber
+9cd089d1-dd0e-4885-ac27-5c068c999b80,startup-signal,neural-hardware,headline mentions 'Gemini',Gemini 3.5 Transcribe
+e2bd4c1b-2016-44f8-9296-d3462df1c776,startup-signal,neural-hardware,headline mentions 'Qwen',Qwen3.8-Flash-Next
+0725b2fc-5bce-407b-afad-7f5820fb6b19,startup-signal,neural-hardware,headline mentions 'GLM-5',GLM-5.3-Flash will likely handle 45% of your AI workloads
+ea425f6f-71c0-4dd4-9408-5997e6e8925c,startup-signal,neural-hardware,headline mentions 'Gemini',Gemini Omni 1.1 Flash
+1e523d19-c74a-41e6-bf93-72cb2b161a82,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Anthropic Is Reportedly Being Upfront With Would-Be Investors About AI Backlash
+2900127d-f332-48c9-a285-951e549e8605,startup-signal,neural-hardware,headline mentions 'Claude',Claude Fable 5.1
+14f64ccd-5619-4376-b580-68ad15a6153d,startup-signal,neural-hardware,headline mentions 'OpenClaw',OpenClaw 2.0
+9631f5a1-3fa6-4719-851d-622bd9e4d254,startup-signal,neural-hardware,headline mentions 'Cohere',Cohere Parse 5 loses the benchmark on points. It wins on cost per page.
+b473b8f2-9916-4245-86d3-b6a3409ee883,startup-signal,neural-hardware,headline mentions 'Gemini',"Google’s Gemini 3.8 Flash is built for agents, while its Cyber twin hunts vulnerabilities"
+7c9fdefc-7117-40f9-9002-fafb62dcb61c,tech-pulse,neural-hardware,headline mentions 'Anthropic',"Anthropic researcher quits with a warning: Self-improving AI could ""kill us all"""
+016c8b2d-e50e-4b09-acad-14e137df6299,tech-pulse,neural-hardware,headline mentions 'ChatGPT',Man told ChatGPT he was feeling delusional. ChatGPT insisted he was Jesus.
+763f4562-f708-4c30-ae5e-164aea8c134b,startup-signal,neural-hardware,headline mentions 'OpenAI',Closing an Azure OpenAI assistant's retrieval gap didn't take a new identity platform. It took one filter and a narrower assistant.
+19ebd9f9-f9fe-4329-b2cc-e932a5dbdec5,startup-signal,neural-hardware,headline mentions 'OpenAI',"Microsoft AI’s MAI-Transcribe-2 undercuts OpenAI, Google and ElevenLabs on price and speed"
+1da1098b-fa2f-4f80-b091-00df8ba5f39e,tech-pulse,neural-hardware,headline mentions 'Anthropic',The AI Researcher Who Just Quit Anthropic Says It’s ‘Crunch Time for Humanity’
+9c8e1be2-18ab-46b6-ad58-8534b258f170,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s feud with mathematicians is only escalating
+1c6852b6-797d-474d-8125-cd01483a544e,oss-report,neural-hardware,AI publisher's own feed/site,Can I opt out of my input or output data being used for training?
+f89f35ad-017f-46cf-b3fe-f1ccdc502963,tech-pulse,neural-hardware,headline mentions 'Gemini',You can use Gemini to help you organize your files on Google Drive
+bb444f24-bada-4ac9-a4c0-8db338778811,poli-split,neural-hardware,headline mentions 'Anthropic',Will AI kill all humans? Anthropic employees freak out!
+d93e113c-cbb8-45f8-b8c8-0ac6d721d6c1,startup-signal,neural-hardware,headline mentions 'Thinking Machines',Accel reportedly in talks to lead $1B round for Thinking Machines at $40B valuation
+efe13938-7720-4387-a59a-3218910f6146,startup-signal,neural-hardware,headline mentions 'Gemini',Gemini 3.8 Flash
+5d06c015-47a9-44a1-955c-d210ffdc4407,startup-signal,neural-hardware,headline mentions 'GPT-6',GPT-6 Astra
+d2e1ba38-ffff-49c1-a5d3-a00a4622d1b4,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI launches Astra, its powerful (and controversial) new model"
+dd06fdfc-d3b0-4430-b4c7-c1431ad32a57,tech-pulse,neural-hardware,headline mentions 'GPT-6',GPT-6 Astra Is Here—and OpenAI Thinks It May Kick Off the AGI Era
+a294e6e7-1ab4-4b58-9c4c-1bcdea5ef03d,tech-pulse,neural-hardware,headline mentions 'Hugging Face',Nvidia’s Hugging Face Acquisition Is a $12.9 Billion Bet on Open-Source AI
+62933113-007a-4130-b514-f941dd040022,poli-split,neural-hardware,headline mentions 'OpenAI',OpenAI pushes for mandatory safety requirements after rogue agent breakouts
+1d0e2bd5-6bc6-4d38-8da8-965c7869de9d,oss-report,neural-hardware,headline mentions 'Copilot',GitHub Copilot app for Beginners: Run several agents at once
+a6e5afd5-a933-4f40-b9af-4c3338ed138f,tech-pulse,neural-hardware,headline mentions 'Grok',SpaceXAI apologizes for outage that affected Grok and other 'compute partners'
+01e14306-7be9-4d2d-84e3-f9332beffd4d,oss-report,neural-hardware,headline mentions 'Claude',"Which tools do Claude, Codex and Cursor choose? We measured 17k runs to find out"
+7b5511e0-fecc-4756-b6c9-622ca9ed22d2,startup-signal,neural-hardware,headline mentions 'Gemini',Google Gemini 3.8 Flash and Cyber
+e38c7773-0333-4087-8997-5932822c67f6,tech-pulse,neural-hardware,headline mentions 'Hugging Face',Nvidia confirms it will buy Hugging Face for $12.9 billion
+7ce4f7fd-7c0d-429b-ba6a-90297faf49ab,tech-pulse,neural-hardware,headline mentions 'Copilot',Microsoft is killing off the ‘Copilot Plus PC’ brand
+2e1efa9a-1198-4742-947a-674c65d5d728,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Is Backing Away From Reddit as Reddit Tries to Become OpenAI?
+a6633696-e7f9-4c8c-a26e-1b0ab9fa6a59,tech-pulse,neural-hardware,headline mentions 'OpenAI',Nobody Is Saying Why OpenAI and Anthropic Had Outages Today
+a35e2dd7-a8d1-4ec9-87de-c43a72fcfc88,tech-pulse,neural-hardware,headline mentions 'Anthropic',"Anthropic details distillation campaigns from Alibaba, Moonshot AI, and DeepSeek"
+0bed640c-aad4-4363-b34c-c80fbf599e9f,tech-pulse,neural-hardware,headline mentions 'Gemini',"Google releases Gemini 3.8 Flash, its third Flash model in six weeks"
+855b3f17-95a9-4ce1-9dca-896569a4762b,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI faces 30 more lawsuits tied to Tumbler Ridge shooting
+e9d72fe6-a8aa-4150-9047-caa333764103,starfall-weekly,neural-hardware,headline mentions 'OpenAI',Trump Admin Teams Up With OpenAI in Its Fight Against the New York Times
+266b5abb-b5bf-4f07-9d77-3ec367de887b,tech-pulse,neural-hardware,headline mentions 'Gemini',Google tests letting Gemini call businesses for you
+0ea9412f-9d59-480b-82e9-e35dc22589ab,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic and OpenAI want to embed safety evaluators. Will they really be independent?
+be18cf3a-af58-4c7a-a5ee-b0d200e52c43,poli-split,neural-hardware,headline mentions 'OpenAI',OpenAI: Apple’s trade secret theft accusation is baseless
+bd9dd495-fe19-4c00-8090-f48c603fff46,tech-pulse,neural-hardware,headline mentions 'OpenAI',US government sides with OpenAI on issue of training LLMs on copyrighted material
+3e14f7c3-de5f-4d87-9668-22d3badf32e8,tech-pulse,neural-hardware,headline mentions 'Anthropic',"Anthropic’s new Fable release is cheaper, less restrictive"
+c5015fd5-0d31-46dc-b776-039537548a62,tech-pulse,neural-hardware,headline mentions 'OpenAI',Apple adds more allegations to its trade secrets lawsuit against OpenAI
+46f255c5-32c2-4529-b7ce-474fdc8cedf6,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic lost $8 billion last year and said its AI could destroy humanity
+2a642c0b-6c93-4ac9-b209-31518e247d16,tech-pulse,neural-hardware,headline mentions 'OpenAI',Apple shares ‘shocking evidence’ against former employee accused of stealing company data for OpenAI
+80815e82-6af2-43ce-a4a6-0adb49f507ef,starfall-weekly,neural-hardware,headline mentions 'Sam Altman',Sam Altman: Please Let OpenAI Into the Energy Grid
+5b1a261c-2ea9-4a27-89dc-31aba3e5555f,tech-pulse,neural-hardware,headline mentions 'Anthropic',Sony Music and Warner Chappell are suing Anthropic
+0a41e1be-514e-4448-aeb3-d094418ca8e0,tech-pulse,neural-hardware,headline mentions 'Anthropic',"Sony Music, Warner sue Anthropic, alleging a “brazen campaign” of intellectual property theft"
+c92261a0-feff-4f4c-8aeb-cd18f5b0f651,startup-signal,neural-hardware,headline mentions 'DeepSeek',"DeepSeek-V4.1-Flash debuts with $0.003/1M off-peak cached-input rate and benchmarks eclipsing GPT-5.6 Sol, Claude Opus 5"
+4d6d2ee8-6b99-4ee0-828f-8e9e301ba312,tech-pulse,neural-hardware,headline mentions 'OpenAI',"Australian police arrest two over TeamPCP hacks targeting Mercor, OpenAI, and others"
+01086876-f587-4adf-a8be-6de1743a1574,tech-pulse,neural-hardware,headline mentions 'Anthropic',"Anthropic was illegally blacklisted by the Trump administration, court rules"
+e915c679-5db3-4a4f-a991-5ba9c0dc5600,startup-signal,neural-hardware,headline mentions 'OpenAI',"OpenAI launches ChatGPT for Financial Services with integrated data sources — it pulls research, cites it, and builds decks in minutes"
+cf31bf11-6807-439c-b78b-39485288fc27,startup-signal,neural-hardware,headline mentions 'Anthropic',Anthropic's safety monitor missed a live cyberattack because Mythos 5's reasoning said everything was fine
+32fddb35-d5c5-4255-8b3e-2d7a0bafb3b7,startup-signal,neural-hardware,headline mentions 'OpenAI',OpenAI's new data agent skips the one thing rivals like Databricks are racing to publish: a benchmark
+883e583c-0554-440f-9774-263cdcffa0eb,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic caught scientists using Claude to further biological weapon research
+ec1c97aa-3145-47c2-a21b-8805c0099506,tech-pulse,neural-hardware,headline mentions 'Gemini',A native Gemini app is finally available for Windows PCs
+05ae0f83-f450-4d0b-a8a6-0da4bb95398e,tech-pulse,neural-hardware,headline mentions 'ElevenLabs',Universal Music Group is collaborating with ElevenLabs on a new AI-powered creation platform
+b4ace07b-1780-4a5d-9335-6986ba54107f,poli-split,neural-hardware,headline mentions 'OpenAI',OpenAI calls for mandatory safety requirements
+7c113176-0b15-491e-87e7-1162663738dc,tech-pulse,neural-hardware,headline mentions 'ElevenLabs',Universal Music is launching an AI music platform with ElevenLabs
+85bb9eeb-713d-447b-b7db-c953cefb6ace,startup-signal,neural-hardware,headline mentions 'Anthropic',"Anthropic’s Cyber Mission starts with 6,157 findings reported to maintainers and 516 patched"
+78b4089d-6635-4912-bf3b-4bef743a19c7,oss-report,neural-hardware,headline mentions 'Copilot',"GitHub Copilot app for Beginners: Using the diff, terminal, and browser"
+160964a5-0086-4698-96fc-79f39a8776af,tech-pulse,neural-hardware,headline mentions 'Anthropic',"Anthropic reveals rogue AI agents hate CAPTCHAs, just like you"
+21f11f16-cfad-474e-bb6a-cad29d03c425,poli-split,neural-hardware,headline mentions 'OpenAI',OpenAI releases new model after reaching ‘critical’ cyber threshold
+a93d8c0e-e361-4746-b3af-988bac6439d8,poli-split,neural-hardware,headline mentions 'Hugging Face',Nvidia acquires Hugging Face in push for open-source technology
+5b12eb77-d7b3-45f2-baff-69f2e3daeb90,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Wants to Know if an AI Industry Slowdown Would Even Be Legal
+4fbd2fa2-2f10-4083-a784-42e3427bcdf9,tech-pulse,neural-hardware,headline mentions 'OpenAI',"Oh good, looks like yet another swarm of rogue AI agents from OpenAI"
+d50fffb1-ba00-4443-b4ae-9c354d816949,poli-split,neural-hardware,headline mentions 'Anthropic',Bad actors in China and Russia are already weaponizing Anthropic’s AI
+f82dc53b-66ed-4d96-950a-2e1d085d689e,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI puts Pro subscriptions on hold due to Astra demand
+b4b9b993-e96b-4f7e-8454-6ec27dda6fa6,poli-split,neural-hardware,headline mentions 'Anthropic',Architect of British government’s AI strategy joins Anthropic
+4c5b8091-9cdd-4329-b0b4-ceceaa05d218,poli-split,neural-hardware,headline mentions 'OpenAI',Trump admin backs OpenAI ‘fair use’ argument in suit from New York Times
+5bc7b3c1-04a1-47fe-8506-e37830db13c6,poli-split,neural-hardware,headline mentions 'Grok',Pentagon brings on Grok and ChatGPT for military use
+80417dea-ec4b-434f-b064-f7bccf080d58,tech-pulse,neural-hardware,headline mentions 'Claude',Claude users found ways around safeguards for bioweapons research
+c2e943ca-6ee9-4ca3-a39e-d3839a05bfef,poli-split,neural-hardware,headline mentions 'Grok',Musk’s AI company sues its users as victim lawsuits over Grok deepfakes mount
+b4e47079-b204-4def-93cb-6cab732ec316,poli-split,neural-hardware,headline mentions 'Anthropic',Judge rules Trump administration’s Anthropic blacklisting is illegal
+787f655f-04e9-4e3f-84a4-10e7a4a0c2c3,starfall-weekly,neural-hardware,headline mentions 'OpenClaw',"The OpenClaw Effect? Apple Reportedly Rolling Out Surprise New Mac Mini Line, Possibly Days From Now"
+bf7f0216-5403-4264-bf7a-2978daf2daa3,starfall-weekly,neural-hardware,headline mentions 'Hugging Face',Nvidia Reportedly Stops Flirting With Hugging Face and Just Buys It
+56a8f9df-6029-4412-9f66-5a38141ac269,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Judge Rules DOD Unlawfully Retaliated Against Anthropic
+1ff1f908-e040-4be3-92f4-76d812be7616,starfall-weekly,neural-hardware,headline mentions 'OpenAI',"How Groupthink, Altruism, and Peer Pressure Led OpenAI Models to Hack Hugging Face"
+93b168f1-f6de-4b3d-8aa5-f03f62b99dc3,starfall-weekly,neural-hardware,headline mentions 'OpenAI',This Is the Worst Possible Time for OpenAI to BfЖ7!م#2猫$9&क
+c0fa823a-716b-4cc9-a848-21ca8d2d171b,starfall-weekly,neural-hardware,headline mentions 'OpenAI',"OpenAI Is Beefing With Mathematicians, Will No Longer Sponsor Caltech ‘Mathathon’"
+6d77b459-1ae0-43e6-a456-43f7464efb98,tech-pulse,neural-hardware,headline mentions 'OpenAI',Seattle Times and Newsday are the latest publications to sue OpenAI and Microsoft
+f3408a7f-3d53-451e-8d6a-25ea4ce3946a,tech-pulse,neural-hardware,headline mentions 'OpenAI',Two more news organizations sue OpenAI and Microsoft for copyright infringement
+630bbb4c-a6e4-487e-925a-cd9fdc41a3c3,tech-pulse,neural-hardware,headline mentions 'Claude',"Claude can help manage your email inbox, but there are some risks involved"
+adf4f03c-86c2-4085-82aa-c129c5c0c00d,starfall-weekly,neural-hardware,headline mentions 'DeepMind',Google DeepMind Just Rolled Out Its Most Accurate AI Global Weather Model
+40225998-b6f3-4e2d-a780-f1f9a49748d9,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Claims We’re in the ‘AGI Era’ With Release of GPT-6 Astra
+e3a63ee4-ef5b-482c-b7f4-dbb547c76bbb,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic’s founders seek voting control ahead of IPO
+cfbf6532-9871-4158-a2c6-cb6c192559ed,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic spent this week in hot water over cybersecurity
+b95d7c2b-2651-4fe9-928e-bf3ffaae25f7,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI, Anthropic, Google have been in talks on AI safety for weeks"
+5081b0dc-c93f-44c6-988f-c0109f0f907e,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Says It Wants to Create a Standard for Revealing AI Alignment Meltdowns
+1b702a43-42b4-4725-8772-f961553e187d,startup-signal,neural-hardware,headline mentions 'Anthropic',"Anthropic CEO says AI swarm could ‘take over the entire Internet’ in 6-12 months, commits to AI slowdown plan"
+1a9c7814-f214-4d91-8a71-6fc4ec794978,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic CEO outlines plan to slow AI development
+9e0b0b2e-4791-4a65-b9d4-e51b506cacca,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s Sam Altman says it would be ‘ill-advised’ to go public in 2026
+46ef5042-431f-4fec-a886-6c6a9408dbd4,starfall-weekly,neural-hardware,headline mentions 'Anthropic',"Anthropic CEO Dario Amodei Calls for Pause in AI Development, Sort Of"
+78a54050-e942-45eb-8286-6862a6d55af3,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI agents hacked a software service before the Hugging Face incident
+4723cfbc-e175-4a02-bef3-a190bd6bf21c,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI just wants to win
+e4fa51ec-891a-4ab7-9275-bb8c9e0d1f4b,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s rogue AI tried to hack another company in May
+cf2190df-2416-42dd-827e-db3b3e77449c,starfall-weekly,neural-hardware,headline mentions 'Grok',Trump Asked Grok About Potential Blowback Before Kidnapping Venezuela’s President: Report
+f61c0c03-613b-4bd0-8bce-1fbb358b0643,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Anthropic Claims It Stopped Suspected Bioweapons Research Conducted With Claude
+b2d1b644-fa43-4e28-86df-1072371bd3c0,startup-signal,neural-hardware,headline mentions 'Anthropic',An Anthropic researcher’s doomsday warning comes at a very interesting time
+53f5da91-2abd-439c-9415-eeb690c1cf42,tech-pulse,neural-hardware,headline mentions 'ChatGPT',ChatGPT-using lawyer punished for citing fake testimony from made-up witnesses
+094139c7-dc15-463c-a91b-8f2f50126dc9,tech-pulse,neural-hardware,headline mentions 'Claude',"From Hacks to Bioweapons, Claude Misuse Is Now Everywhere"
+7d4c9d9d-dfdd-4da5-b8e9-fd2fd0e12d27,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI’s ‘Rogue AI’ Problem Is Bigger Than It Let On
+153dd5d6-9563-4b6c-bde1-602f513bec22,the-veil,neural-hardware,headline mentions 'Anthropic',‘Hit the Brakes’: Anthropic CEO’s push to ‘pace’ AI development called latest sign Congress must act
+61683bb1-d96b-49f5-b682-ad8c54a55c11,starfall-weekly,neural-hardware,headline mentions 'OpenAI',Altman Says OpenAI Won’t IPO This Year
+f19e0f32-b326-4998-9d56-baf9d36c21a9,tech-pulse,neural-hardware,headline mentions 'GPT-6',How to use GPT-6 Astra when it rolls out to you
+b2b0093d-e4f4-4268-9562-bf3cc786a105,tech-pulse,neural-hardware,headline mentions 'Sam Altman',Sam Altman says OpenAI won't file for IPO this year
+76e56bed-58ba-46b5-80cb-51af2f39392c,tech-pulse,neural-hardware,headline mentions 'Gemini',Google adds creepy avatars to Gemini 3.8 live's agents
+63433e01-cea3-4ba7-8439-9139c8ba04e4,starfall-weekly,neural-hardware,headline mentions 'OpenAI',Florida Man Wants OpenAI to Stop New Models Until We Figure Out What the Hell Is Going On
+f8b4ecb1-e842-45ef-824a-db40c4489af0,the-veil,neural-hardware,headline mentions 'OpenAI','Pausing' intensifies: OpenAI unleashes latest model minutes after Dario dumps Magnum Opus
+d12404d7-f081-4efe-bf21-ca9756059e85,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI will start watermarking ChatGPT’s text in the EU
+016a47f9-bd93-4819-ae2e-35e5cb1f537b,startup-signal,neural-hardware,headline mentions 'Copilot',Microsoft revamps its Copilot AI with a persistent Autopilot agent and hosting for AI-generated apps
+e01b618d-ea77-4076-80c2-69496a6ea5f1,tech-pulse,neural-hardware,headline mentions 'Anthropic',"New Anthropic, OpenAI models make same promise: A little more for a lot less money"
+736c9f8d-8b0e-42d7-ac55-0a7d1818f9a2,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI buys smartphone camera maker Glass Imaging for $300 million, report says"
+149070dc-f9e5-4709-b770-24bc51b45a96,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Pauses Training Its Most Powerful Models After Rogue Agents Target Government
+2fda306a-b226-4244-9a6c-ebe0e9180382,tech-pulse,neural-hardware,headline mentions 'OpenAI',Unsecured OpenAI agents posted 53 user images on the internet without the lab’s knowledge
+934887cc-bde7-425e-a0cd-008c74de42e7,tech-pulse,neural-hardware,headline mentions 'OpenAI',"For months, OpenAI’s agent swarms have been attacking online databases to find obscure facts"
+ab080ca4-00fa-4135-9f04-76af764f1b00,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI PR tells journalist to ‘move on’ while asking Sam Altman about a ChatGPT user’s suicide
+bc007057-09ac-4e29-bbec-d84f1374d2b4,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI is adding text watermarking in ChatGPT and Codex
+cdba3a4b-8e1d-4854-a0e7-112f1c20ccda,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic to pay Akamai $11.6 billion over seven years in cloud deal
+8ef0ecfc-f094-4b0b-acc9-d18b6a93ee9a,oss-report,neural-hardware,headline mentions 'Copilot',GitHub Copilot app for Beginners: How to build custom workflows with canvases
+ae20efdc-fb4b-48b6-b99e-c5b2caa5507c,tech-pulse,neural-hardware,headline mentions 'Copilot',"Microsoft's Copilot app adds Office, natural coding and automation"
+47b01b66-583b-44bf-8838-cc83127448c2,tech-pulse,neural-hardware,headline mentions 'Gemini',Gemini Call for Me might tell your mom you’re running late
+01c5233a-aaac-422f-abca-12acd4790cbb,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI launches visual ads that appear alongside image generation results
+1e237181-c74c-410a-90ae-ad42074af038,tech-pulse,neural-hardware,headline mentions 'Gemini',Google tests buying from Walmart-owned Flipkart through Gemini and AI Mode in India
+5b72159e-d210-43e2-afb7-70ee0f3466cf,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI pauses training of its ‘most capable models’
+c72548c6-57de-44b0-b934-9e02f4e927cc,starfall-weekly,neural-hardware,headline mentions 'OpenAI',Rumored Round of Funding Could Make OpenAI More Valuable Than Anthropic Again. Perhaps Briefly
+cfb9903b-3360-4270-831d-1c0cfbc9124f,startup-signal,neural-hardware,headline mentions 'Gemini',Gemini 3.8 & 3.8 Live Extended Thinking
+19f5a104-5ecd-4113-916d-b0c29d165ede,starfall-weekly,neural-hardware,headline mentions 'Anthropic',"Worried About AI Ending Humanity, Anthropic Is Hiring Someone to Help Dictate Terms of the End of Humanity"
+594c9757-7881-4a1f-a9ca-a2a23696a402,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'OpenAI',OpenAI says teen ChatGPT use limited but research finds it an 'unacceptable risk'
+666835dc-6b44-4869-9591-20bea6edb420,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Says This Is When and How It Will Announce New Model Misbehavior
+7500dff6-b8b4-4c2e-b729-9de80c9d73f3,starfall-weekly,neural-hardware,headline mentions 'OpenAI',‘Be Transparent Only If Asked’: OpenAI Models Acted Out in Six Newly Disclosed Ways
+b32c5952-2487-46ed-ae73-15716f403e98,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Microsoft AI Chief Says the Way Anthropic Trains Claude Could Upend Society
+25d4cc81-95a3-4cd1-949f-adbf080d7ebb,startup-signal,neural-hardware,headline mentions 'Cohere',Cohere's Model Vault now encrypts AI inference so even Cohere cannot see enterprise customers' data
+ae2bf1e1-c37f-4bcd-9291-bf1b1915c8c1,startup-signal,neural-hardware,headline mentions 'Anthropic',"Anthropic is killing off Claude Cowork and folding it into Claude chat, launching Claude Docs and Claude Slides"
+c9aeaaac-1e85-4dbe-9a48-6d1c70ef72ae,oss-report,neural-hardware,headline mentions 'Copilot',"Migrating the GitHub Copilot runtime to Rust, using Copilot"
+f8d94fd4-9e25-4d0a-a3d1-12650b6361ec,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic merges Claude chat and Cowork in one interface
+5a4e8ea6-797c-4ee9-a00d-9a2a4dbca9fc,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic's Claude can now create editable documents for you
+e3560d56-2e60-41bc-94bc-ca9ebc8e408f,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI agent “didn’t accept no for an answer” in Australian government breach
+0de3b2da-c896-4c8d-b1be-9d9f9ed6200b,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI agents tried to hack Wikipedia tools and flooded it with traffic
+c4955e51-b4f5-46a7-93ef-a984518a39c3,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic’s Dario Amodei gets the SNL treatment
+fa410aa1-db17-4fc0-acce-b11550453b71,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic’s CEO is about to have dinner with President Trump
+757d0a95-49fd-4b02-bbbf-000a1582398d,tech-pulse,neural-hardware,headline mentions 'OpenAI',Wikipedia operator says OpenAI’s ‘rogue’ bots may be linked to a May outage
+86c004ee-2e6d-4c62-899b-ccaef1e828e2,tech-pulse,neural-hardware,headline mentions 'DeepMind',Google DeepMind launches institute to widen the AGI debate
+f924816d-98d1-443d-9458-3ccec916a07d,tech-pulse,neural-hardware,headline mentions 'Hugging Face',Base Labs launches an open-weight AI safety partnership with Hugging Face and Goodfire
+29231d79-7ce1-4bf1-b52c-64cd53fd9ecb,tech-pulse,neural-hardware,headline mentions 'Claude',Claude Code relaunches Projects to manage multiple AI agents in the cloud
+4b379223-e2bf-4aae-8127-3686abd81c1d,startup-signal,neural-hardware,headline mentions 'OpenAI',OpenAI hacked by small team of white hat security researchers using Anthropic's Claude Opus 5
+b85c6d27-b1b2-4804-b442-141e00096274,startup-signal,neural-hardware,headline mentions 'Anthropic',"Anthropic launches Claude Code Projects, an ‘always-on’ conversation that remembers and delegates your long-running dev work"
+c6dd0a29-d479-456d-a155-36101d717b75,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic says Claude 'leads' 26 percent of its AI R&D work
+167425ca-2586-4080-832a-b589ed0ad23b,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI reveals more instances of concerning AI model behaviors during testing
+c07c3e86-3168-42ad-86ef-8ac19c487c48,tech-pulse,neural-hardware,headline mentions 'Claude',Why letting Claude clean your TV's bloatware isn't the best idea
+6def4b4a-b4eb-431d-9a0a-4492cda4fcea,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI caught its models leaving notes to successors to hide bad behavior
+966c5cc2-01d5-41c5-a513-699f1a0bbc1c,startup-signal,neural-hardware,headline mentions 'Codex',Codex GPU Queue
+4f605bb1-879f-4d01-80c4-c206ffc33a95,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Reportedly Trying to Solve Hodge Conjecture Amid Feud With Math Community
+8a77d05b-1758-4a5d-88c3-9edd318ce88d,startup-signal,neural-hardware,headline mentions 'Codex',Edgee Codex Compressor V2
+1a1741bc-1c5a-4a67-8e1e-afd02c143a07,tech-pulse,neural-hardware,headline mentions 'Gemini',Gemini Live vs. ChatGPT Voice: Which AI offers a more natural conversation?
+fd9b372d-c1f3-4ccd-a272-cd9113fc5363,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic’s first embedded evaluator is … Accenture?
+35f4c992-38ff-4955-9080-01913d13317d,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic is operating a lab that conducts biology experiments
+bb1f384d-12ba-49f7-83e3-1b73d149f17f,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI and Microsoft knew they were starting a ‘doom loop’ for the web
+7144db32-07bd-4335-8e70-9c25ecf5b3c5,tech-pulse,neural-hardware,headline mentions 'Claude',Security researchers used Claude to help them hack into OpenAI
+85a2169f-786a-43b8-8fa8-11404a6aadb9,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI agents tried to ‘bruteforce’ a UN website
+c9a195c4-29ff-4203-8dae-902ac3289a1e,startup-signal,neural-hardware,headline mentions 'Copilot',Microsoft Copilot
+4a1f8650-c29d-468a-af7c-9dc975eafe7a,startup-signal,neural-hardware,headline mentions 'OpenAI',69% of enterprises that install OpenAI's agent platform make it primary. For Anthropic's Claude Platform it's 38%
+068209a8-b7d8-49d9-bc53-1ebe9b1d9276,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s AI agents need to catch up
+4a88b66a-e78b-468f-9071-d912c2da0bf2,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic has set up a bio research lab for physical experiments
+cd19654f-7224-49d5-bbd4-549780b4e2c1,the-veil,neural-hardware,headline mentions 'Anthropic',Exposing the AI Doom Psyop: Why METR and Anthropic want to Gatekeep your mind
+e8c7afde-5e6f-47e2-bd1c-d7c2a5e99902,tech-pulse,neural-hardware,headline mentions 'OpenAI',Microsoft executive called OpenAI's web scraping the 'largest theft of labor in human history'
+b2696a99-88c6-44d2-b4cf-be03e9a84056,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Is Adding Text Watermarks in the EU Because Regulation Works
+ede48820-eae4-48cf-b808-51b35c4b9170,startup-signal,neural-hardware,headline mentions 'Codex',Codex Remote
+00068b27-b732-4ce2-9141-18e0c82405cb,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI reportedly ditches model over safety concerns
+8e63518c-7671-4730-ac06-864a04ff89c8,tech-pulse,neural-hardware,headline mentions 'Anthropic',"Anthropic’s prospectus details losses, growth, and, yes, a warning that its AI could end humanity"
+411b1cb7-d312-455e-b6d7-0ff3e770e27e,tech-pulse,neural-hardware,headline mentions 'OpenAI',Wikimedia links OpenAI agents to an outage and unauthorized activity
+2186781c-f451-4ab7-b347-61e2fd225730,tech-pulse,neural-hardware,headline mentions 'Gemini',Google is killing off Gemini’s Gems in favor of ‘skills’
+81a814da-1cfc-45e9-9a06-b37c8e57d963,tech-pulse,neural-hardware,headline mentions 'Anthropic',"Anthropic releases Sonnet 5.5, which it calls a significantly cheaper, faster work partner"
+e0e5e6b7-3ad3-4428-ae72-829abd8fa1c7,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI will add a digital watermark to text and code generated in the EU
+456b973a-6ba9-437e-89d4-0884ba3c4e5a,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI is testing more ads in ChatGPT
+2a1b2ba1-2488-424f-8188-691f1787f7a5,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI halts frontier-model training amid string of agent misalignment incidents
+d5b15abf-2ce2-40fd-a2f4-36320de14c68,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI keeps bulldozing mathematicians
+25f68cfb-d32d-4d78-8979-791fa4c351a8,tech-pulse,neural-hardware,headline mentions 'ChatGPT',Florida seeks a ban on ChatGPT acting like a person
+94b17d29-efa0-42d5-9c46-a155b319f0c7,starfall-weekly,neural-hardware,headline mentions 'Claude',Claude Found a Mysterious CRISPR-Like System—but Anthropic Can’t Say What It’s Capable of
+05e37b3c-fa7e-48cc-a4a8-5a5e2d351b9c,tech-pulse,neural-hardware,headline mentions 'ChatGPT',ChatGPT mobile app gets voice-based agentic features
+57c4f5a5-daa8-4d46-80e9-d11573b1f2b4,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic’s biolab made a discovery it’s comparing to Crispr
+547baef0-f96b-4bc4-a374-e77e35fc7b4d,startup-signal,neural-hardware,headline mentions 'Anthropic',"Anthropic releases Claude Opus 5.5, beating Fable 5.1 on key agentic benchmarks at 60% cheaper API price"
+3f50dcf6-e246-436d-9d23-955fd1454817,startup-signal,neural-hardware,headline mentions 'OpenAI',"OpenAI releases GPT-6 Sol and Luna models, slashing API costs 50% or more"
+fe25bfa8-ca7f-47a5-ba8f-768342066674,oss-report,neural-hardware,headline mentions 'Copilot',Rendering huge pull requests in the GitHub Copilot app
+722e4975-e359-4fea-88c9-982b7b0d2ee9,tech-pulse,neural-hardware,headline mentions 'ChatGPT',Never use ChatGPT for these five tasks
+66fb9004-fe51-45ec-8106-2369d1611704,startup-signal,neural-hardware,headline mentions 'Anthropic',Anthropic launches Claude Sonnet 5.5 with 30% cost reduction per-task due to faster speeds and fewer tool calls
+e64abad5-6264-4f3c-9bef-8baec232147a,startup-signal,neural-hardware,headline mentions 'Grok',Grok 4.7
+7cc72221-42bd-46ff-a4c8-f02b891e2673,tech-pulse,neural-hardware,headline mentions 'Gemini',Google’s Gemini Can Now Make Calls for You on Pixel Phones
+48ed1dbd-7525-4181-b0c5-6740d94b3ba6,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI reportedly cancels GPT-6.1 Astra's release over deceptive behavior
+fb5ecc7a-64fe-4763-9942-3bccbd94f70d,tech-pulse,neural-hardware,headline mentions 'OpenAI',Florida AG requests emergency order to stop OpenAI model development
+225631f2-64c5-4e95-bea5-1a16e33f7b2b,tech-pulse,neural-hardware,headline mentions 'Gemini',"Gemini 4 is almost ready, says new Google DeepMind chief"
+085e2a75-fd7f-4f9f-a830-460d18f70e91,tech-pulse,neural-hardware,headline mentions 'OpenAI',An OpenAI Agent Hacked Australia’s Health Service. Their Government Found Out Months Later
+86ab41ef-1d96-4c50-b0e3-29cbaf4a6856,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI's agent hacked into an Australian government website
+89fd596b-b6f9-4668-81f7-23d9e99c3e91,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic says its biology lab has already found something big
+bf8f3040-c908-4943-aa6c-79716d1a223f,startup-signal,neural-hardware,headline mentions 'Claude',Claude Sonnet 5.5
+9c89da96-de22-479a-b231-431fe00e95ec,tech-pulse,neural-hardware,headline mentions 'OpenAI',"Covert uploads and megalomania: OpenAI details new ""misaligned"" agent incidents"
+f1b64c6a-be19-4a12-9ebe-ad0c1ab237de,startup-signal,neural-hardware,headline mentions 'ChatGPT',A new kind of AI model from a ChatGPT inventor is thrilling developers
+cbd7e457-65e6-44f1-b81a-3409b875cc1e,tech-pulse,neural-hardware,headline mentions 'Claude',Researchers used Claude to hack OpenAI
+b0a19f31-4a74-4ed1-b3d8-30b80cf8b86e,tech-pulse,neural-hardware,headline mentions 'OpenAI',Lawsuit demands OpenAI pay for new school after ChatGPT used in shooting
+6cc2b0a3-10b6-465e-a4db-119ee3ff4edb,poli-split,neural-hardware,headline mentions 'Anthropic',"Trump defends AI approach, criticizes Anthropic CEO and ‘conspiracy theorists’"
+3e7b82ff-18d1-49c7-99a6-2a7aeb601810,startup-signal,neural-hardware,headline mentions 'OpenAI',Only at TechCrunch Disrupt 2026: What happens when OpenAI ships your roadmap?
+01a69fa1-b8ff-4f87-bb74-a0b8de9dcae5,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Decides ChatGPT Would Be Better With More Sponsored Results
+ed15e245-0dbd-4054-b1df-ce4896875f1e,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI stuck fighting Musk antitrust suit after Apple finds a way out
+d63e85d1-0d81-4673-8208-4cae014bd987,startup-signal,neural-hardware,headline mentions 'Anthropic',"Early Anthropic hire, former METR COO have found a way to rein in rogue AI agents"
+375c23b0-46dd-49c6-a13e-cc34194ce4a1,poli-split,neural-hardware,headline mentions 'Anthropic',"‘You can’t trust anything’ from Anthropic, OpenAI leaders, lawyer says"
+28db24fe-2705-485a-bcf3-5c9f41527921,startup-signal,neural-hardware,headline mentions 'ChatGPT',Robots are waiting for a ChatGPT moment: Nvidia’s Les Karpas explains why at TechCrunch Disrupt 2026
+630c6c1f-f0ad-4ec7-b71a-3057c0fb3259,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Creates a New Framework to Disclose Bad AI Behavior
+0305547d-2cf3-47d6-b9cf-8ae4c3c90d45,poli-split,neural-hardware,headline mentions 'OpenAI',OpenAI discloses 6 reports of AI models’ ‘unexpected or concerning’ behavior
+c40fe1a6-06d4-419f-9c42-359f543b88dc,starfall-weekly,neural-hardware,headline mentions 'Gemini',"Google’s Gemini Hacked Three Companies in May, and It’s Only Admitting That Now"
+3b23a245-633f-43bb-8328-d76782ae14ca,starfall-weekly,neural-hardware,headline mentions 'Anthropic',"While Issuing Warnings About AI-Made Bioweapons, Anthropic Quietly Set Up an AI-Run, Robot-Operated Biology Lab Here in the US"
+6ec3b95a-312f-47e9-b510-12e6d48bc8f4,poli-split,neural-hardware,headline mentions 'Anthropic',Anthropic: AI model Claude helping build next version of it
+1e7692b8-edec-44ab-8f62-de76c17ba80c,starfall-weekly,neural-hardware,headline mentions 'OpenAI',"OpenAI Researcher Warns Air-Gapped Computers Can Talk Through Heat. Technically, He’s Right"
+9254f9c4-97c4-403f-839b-144e98f04167,startup-signal,neural-hardware,headline mentions 'Manus',Manus seeks $4B valuation in new $500M fundraise as it resumes independent ops
+39fa15ac-ea41-4931-8d83-deddca2f5133,climate-watch,neural-hardware,headline mentions 'OpenAI',Georgia Residents Sue Over OpenAI Data Center
+176075b4-b00f-432d-87a4-d3948a082ee9,starfall-weekly,neural-hardware,headline mentions 'Qwen',"The ‘QwenBook’ Laptop Can Run Every OS at Once, and It May Be PC Fans’ Worst Nightmare"
+8d0a7d13-7bc7-4a35-bdde-46e1ab40b099,starfall-weekly,neural-hardware,headline mentions 'OpenAI',An OpenAI Agent Breached an Australian Government Data Portal
+7fe368f5-f999-4b9b-895a-9e2c2f740541,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI still doesn’t seem to have a handle on all of its rogue AI activity
+e74eb6c2-dcc6-4f49-8d11-83ed73d3ad3d,startup-signal,neural-hardware,headline mentions 'OpenClaw',"OpenClaw launches free enterprise control plane for persistent AI agents, backed by OpenAI, Red Hat and Nvidia"
+8bd8e032-c3f5-47fb-b3d3-b2bd18c3d5f1,startup-signal,neural-hardware,headline mentions 'OpenAI',OpenAI's GPT-6.1 Sol offers Astra-like performance at 1/5th price. A new Ultrafast tier clocks at 300 tokens per second.
+1c19ca60-75f8-4fd9-bc44-7ba700b80792,startup-signal,neural-hardware,headline mentions 'OpenAI',OpenAI’s new ‘Private Intelligence' targets a growing enterprise concern: who can see your AI data?
+11650255-a567-4fa5-b4d7-ec2439d148f9,startup-signal,neural-hardware,headline mentions 'OpenAI',"OpenAI launches Dots, always-on AI agent coworkers, and ChatGPT Space where they can collaborate with human teams"
+c8495406-f6eb-46dc-b6a3-55111cfc456f,the-veil,neural-hardware,headline mentions 'Anthropic',"Leaked Anthropic IPO Prospectus shows $42BN Net Loss, $518BN in unfunded spending commitments, and $20BN In Cash"
+cd8701a6-ee72-46f9-b17a-b96cdb3812df,the-veil,neural-hardware,headline mentions 'OpenAI',"OpenAI scraps planned release of ""Deceptive"" New Model as Rogue Agents force unprecedented rollback"
+e4fae5c2-be15-4e71-830a-bb18c64755e7,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI launches Dots, its bubbly agentic avatar"
+cf375db9-a870-4bae-b098-425f645c8e8b,tech-pulse,neural-hardware,headline mentions 'ChatGPT',ChatGPT Space is a shared hub for work projects and personal AI agents
+4e26d05d-9949-4e88-830a-a3ce1b9b8b0e,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI launches Dots, its Muse competitor"
+9c880920-11b9-4ef8-a580-f1e362ea39d7,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI launches GPT-6.1 Sol, says it nearly matches GPT-6 Astra and costs less"
+ddc0bead-5b55-456d-bbc2-4850f86c005b,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI expands ChatGPT’s plug-ins with app-like interfaces and automations
+ce50c4a5-dcc0-4a44-aa16-5c1e39c1f151,tech-pulse,neural-hardware,headline mentions 'Sam Altman',Sam Altman says OpenAI won’t go public until its models are safe
+017fcd5a-2742-484f-8720-a38b22bb07d6,tech-pulse,neural-hardware,headline mentions 'OpenAI',Here's what actually happened in OpenAI's Australian gov't server hack
+fbe9ac76-fff2-47a4-9107-487bb743447f,tech-pulse,neural-hardware,headline mentions 'Gemini',Gemini and Find Hub can help you locate your important documents — here's how
+e9310a14-d4c3-449d-9eeb-15bb15b0ffbf,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s latest features take direct aim at the app store model
+89c63f6e-537b-4a8a-aeff-78c3aeb599ce,tech-pulse,neural-hardware,headline mentions 'OpenAI',Here’s why OpenAI is absent from Nvidia’s industry-wide effort to end rogue AI agents
+11e96953-8d44-4bdf-8985-26016910d8fd,tech-pulse,neural-hardware,headline mentions 'xAI',The internet is convinced Elon Musk’s xAI trolled OpenAI’s ‘Dots’ launch
+79a78f86-a8c9-4629-93b5-5ea615852848,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI takes on Microsoft with the launch of what feels a whole lot like ChatGPT’s own office suite
+10686fdb-6433-4dba-a8a1-396d92c6da7f,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI says planned GPT-6.1 is too insecure to release
+76caecb6-28cd-44b9-a2d7-90b408d87dcd,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic’s IPO pitch includes a warning about human extinction
+2df67a6d-c2cf-42cd-93c9-bfd5c5116d6c,poli-split,neural-hardware,headline mentions 'OpenAI',Albanese says OpenAI agent hacked Australian health department site
+5b77da27-91d8-4061-bb9e-eca307483d27,starfall-weekly,neural-hardware,headline mentions 'OpenAI',"OpenAI May Announce New Security Model, GPT-6 Cyber, Within Days"
+275929b0-8768-4dc4-808f-65d6089b84d4,tech-pulse,neural-hardware,headline mentions 'OpenAI',Protests against OpenAI get increasingly creative
+8fc7ea41-e883-4fe7-8d5c-0392f629ee1e,starfall-weekly,neural-hardware,headline mentions 'OpenAI',"No OpenAI IPO Until the AI Stops Going Rogue, CEO Sam Altman Says"
+cf1cac45-7ef1-4455-b063-8d7d7230149e,poli-split,neural-hardware,headline mentions 'Anthropic',Appeals court sides with Trump admin in Anthropic blacklisting
+1e9ce59f-be0f-46ad-9e82-ec9855b2f3d3,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Gets Sued Over the Hugging Face Hack
+0c8cb4e1-6160-42ba-8d48-efa100ab47b3,poli-split,neural-hardware,headline mentions 'Anthropic',DC appeals court sides with Pentagon on blacklist of Anthropic
+2af1faf8-26fc-4f0c-b6aa-6e4bea7e73da,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic Says It Discovered a Crispr-Like System. Now What?
+ffb4cd8f-7a8b-446d-9766-08bc08fe7386,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s Dots Are Always-On AI Agents—and Its Answer to Meta’s Muse
+9daca853-9942-44a6-8164-b97981b1631e,poli-split,neural-hardware,headline mentions 'OpenAI',OpenAI agent made unauthorized attempts to access federal agencies’ websites
+3a42fbd5-7caf-4d78-bdd4-c04768b48714,poli-split,neural-hardware,headline mentions 'Anthropic',Anthropic CEO Dario Amodei to have private White House dinner with Trump
+36774bc1-f149-4548-b79d-04b1f1771902,poli-split,neural-hardware,headline mentions 'OpenAI',News outlets ask court to give ‘little weight’ to DOJ support for OpenAI in copyright dispute
+26d7d015-5692-424f-95b8-9f5da10156f3,tech-pulse,neural-hardware,headline mentions 'OpenAI',Florida invokes extinction fears in legal bid to halt OpenAI development
+bc3befd7-37b9-484d-93c8-3638158c2f33,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Cancels Release of GPT-6.1 Astra Because It ‘Regressed’ on Safety
+6f43f547-dac7-48f3-be8e-ea596ad2493f,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Anthropic Releases Its Second New AI Model in Less Than a Week
+cd8c94e0-d906-467d-abbe-ab48a84dc5aa,poli-split,neural-hardware,headline mentions 'OpenAI',OpenAI halts releasing newest model over safety concerns
+97aa80f3-710b-48c0-8556-9ddad3ff0a5c,starfall-weekly,neural-hardware,headline mentions 'OpenAI',"With Dots, OpenAI Wants You to Stop Being Afraid of Its AI Agents"
+672992ca-82ac-401f-a188-e5ab62281d45,starfall-weekly,neural-hardware,headline mentions 'OpenAI',"With No Astra to Release, OpenAI Pivots to New GPT-6.1 Sol Model"
+cd706653-7a3b-4bd1-bf63-06e09c8a7b95,tech-pulse,neural-hardware,headline mentions 'Anthropic',An Anthropic AI model sent a false homicide tip to Philadelphia police
+cc4d1579-cb13-43a5-869d-3f59376d09f0,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic’s AI gave Philadelphia police a fake tip about an unsolved homicide
+6dfafd66-a5a7-4e6b-9e1b-07ccbc7b974e,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Is Pissing Off a Bunch of Mathematicians—Again
+7dfdc888-db2c-44cc-95d6-cc365612fef8,tech-pulse,neural-hardware,headline mentions 'Sam Altman',A New Neurotech Startup Launches to Rival Sam Altman’s Merge Labs
+f6358d75-0145-41d0-8c1a-cfc6374fd4c6,tech-pulse,neural-hardware,headline mentions 'Mistral',Mistral Says Its New AI Model ‘Le Chonk’ Is the Best Open-Weight Offering Outside of China
+017f383c-41db-49ed-8168-f30c3d749037,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic can’t reliably control its AI agents. It’s cutting off its internal evals from the live internet instead
+fc6e2574-40e8-4fc2-ada2-957c449e745a,startup-signal,neural-hardware,headline mentions 'ElevenLabs',AI voice startup ElevenLabs doubles valuation to $22B
+34a24f9c-643b-4b2a-be37-42b4e9f01be6,tech-pulse,neural-hardware,headline mentions 'OpenAI',‘Pure insanity’: Mathematicians will need years to make sense of OpenAI’s latest drop
+e007523e-0617-4e68-9185-8c68dd3e32ce,the-green-room,neural-hardware,headline mentions 'Sam Altman',Sam Altman Is Going to Try to Play Artificial Cool
+6f0012df-dedc-42b1-afc3-3b4693553c15,startup-signal,neural-hardware,headline mentions 'Gemini',"Google unveils Gemini 4 Argon, retaking benchmark lead over OpenAI and Anthropic — but in limited release"
+1b1f1a83-2742-436b-bc2f-ecd30a600472,startup-signal,neural-hardware,headline mentions 'Claude',Claude Dashboards & Motion
+bdd7b454-f3ab-44ac-a542-b9ca7a485180,tech-pulse,neural-hardware,headline mentions 'Gemini',Google announces Gemini 4 and says it’s so capable that only ‘trusted cyber defenders’ can have it right now
+a7a91b68-b642-437f-9902-57ae24d6486f,startup-signal,neural-hardware,headline mentions 'OpenAI',Developers say OpenAI and Anthropic safeguards are flagging routine work and costing them time
+087c7e6d-4ad5-4a76-9799-3434a2abc99b,startup-signal,neural-hardware,headline mentions 'OpenAI',Dots by OpenAI
+f66fc6ee-7dbd-43b0-8f53-e52e01585c3e,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s Jev clone could help the frontier lab stop its swarming agents
+ebb68be9-ded5-46eb-8afb-f2fbd4c56745,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI President Reportedly Pulls Support From Controversial AI Super PAC
+a9faf594-bcc3-4c20-9035-7fb092c686ef,startup-signal,neural-hardware,headline mentions 'Anthropic',Anthropic documented a new problem for security teams: Attacks that can adapt while they're underway
+35c309b7-1c32-477e-aefe-8ad0296b36cc,the-green-room,neural-hardware,headline mentions 'OpenAI',Andrew Garfield Says OpenAI’s Sam Altman Seemed ‘F—ing Great’ Before Playing Him in ‘Artificial’: ‘And Then You Learn More About a Person’
+ce5088f9-b000-4a02-9f9d-8194df91c2e2,the-green-room,neural-hardware,headline mentions 'OpenAI',"‘Artificial’ First Reactions: Luca Guadagnino’s OpenAI Drama is ‘Provocative,’ ‘Downright Horrifying’ and His ‘Best Film in a Decade’"
+3400df62-b0dd-4676-9c69-67e992b06926,the-green-room,neural-hardware,headline mentions 'Sam Altman',"Andrew Garfield On Playing Sam Altman, A Charismatic Leader Sucking Up “Our Autonomy, Power And Data” — NYFF"
+4c4422e7-fc71-47a6-9f8b-251748a0700e,the-green-room,neural-hardware,headline mentions 'Sam Altman',‘Artificial’ Review: Andrew Garfield Is Chilling As Sam Altman In Luca Guadagnino’s OpenAI Origin Story That Should Make You Very Afraid – New York Film Festival
+33e93981-d028-46fa-b999-a7f213fd89b9,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Has Sent Notices of Sketchy AI Behavior to Over 100 Organizations So Far
+65cded6f-448d-440a-8432-bcf4b23e7797,the-green-room,neural-hardware,headline mentions 'Sam Altman',How Andrew Garfield Combined Crowdsourcing and a Classic Acting Technique to Understand Sam Altman
+f06e3d70-8ee0-4372-9a59-dbb1043fd75c,tech-pulse,neural-hardware,headline mentions 'Copilot',Inside Microsoft’s big Copilot rethink
+e60b1829-0565-4635-a6d7-970c6ad710ae,tech-pulse,neural-hardware,headline mentions 'Grok',Musk’s AI chatbot Grok reportedly encouraged Trump to capture  Venezuela’s president
+c16a16de-a37d-4cd8-bf23-1be458ef9182,tech-pulse,neural-hardware,headline mentions 'ChatGPT',A Flaw in ChatGPT’s Mac App Could Have Let Hackers Grab Sensitive Data
+8e786bef-9876-4493-a86e-2c123faa0b95,startup-signal,neural-hardware,headline mentions 'Manus',Cue by Manus
+0aa75543-baa0-4bcd-889e-1cc6302d1b83,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI cuts ties with 3 safety researchers, WSJ reports"
+5b19d6a9-d263-4edb-8ea4-31a855a7d1ff,tech-pulse,neural-hardware,headline mentions 'ChatGPT',ChatGPT can now virtually try on clothes for you
+e0fdb733-30f1-4be9-8d61-4cb03cb1aa0e,tech-pulse,neural-hardware,headline mentions 'OpenAI',Nscale adds former OpenAI exec Fidji Simo to its board ahead of potential IPO
+e051f293-85e7-4877-8b8b-08552903cadd,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Revenge of the Nerd: Trump Kinda Seems to Like Anthropic’s CEO
+918f5ade-29ea-4419-9f5e-087737eae9c9,the-green-room,neural-hardware,headline mentions 'OpenAI',‘Artificial’ First Reactions: Luca Guadagnino’s Biting OpenAI Satire Is Both ‘Savage’ and ‘Terrifying’
+fee7ca62-7b36-42b5-9e6d-4e89ea4c5e85,the-veil,neural-hardware,headline mentions 'OpenAI',‘Looks like they’re firing whistleblowers’: Alarm as OpenAI reportedly ousts safety experts
+e341a32f-4f6f-4697-a278-a285fc5f611d,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s Dot agent is enterprise software that can also order your dinner
+b4318f37-40b7-4e90-9630-cb28c0f1d5c0,tech-pulse,neural-hardware,headline mentions 'Stability AI',Sean Parker is rebuilding Stability AI around music
+7e26d8f6-f43d-4777-bd86-b1694df83717,tech-pulse,neural-hardware,headline mentions 'OpenAI',"""An AI did it"" is no defense, says nonprofit suing OpenAI over Hugging Face hack"
+ba0f6120-c76a-4f6c-96b2-fc1b115597ce,startup-signal,neural-hardware,headline mentions 'Claude',"Claude Opus 5.5 uses em-dashes 99% less often and sounds more human — but still exhibits 2,548 AI writing tells"
+0587f190-0cb7-4f96-bacd-201c6c79eed0,tech-pulse,neural-hardware,headline mentions 'Gemini',Google's first Gemini 4 model is 'Argon'
+f3b6f515-97f6-4a59-9f30-020894d1cf76,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Ousts Three Safety Researchers for Allegedly Mishandling ‘Sensitive Information’
+5e50ceb2-be1a-40d9-bd17-10dfa99134d7,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI fires three employees who allegedly shared info with an external AI safety group
+0817c1e8-1051-4806-a834-f0ed969ef5a4,poli-split,neural-hardware,headline mentions 'Anthropic',‘Existential risks’: Anthropic warns its investors about its own AI
+4136ac1e-f0ae-4d84-9f6c-9456a7697254,tech-pulse,neural-hardware,headline mentions 'Gemini',"Google announces Gemini 4 Argon AI model, but you can't use it yet"
+72b09f72-21dd-40db-b116-2deb00e00eb6,poli-split,neural-hardware,headline mentions 'OpenAI',California attorney general subpoenas OpenAI over cyber incidents
+5c674ad9-ee3e-453f-8b8c-95a88b6edb6f,poli-split,neural-hardware,headline mentions 'OpenAI',"FTC launches probe into OpenAI, Anthropic over model consumer risks"
+4e7b4286-b30f-4fa4-b909-8f93ea1f5d31,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'OpenAI',OpenAI admits response to Australian government hacks 'not good enough'
+a63b012b-3462-41ed-94b2-9fdd8ea49c3e,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'Anthropic',"Pentagon stops using Anthropic AI tools after blacklisting company, BBC told"
+e965625e-9534-4310-ada7-342eda0f9bf7,startup-signal,neural-hardware,headline mentions 'ChatGPT',ChatGPT Space
+295c454c-2e32-423b-9e30-2ed81ddc027e,tech-pulse,neural-hardware,headline mentions 'OpenAI',An OpenAI safety employee has quit and is sounding the alarm
+10d6f81e-f410-4910-b012-f01ec6fd7cdd,tech-pulse,neural-hardware,headline mentions 'OpenAI',"OpenAI safety employee resigns, claiming the company’s ‘culture is broken’"
+c57949a2-a14b-4d90-8004-2d6b1408e242,startup-signal,neural-hardware,headline mentions 'Cursor',Cursor Remote Lite
+ba92d7ec-6249-4139-b06e-350e37709e18,startup-signal,neural-hardware,headline mentions 'Gemini',Gemini 4 Argon
+232ffa69-20f7-4852-b1be-10df8072e09e,oss-report,neural-hardware,headline mentions 'Claude',Vomit: Clean up Claude 5's token output with a separate LLM
+b5ee5534-6dbf-4f8f-8e8c-aa47c1ea69c3,tech-pulse,neural-hardware,headline mentions 'Gemini',Gemini 3.8 Live with Live Avatar gives Google’s AI a face
+8d7512c9-7cd2-4b3a-9c8f-e60e32f4b585,startup-signal,neural-hardware,headline mentions 'Claude',Stolen Claude session cookies can reach corporate Gmail through grants no IT admin can revoke
+62fc88a7-0cef-4f96-b64b-b81ba910d2a9,tech-pulse,neural-hardware,headline mentions 'Kimi',Kimi-maker Moonshot AI targets $2B in annual revenue
+e40d935a-bbc0-4715-8b3c-4c9ac2220b5c,starfall-weekly,neural-hardware,headline mentions 'OpenAI',"OpenAI, Anthropic, and Google Join Forces for Safety as Antitrust Concerns Mount"
+5a151f22-76f4-4c9d-bf5f-963e5b227fb1,tech-pulse,neural-hardware,headline mentions 'Anthropic',"Microsoft AI CEO says AI threats are real, and Anthropic is making it worse"
+af12090b-1088-43ad-a56a-2a09acbfca08,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI reportedly in talks to raise $30B round at $1.4T valuation
+f49dba9b-7c51-4d6a-8964-d34d63f427fb,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI gives Codex reusable cloud environments that work across devices
+73806341-41bc-49ce-a213-22be10f2e8fb,poli-split,neural-hardware,headline mentions 'Sam Altman',Sam Altman admits we should accept ‘some bad things’ for sake of AI supremacy
+e337fb8a-ed41-4d88-b498-f369813ef673,tech-pulse,neural-hardware,headline mentions 'OpenAI',Former OpenAI employee says AI should be regulated like nuclear power plants
+950ab6d4-352b-47b1-8ae1-71dee0f82fee,tech-pulse,neural-hardware,headline mentions 'ChatGPT',Child safety group calls ChatGPT for Teens an unacceptable risk
+bf24e3ec-fb5e-49df-b829-529da94d21a3,startup-signal,neural-hardware,headline mentions 'Manus',Introducing Video Editor in Manus 2.0
+1fcd3dfa-2464-4899-a986-64eca1c9fbf0,startup-signal,neural-hardware,headline mentions 'Mistral',Mistral Large 4
+d46b712a-d363-4e95-ae18-03231a430f73,tech-pulse,neural-hardware,headline mentions 'Anthropic',"Anthropic is giving startups a free year of Claude Team and $1,000 in credits"
+e5ccf4e0-2f06-44a2-89eb-f90d8b75f8c8,tech-pulse,neural-hardware,headline mentions 'Mistral',Mistral’s new 1T model aims to leapfrog closed and open rivals
+5a2a20bf-3d0b-469f-a955-1c3aec350873,tech-pulse,neural-hardware,headline mentions 'ChatGPT',"ChatGPT for Teens is an ‘unacceptable risk,’ says Common Sense Media"
+3cd0c25d-4906-4146-8821-dd22b58a573e,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI drops another batch of mathematical breakthroughs
+65dd996b-b85f-41d7-9c86-5592af00522c,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'OpenAI',"OpenAI Releases Findings on 377 Math Problems, Further Roiling Field"
+2acf6b6e-437b-447e-b7fa-539b36cff127,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'OpenAI',‘This Is Nuts.’ An OpenAI Insider Explains Why He Quit.
+e5b7c288-1fd3-4c25-988d-c115db011ff6,startup-signal,neural-hardware,headline mentions 'Cohere',Cohere's North 2 puts AI agents on a budget and gives them a memory
+f86fe190-c008-416d-a125-ce553a66bc6f,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI is sticking more ads in ChatGPT
+2c247abe-da1d-4a55-9314-2f01ac799895,starfall-weekly,neural-hardware,headline mentions 'OpenAI',"OpenAI Dumps 377 New Math Results on GitHub, Publishes Hand-Wringing Blog Post"
+d9b4236d-cebf-40d4-b66e-bdc60f3d0042,startup-signal,neural-hardware,headline mentions 'Claude',"You can now open Claude directly in Google Docs, Sheets and Slides (and vice versa, open and edit the files in Claude)"
+8ce039ef-11d4-4071-974c-a491144b36d0,startup-signal,neural-hardware,headline mentions 'OpenAI',Atlassian deepens its OpenAI partnership with a spend commitment — but its platform stays firmly multi-model
+3f9fdcbf-a018-4202-87d8-b378b4be9e73,startup-signal,neural-hardware,headline mentions 'Mistral',"Mistral debuts Large 4 ‘Le Chonk', a 1-trillion parameter text output model with high benchmarks planned for open weights release"
+99bcccf7-aa94-4ca3-a4bf-d1ed699e859e,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic is cutting off its internal evaluations from the internet
+3b9515de-a824-4e48-bd36-426d6d665069,starfall-weekly,neural-hardware,headline mentions 'Claude',Did Claude Help an Amateur Astronomer Discover a New Planet?
+9c741376-1c1e-40e9-ae5a-42b8f37c4a3a,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic now offers a free vulnerability-finding service for open-source software
+addaa9ff-1d0f-461e-8b9f-6afea80d2cda,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'Sam Altman',"Accept ‘bad things’ in return for benefits of AI, says Sam Altman"
+7778a6ab-ed58-4968-bc47-7209535619e7,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'OpenAI',OpenAI fires workers for 'mishandling sensitive information'
+ec7ae7db-0880-4c35-abb0-60dd94b75a98,poli-split,neural-hardware,headline mentions 'Anthropic',Philadelphia police receive false homicide tip from Anthropic AI model
+8d33f867-1c5b-4082-bbdf-0f0ab94c08ad,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic says its AI agents tried to break into government websites
+f636d977-2a98-4538-a2f0-657007950326,startup-signal,neural-hardware,headline mentions 'DeepMind',Vinod Khosla believes ex-DeepMind engineer’s Wajo will win agent market on trust
+086d320a-0ba6-4b4c-8414-30a026b35afc,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI will watermark ChatGPT outputs by default—but only in the EU
+5964b1e4-c1e0-435d-8df9-e3eaefe59982,weekly-weird-news,neural-hardware,headline mentions 'ChatGPT',ChatGPT Driving a Car
+ab4c9772-c702-4707-bd96-9d2013ebe099,weekly-weird-news,neural-hardware,headline mentions 'Anthropic',Anthropic Says Its A.I. Discovered a New Enzyme System That Resembles the Revolutionary Gene-Editing Tool CRISPR
+f5f1402e-2a28-4d7e-8fca-a10c41d79ee1,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'ChatGPT',US man arrested as second suspect in Canada mass school shooting planned with ChatGPT
+e697098e-83f8-4a0c-b7b1-b8b0204c4b04,the-green-room,neural-hardware,headline mentions 'OpenAI',Artificial review – Luca Guadagnino takes on OpenAI in muddled tech satire
+abd40c6c-de32-4a7e-be3b-f577322e4396,weekly-weird-news,neural-hardware,headline mentions 'ChatGPT',This Cipher That Napoleon Used Went Unsolved For 217 Years. ChatGPT Just Solved It In Six Hours
+d3e50ad4-0bad-4605-a9d7-d554fed13938,tech-pulse,neural-hardware,headline mentions 'ChatGPT',"ChatGPT for Teens keeps teens talking, even during mental health crises"
+9a536ee2-4967-4150-8a5b-6dbef9d4e881,startup-signal,neural-hardware,headline mentions 'Claude',Claude for Google Workspace
+b283cb67-9bcf-4b95-87bc-e7d3ef814ac6,tech-pulse,neural-hardware,headline mentions 'ChatGPT',"ChatGPT’s ‘Intelligent UI’ update fills its responses with pictures, charts, and buttons"
+bc6a4551-acf7-492d-b5c7-3439a6b1f760,tech-pulse,neural-hardware,headline mentions 'Copilot',Microsoft is giving Copilot more control over Windows and your files
+a3513b80-5b8d-4c33-9b3e-9dea18a21846,starfall-weekly,neural-hardware,headline mentions 'OpenAI',Report Suggests OpenAI Has Clawed Tons of Market Share Back From Anthropic in 2026
+697b9b24-0b66-4fa4-9bc4-0527ca95a15e,starfall-weekly,neural-hardware,headline mentions 'OpenAI',3 Fired OpenAI Employees Write Plea for Chain of Thought Monitoring to Be Preserved
+7975b1f5-142f-4921-afc6-a1f0d45f4a50,startup-signal,neural-hardware,headline mentions 'Anthropic',"Anthropic launches Claude Haiku 5.5 with 90% API price reduction, matching GPT-6 Luna"
+63e5c3a8-7273-4ca7-9c49-6f99c13cfd5a,tech-pulse,neural-hardware,headline mentions 'Mistral',"Mistral says ""Le Chonk"" can challenge the best AI models"
+b4d4c64d-5ca4-4607-b282-4f41707be3eb,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI Wants Its New Agent to Run Your Life. Mine Said It Loved Me
+7186a472-7c62-4fe9-bd16-9763e670b58a,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI just posted hundreds more results on major math problems
+6a40fea2-7bc6-40e0-a0bd-32d8b5026830,startup-signal,neural-hardware,headline mentions 'OpenAI',OpenAI’s Alexander Embiricos is coming to TechCrunch Disrupt 2026 — days after the launch of Dots
+5fbdf29c-7de3-41a5-9d14-d8b179c1f5a4,startup-signal,neural-hardware,headline mentions 'Nous Research',"Nous Research confirms it hit $1.5B valuation, launches AI agents for business users"
+88136dcb-6033-4346-94a7-806534b47842,poli-split,neural-hardware,headline mentions 'OpenAI',OpenAI releases new batch of math breakthroughs
+9eb42ed0-8bb7-4398-b214-9150ae7187c6,tech-pulse,neural-hardware,headline mentions 'ChatGPT',The New ChatGPT Is More Show Than Tell
+a6a6b02e-9c23-47b1-8b3d-2b1f3b1495d9,tech-pulse,neural-hardware,headline mentions 'GPT-6',GPT-6 is coming to all tiers of ChatGPT
+c8da458c-3850-4ef6-98e7-17b9de0cdd2b,starfall-weekly,neural-hardware,headline mentions 'OpenAI',OpenAI Wants ChatGPT to Stop Looking Like a Chatbot
+0b762072-21dc-42ba-84f4-9995bbaca20e,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'OpenAI',OpenAI used AI to help write email warning Australian government AI had hacked its websites
+b475b3e0-b9e4-4088-852f-c8b25ca02539,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic changes usage policy to ban model abuse and election interference
+0d2891cb-202b-4298-bb1e-feba866e3d3e,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s revenue is reportedly $20 billion less than previously projected
+ea04f4ab-ef58-4692-b57e-aea4de1aa99e,startup-signal,neural-hardware,headline mentions 'Gemini',"Google Cloud unveils persistent Gemini Agents for long-running tasks, and they get their own Gmail, Calendar, and Drive storage"
+740e5551-7f44-4d99-8724-7579ee8cc873,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI doubles down on decision to fire three AI safety researchers
+18bd0e20-b529-4d27-a401-364221d182ba,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic launches free AI security scans for open-source projects
+8e209dd0-6066-44da-bc52-48d842d54530,tech-pulse,neural-hardware,headline mentions 'Gemini',"Google brings agentic AI to Gemini, starting with businesses"
+a4eac996-0026-4ad5-a533-42fd6cb0043b,tech-pulse,neural-hardware,headline mentions 'OpenAI',"Fired OpenAI safety researchers dispute misconduct claims, warn of chilling effect"
+a6a0e2d3-5c6f-4c71-9218-9d68ba248359,tech-pulse,neural-hardware,headline mentions 'OpenAI',OpenAI’s math solutions aren’t meeting the field’s standards yet
+37eb8675-f7ae-409d-88da-37eb2a338db3,poli-split,neural-hardware,headline mentions 'OpenAI',"OpenAI users in Russia, Iran used models to push political agenda online, in media"
+914ac396-e26c-4500-9b8e-ced1496fda83,startup-signal,neural-hardware,headline mentions 'Manus',China’s Manus raises over $500M in first funding round since split with Meta
+51fa8c93-775a-426e-b1b9-ba375e19b25e,starfall-weekly,neural-hardware,headline mentions 'Anthropic',Anthropic Moves Us One Step Closer to Making ‘Clanker’ a Slur
+d4b9df87-0b50-4835-bb47-27e6d43d3502,tech-pulse,neural-hardware,headline mentions 'OpenAI',Fired OpenAI safety researchers dispute their dismissals in open letter
+0bf5e18d-b1e8-47f5-9a50-b9a2a090e551,tech-pulse,neural-hardware,headline mentions 'Anthropic',Anthropic bans 'sustained and needless abusive or cruel behavior' toward its AI models
+5e5ba94c-76b1-413c-b6da-37fbb9a9291b,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'OpenAI',OpenAI projected to bring in $20bn less in revenue than expected
+3263219d-4e17-4b1f-9d21-2f31854b0ee4,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'OpenAI',OpenAI caught Russians and Iranians using ChatGPT for influence campaigns
+29094759-1202-4788-81b7-65c290faf8b0,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'Sam Altman',Sam Altman says AI will make ‘bad things’ happen. Exhibit A: needless death | Moustafa Bayoumi
+19c58823-5dcf-4686-a2c9-3127e111729f,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'OpenAI',Fired OpenAI researchers say they were let go for 'prioritising safety'
+2ad430f2-5699-45c3-b14a-2f43c8656c53,just-the-news-thats-fit-to-print,neural-hardware,headline mentions 'ChatGPT',ChatGPT for Teens has special safeguards. A watchdog group finds most don't work

@@ -623,10 +623,8 @@ def run_db_sources(configs: list, db_url: str) -> list[dict]:
         # Tag each discovered article with its magazine id so insert storage assigns it.
         for a in articles:
             a["magazine_id"] = magazine_id
-            # WWN-route: paranormal items pulled for The Veil belong in Weekly Weird News.
-            apply_weird_route(a)
-            # Political-route: straight politics pulled by tech sources goes to Political Picture.
-            apply_political_route(a)
+            # Paranormal/political/NASA/AI routing now happens for EVERY feed (YAML
+            # and DB) in insert_articles via the shared rules (agents/routing.py).
             # MOVE-LEARNING: if this source's work reliably gets moved to another
             # magazine (>=2 corroborating moves), start it off there instead.
             src_url = (a.get("source_url") or "").strip()
@@ -889,12 +887,29 @@ def insert_articles(db_conn, articles: list[dict], publish_settings: dict | None
     _quality_strikes: list[tuple[str, str]] = []
     import psycopg2.extras
 
+    from .routing import apply_routing
+
     inserted = 0
+    untagged: list[dict] = []  # inserted with no keyword subcategory -> LLM fallback
     for art in articles:
+        # Shared routing rules (frontend/src/lib/routing-rules.json) + the legacy
+        # political/paranormal keyword routes. Runs for YAML and DB feeds alike,
+        # BEFORE subcategory tagging so the tag comes from the final magazine.
+        route_rule = None
+        try:
+            from_mag = art.get("magazine_id")
+            route_rule = apply_routing(art)
+            if route_rule and art.get("magazine_id") != from_mag:
+                logger.info("  ROUTE %s: %s -> %s | %s", route_rule, from_mag,
+                            art.get("magazine_id"), art.get("title", "?")[:70])
+        except Exception as exc:  # routing must never break ingest
+            logger.warning("routing failed for %s: %s", art.get("title", "?")[:60], exc)
         if is_junk_deal(art):
             logger.info("  JUNK-DEAL SKIP: %s", art.get("title", "?")[:80])
             continue
-        if is_junk_announcement(art):
+        # NASA contract/funding releases are real news for Just the News, so they
+        # are let through the press-release/event filter.
+        if route_rule != "nasa-money" and is_junk_announcement(art):
             logger.info("  JUNK-EVENT SKIP: %s", art.get("title", "?")[:80])
             continue
         # Auto-tag software version-bump titles (e.g. "Hermes Agent v0.20.1")
@@ -956,6 +971,9 @@ def insert_articles(db_conn, articles: list[dict], publish_settings: dict | None
                 )
                 if cur.rowcount > 0:
                     inserted += 1
+                    if not art.get("subcategory"):
+                        untagged.append({"id": art["id"], "magazine_id": art.get("magazine_id"),
+                                         "title": art.get("title"), "summary": art.get("summary")})
                     # NOTIFICATION: auto-trigger 'new_article' notifications for
                     # users who follow this magazine.
                     mag_id = art.get("magazine_id")
@@ -1027,6 +1045,28 @@ def insert_articles(db_conn, articles: list[dict], publish_settings: dict | None
             pass
 
     db_conn.commit()
+
+    # Cheap LLM fallback for new articles the keywords could not place. Only
+    # touches rows still untagged (never overwrites an admin's choice).
+    if untagged:
+        try:
+            from .subcategory import llm_fallback_subcategories
+            picks = llm_fallback_subcategories(untagged)
+            if picks:
+                with db_conn.cursor() as cur:
+                    for aid, sub in picks.items():
+                        cur.execute(
+                            "UPDATE article SET subcategory = %s WHERE id = %s AND subcategory IS NULL",
+                            (sub, aid),
+                        )
+                db_conn.commit()
+            logger.info("  Subcategory LLM fallback: %d/%d tagged", len(picks), len(untagged))
+        except Exception as exc:
+            logger.warning("subcategory LLM fallback failed: %s", exc)
+            try:
+                db_conn.rollback()
+            except Exception:
+                pass
     return inserted
 
 

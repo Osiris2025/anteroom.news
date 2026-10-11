@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { DELETION_REASONS, deletionReasonLabel } from "@/lib/deletionReasons";
+import { subcatLabel } from "@/lib/subcategories";
 
 type Props = {
   articleId: string;
@@ -164,7 +165,7 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
         <select value={subcat} onChange={(e) => { setSubcat(e.target.value); act(() => patch({ subcategory: e.target.value || null })); setEditSub(false); }}
           autoFocus style={sl()}>
           <option value="">— subcategory —</option>
-          {subcats.filter(Boolean).map((s) => <option key={s} value={s}>{s}</option>)}
+          {subcats.filter(Boolean).map((s) => <option key={s} value={s}>{subcatLabel(s, currentMag)}</option>)}
         </select>
       ) : (
         <button onClick={() => setEditSub(true)} disabled={busy} style={bt("#202020", "#ccc", 10)}># Subcat</button>

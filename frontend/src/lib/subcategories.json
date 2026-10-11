@@ -1,0 +1,19 @@
+{
+  "_comment": "Display labels and AI-fallback descriptions for magazine subcategories (the slugs + keywords live in the magazine_taxonomy table). Read by the frontend (src/lib/subcategories.ts) and the engine (mounted read-only at /app/subcategories.json). Slugs not listed here are shown humanized (\"climate-change\" -> \"Climate Change\").",
+  "labels": {
+    "Releases": "Releases"
+  },
+  "magazines": {
+    "neural-hardware": {
+      "security-attacks": { "label": "Security & Attacks", "description": "Cybersecurity: breaches, ransomware, malware, phishing, vulnerabilities and patches, nation-state hacking, scams, plus attacks on AI systems (jailbreaks, prompt injection, data theft through AI tools)." },
+      "safety-risk": { "label": "AI Safety & Risk", "description": "AI alignment, rogue or misbehaving AI agents, safety research and warnings, models withheld as too dangerous, existential risk." },
+      "politics-policy": { "label": "Politics & Policy", "description": "Government, regulation, legislation, courts and lawsuits involving government or copyright, military and defense use of AI, international AI policy." },
+      "chips-hardware": { "label": "Chips, Hardware & Data Centers", "description": "GPUs, chips, servers, data centers, power and energy for AI, robotics hardware, devices and workstations." },
+      "reviews": { "label": "Reviews & Hands-On", "description": "Reviews, tests, comparisons, hands-on impressions, tutorials, how-to guides and tips." },
+      "ai-companies": { "label": "AI Companies & Industry", "description": "Business news about AI companies: funding, valuations, IPOs, acquisitions, partnerships, revenue, pricing, executives, hiring and departures, strategy." },
+      "models-research": { "label": "Models & Research", "description": "New or updated AI models, benchmarks, model capabilities, research papers, discoveries made with AI, training techniques." },
+      "tools-agents": { "label": "Tools & Agents", "description": "AI products, apps and features, coding assistants, agent harnesses, plugins and extensions, APIs and SDKs, developer tools, product launches." },
+      "society-culture": { "label": "Society & Culture", "description": "AI's effect on jobs, education, health, relationships, media, film and art; ethics debates, opinion and essays, everyday-life stories." }
+    }
+  }
+}

@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import AdminCardTools from "@/components/AdminCardTools";
 import { useAdmin } from "@/components/AdminProvider";
+import { subcatLabel } from "@/lib/subcategories";
 
 export type StoryArticle = {
   id: string;
@@ -58,7 +59,7 @@ export default function StoryCard({ article, onChanged }: { article: StoryArticl
           <span style={{ minWidth: 0, flex: 1 }}>
             <div style={{ fontSize: 10, color: "var(--accent,#ffd700)", letterSpacing: 1, textTransform: "uppercase", marginBottom: 3, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
               {article.pinned ? `${article.pinKind || "PINNED"} · ` : ""}
-              {mag}{article.subcategory ? ` / ${article.subcategory}` : ""}
+              {mag}{article.subcategory ? ` / ${subcatLabel(article.subcategory, article.magazine?.id)}` : ""}
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{title}</div>
             {article.summary ? (

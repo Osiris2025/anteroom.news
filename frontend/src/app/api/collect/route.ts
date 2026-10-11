@@ -6,20 +6,25 @@ import { article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 import crypto from "crypto";
 import { duplicateResponse, insertErrorResponse } from "@/lib/articleDuplicate";
+import { applyRoutingRules, ROUTING_PROMPT_GUIDANCE } from "@/lib/routingRules";
+import { tagSubcategory } from "@/lib/subcategoryTagger";
 
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
 const MODEL = "deepseek/deepseek-v4-flash-0731";
 
-// Magazine catalogue used for AI auto-detection and DB seeding
-const MAGAZINE_CATALOGUE: { id: string; name: string; description: string }[] = [
-  { id: "weekly-weird-news", name: "Weekly Weird News", description: "Satirical tabloid covering cryptids, UFOs, and the unexplainable" },
-  { id: "weird-and-wild", name: "Weird & Wild", description: "Speculative science and unusual natural phenomena" },
-  { id: "tech-pulse", name: "Tech Pulse", description: "Technology news and digital culture" },
-  { id: "poli-split", name: "Poli Split", description: "Political news and analysis" },
-  { id: "climate-watch", name: "Climate Watch", description: "Climate science and environmental news" },
-  { id: "startup-signal", name: "Startup Signal", description: "Startup and venture capital news" },
-  { id: "oss-report", name: "OSS Report", description: "Open source software news and ecosystem updates" },
-];
+// Magazine catalogue for AI auto-detection: read live from the magazine table
+// (was a stale hardcoded list of 7 that left out AI Frontier, Just the News and others).
+type MagInfo = { id: string; name: string; description: string };
+async function loadCatalogue(): Promise<MagInfo[]> {
+  try {
+    const rows = await db
+      .select({ id: magazine.id, name: magazine.name, tagline: magazine.tagline, description: magazine.description })
+      .from(magazine);
+    return rows.map((m) => ({ id: m.id, name: m.name, description: m.tagline || m.description || "" }));
+  } catch {
+    return [];
+  }
+}
 
 // Fetch + extract OpenGraph / meta tags from a URL
 async function extractMeta(url: string): Promise<{
@@ -73,13 +78,14 @@ async function extractMeta(url: string): Promise<{
 async function analyzeWithAI(
   title: string,
   description: string | null,
-  apiKey: string
+  apiKey: string,
+  catalogueList: MagInfo[],
 ): Promise<{
   magazineId: string | null;
   suitabilityOk: boolean;
   warnings: { level: string; message: string }[];
 }> {
-  const catalogue = MAGAZINE_CATALOGUE.map(
+  const catalogue = catalogueList.map(
     (m) => `- "${m.id}" (${m.name}): ${m.description}`
   ).join("\n");
 
@@ -92,6 +98,8 @@ async function analyzeWithAI(
     ``,
     `Magazine catalogue:`,
     catalogue,
+    ``,
+    ROUTING_PROMPT_GUIDANCE,
     ``,
     `Respond with JSON only (no markdown fences, no commentary):`,
     `{"magazineId":"...","suitabilityOk":true/false,"warnings":[{"level":"info|warn|block","message":"..."}]}`,
@@ -136,8 +144,9 @@ async function analyzeWithAI(
     }
 
     const parsed = JSON.parse(content);
+    const valid = catalogueList.some((m) => m.id === parsed.magazineId);
     return {
-      magazineId: parsed.magazineId || null,
+      magazineId: valid ? parsed.magazineId : null,
       suitabilityOk: parsed.suitabilityOk !== false,
       warnings: Array.isArray(parsed.warnings) ? parsed.warnings : [],
     };
@@ -195,8 +204,16 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // AI auto-detect magazine + check suitability
-  const aiResult = await analyzeWithAI(meta.title, meta.description, apiKey);
+  // AI auto-detect magazine + check suitability, then the shared routing rules
+  // (NASA / AI publishers / security) override the AI's pick.
+  const catalogue = await loadCatalogue();
+  const aiResult = await analyzeWithAI(meta.title, meta.description, apiKey, catalogue);
+  const routed = applyRoutingRules(aiResult.magazineId, {
+    title: meta.title, summary: meta.description, sourceUrl: rawUrl,
+  });
+  if (routed.magazineId && catalogue.some((m) => m.id === routed.magazineId)) aiResult.magazineId = routed.magazineId;
+  const subcategory = await tagSubcategory(aiResult.magazineId, meta.title, meta.description);
+  const findMag = (id: string | null) => (id ? catalogue.find((m) => m.id === id) || null : null);
 
   // If suitability is blocked, still create the draft but flagged for admin review
   if (!aiResult.suitabilityOk && aiResult.warnings.some((w) => w.level === "block")) {
@@ -215,6 +232,7 @@ export async function POST(req: NextRequest) {
         summary: meta.description || null,
         status: "draft",
         magazineId: aiResult.magazineId,
+        subcategory,
         flagged: true,
         suitabilityOk: false,
         warnings: JSON.stringify(aiResult.warnings),
@@ -231,7 +249,7 @@ export async function POST(req: NextRequest) {
       article: created,
       warnings: aiResult.warnings,
       suitabilityOk: false,
-      magazine: aiResult.magazineId ? MAGAZINE_CATALOGUE.find((m) => m.id === aiResult.magazineId) || null : null,
+      magazine: findMag(aiResult.magazineId),
       message: "Article saved as flagged draft — suitability concerns detected.",
     });
   }
@@ -250,6 +268,7 @@ export async function POST(req: NextRequest) {
         summary: meta.description || null,
         status: "draft",
         magazineId: aiResult.magazineId,
+        subcategory,
         flagged: !aiResult.suitabilityOk,
         suitabilityOk: aiResult.suitabilityOk,
         warnings: aiResult.warnings.length > 0 ? JSON.stringify(aiResult.warnings) : null,
@@ -258,9 +277,7 @@ export async function POST(req: NextRequest) {
       })
       .returning();
 
-    const magInfo = aiResult.magazineId
-      ? MAGAZINE_CATALOGUE.find((m) => m.id === aiResult.magazineId) || null
-      : null;
+    const magInfo = findMag(aiResult.magazineId);
 
     return Response.json({
       ok: true,

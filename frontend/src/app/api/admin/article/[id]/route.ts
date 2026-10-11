@@ -5,6 +5,7 @@ import { randomUUID } from "crypto";
 import { db } from "@/lib/db";
 import { article, deletionLog, magazineMoveLog, source } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
+import { tagSubcategory } from "@/lib/subcategoryTagger";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
 
@@ -66,6 +67,11 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       }
     }
     upd.magazineId = target;
+    // Re-tag in the new magazine (keywords, then a cheap AI pick) unless the admin
+    // chose a subcategory in the same request. The old magazine's tag never carries over.
+    if (target !== row.magazineId && body.subcategory === undefined) {
+      upd.subcategory = await tagSubcategory(target, row.title, row.summary);
+    }
   }
   if (body.subcategory !== undefined) upd.subcategory = body.subcategory || null;
   if (body.socialRepeat !== undefined) {

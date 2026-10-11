@@ -33,6 +33,8 @@ services:
       DATABASE_URL: postgresql://nexus:${NEXUS_DB_PASSWORD}@postgres:5432/nexus
     volumes:
       - ./streams:/app/streams:ro
+      - ./frontend/src/lib/routing-rules.json:/app/routing-rules.json:ro
+      - ./frontend/src/lib/subcategories.json:/app/subcategories.json:ro
     restart: unless-stopped
     networks:
       - default

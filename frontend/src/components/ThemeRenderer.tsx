@@ -10,6 +10,7 @@ import LiveCrawl from "@/components/LiveCrawl";
 import MagazineEditorial from "@/components/MagazineEditorial";
 import FollowButton from "@/components/FollowButton";
 import DefaultMagazineButton from "@/components/DefaultMagazineButton";
+import TopicInvite from "@/components/TopicInvite";
 
 /**
  * ThemeRenderer
@@ -160,6 +161,7 @@ export default function ThemeRenderer({ magazineId, dbMagazine, dbMagazines }: {
             <FollowButton magazineId={magazine.id} magazineName={magazine.name} />
             <DefaultMagazineButton magazineId={magazine.id} magazineName={magazine.name} accent={magazine.accent} />
           </div>
+          <TopicInvite magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />
           <MagazineEditorial magazine={magazine.id} magazineName={magazine.name} accent={magazine.accent} />
           <LiveFeed magazine={magazine.id} />
           <MagazineTopStories magazine={magazine.id} />

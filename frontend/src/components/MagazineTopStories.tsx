@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import AdminCardTools from "@/components/AdminCardTools";
+import { subcatLabel } from "@/lib/subcategories";
 
 type LiveArticle = {
   id: string; title: string; headline?: string | null; summary: string | null;
@@ -22,10 +23,8 @@ type Cell = {
 
 const UID = "_mztopstories";
 
-// Humanize a subcategory slug: "hardware-datacenters" → "Hardware Datacenters".
-function label(slug: string): string {
-  return slug.split(/[-_]/).map((w) => w.charAt(0).toUpperCase() + w.slice(1)).join(" ");
-}
+// Human label for a subcategory slug ("chips-hardware" → "Chips, Hardware & Data Centers").
+const label = (slug: string, magazine?: string) => subcatLabel(slug, magazine);
 
 function pickLeader(arts: LiveArticle[]): LiveArticle | null {
   return arts.find((a) => a.featured === true) || arts[0] || null;
@@ -135,11 +134,21 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
 
   // Derive the magazine's subcategory vocabulary from loaded articles (fallback
   // to a small default set if none are tagged yet).
+  // Admin tools: offer every subcategory the magazine has live content in, not
+  // just the ones on this page.
+  const [magSubcats, setMagSubcats] = useState<string[]>([]);
+  useEffect(() => {
+    if (!isAdmin) return;
+    fetch(`/api/articles/subcats?magazine=${encodeURIComponent(magazine)}`)
+      .then((r) => r.json())
+      .then((j) => { if (Array.isArray(j?.subcats)) setMagSubcats(j.subcats.map((x: any) => String(x.subcategory))); })
+      .catch(() => {});
+  }, [isAdmin, magazine]);
   const subcats = useMemo(() => {
-    const s = new Set<string>();
+    const s = new Set<string>(magSubcats);
     for (const a of articles) if (a.subcategory) s.add(a.subcategory);
     return s.size ? [...s] : ["Features", "Analysis", "Explainers", "Briefs"];
-  }, [articles]);
+  }, [articles, magSubcats]);
 
   const cells = buildCells(grid, grid.length, magazine);
   const totalPages = Math.max(1, Math.ceil(total / size));
@@ -161,7 +170,7 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
       <div className="mz-ed-head">
         <span className="mz-ed-mark">▼</span>
         <h2 className="mz-ed-h2">
-          {subcatParam ? <>“{subcatParam}” stories</> : "From the Desk"}
+          {subcatParam ? <>“{label(subcatParam, magazine)}” stories</> : "From the Desk"}
         </h2>
       </div>
 
@@ -174,7 +183,7 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
             background: "rgba(255,215,0,.08)", color: "var(--accent, #ffd700)",
             fontSize: 12, fontWeight: 700,
           }}>
-            Filtering: {label(subcatParam)} ({total} stories)
+            Filtering: {label(subcatParam, magazine)} ({total} stories)
           </span>
           <button
             onClick={() => router.push(`/magazines/${magazine}`)}
@@ -229,7 +238,7 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
           ) : null}
           <div className="mz-ed-kicker">
             {c.article.pinned && c.article.pinKind ? <span className="mz-ed-pin">{c.article.pinKind}</span> : null}
-            <span>{c.article.subcategory || c.article.magazine?.name || "News"}</span>
+            <span>{c.article.subcategory ? label(c.article.subcategory, magazine) : c.article.magazine?.name || "News"}</span>
           </div>
           <div className="mz-ed-title">{c.article.headline || c.article.title}</div>
           {c.article.summary && <div className="mz-ed-summary">{c.article.summary}</div>}

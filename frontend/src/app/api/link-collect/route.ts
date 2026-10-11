@@ -6,6 +6,8 @@ import { article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 import crypto from "crypto";
 import { duplicateResponse, insertErrorResponse } from "@/lib/articleDuplicate";
+import { applyRoutingRules, ROUTING_PROMPT_GUIDANCE } from "@/lib/routingRules";
+import { tagSubcategory } from "@/lib/subcategoryTagger";
 
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
 
@@ -90,6 +92,8 @@ async function detectMagazine(
     'Warnings: "blocker" for non-news/paywall/spam, "warning" for borderline/opinion, "info" for mild concerns.',
     "If it's clearly a news article without issues, return empty warnings.",
     "Pick the magazine that best matches the article's subject matter.",
+    "",
+    ROUTING_PROMPT_GUIDANCE,
   ].filter(Boolean).join("\n");
 
   const user = "Title: " + title + "\nDescription: " + (description || "(none)") + "\n\nClassify this article.";
@@ -177,6 +181,16 @@ export async function POST(req: NextRequest) {
 
   // Try AI magazine detection + suitability warnings
   const aiResult = await detectMagazine(meta.title, meta.description);
+  // Shared routing rules (NASA / AI publishers / security) override the AI pick.
+  const routed = applyRoutingRules(aiResult?.magazineId || null, {
+    title: meta.title, summary: meta.description, sourceUrl: rawUrl,
+  });
+  let magazineId: string | null = aiResult?.magazineId || null;
+  if (routed.magazineId && routed.magazineId !== magazineId) {
+    const [exists] = await db.select({ id: magazine.id }).from(magazine).where(eq(magazine.id, routed.magazineId));
+    if (exists) magazineId = routed.magazineId;
+  }
+  const subcategory = await tagSubcategory(magazineId, meta.title, meta.description);
 
   const id = "collect-" + crypto.randomBytes(6).toString("hex");
 
@@ -191,7 +205,8 @@ export async function POST(req: NextRequest) {
         title: meta.title,
         summary: meta.description || null,
         status: "draft",
-        magazineId: aiResult?.magazineId || null,
+        magazineId,
+        subcategory,
         warnings: aiResult?.warnings || null,
         submittedBy: session.user.id,
         submittedAt: new Date(),
@@ -201,7 +216,7 @@ export async function POST(req: NextRequest) {
     return Response.json({
       article: created,
       aiDetected: !!aiResult,
-      magazineDetected: aiResult?.magazineId || null,
+      magazineDetected: magazineId,
       warnings: aiResult?.warnings || [],
     });
   } catch (e: any) {

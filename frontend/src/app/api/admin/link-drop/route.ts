@@ -5,6 +5,8 @@ import { article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 import crypto from "crypto";
 import { duplicateResponse, insertErrorResponse } from "@/lib/articleDuplicate";
+import { applyRoutingRules, ROUTING_PROMPT_GUIDANCE } from "@/lib/routingRules";
+import { tagSubcategory } from "@/lib/subcategoryTagger";
 import {
   buildCommentarySystem, buildCommentaryUser, generateCommentary, COMMENTARY_REQUEST_OPTIONS,
 } from "@/lib/commentary";
@@ -186,6 +188,8 @@ export async function POST(req: NextRequest) {
     "",
     `Available magazines:\n${magList}`,
     "",
+    ROUTING_PROMPT_GUIDANCE,
+    "",
     "Respond with valid JSON ONLY in this exact format (no markdown, no explanation):",
     JSON.stringify({
       magazine_id: "the best-matching magazine id from the list above, or null if unclear",
@@ -224,6 +228,15 @@ export async function POST(req: NextRequest) {
     aiSummary = meta.description || null;
   }
 
+  // --- Shared routing rules (NASA / AI publishers / security) override the AI
+  // pick; an explicit magazine chosen by the admin always wins.
+  const routed = applyRoutingRules(detectedMagazineId, {
+    title: meta.title, summary: aiSummary || meta.description, sourceUrl: rawUrl,
+  }, explicitMagazineId);
+  if (routed.magazineId && magazines.some((m: any) => m.id === routed.magazineId)) {
+    detectedMagazineId = routed.magazineId;
+  }
+
   // --- Commentary: written by the chosen magazine's own columnist, using the
   // shared style rules (plain paragraphs, no markdown/labels/pitch-deck lines).
   // Validated and retried once; a cleaned version is saved if both miss.
@@ -260,6 +273,7 @@ export async function POST(req: NextRequest) {
 
   // --- Insert draft ---
   const id = `link-${crypto.randomBytes(6).toString("hex")}`;
+  const subcategory = await tagSubcategory(detectedMagazineId, meta.title, aiSummary || meta.description);
 
   try {
     const [created] = await db
@@ -275,6 +289,7 @@ export async function POST(req: NextRequest) {
         aiThoughts: JSON.stringify(aiThoughts),
         status: "draft",
         magazineId: detectedMagazineId,
+        subcategory,
         submittedBy: userId,
         submittedAt: new Date(),
       })

@@ -32,21 +32,19 @@ export default function StoryCard({ article, onChanged }: { article: StoryArticl
 
   return (
     <>
+      {/* Admin tools: the same (A) circle on every device (phone, iPad, desktop).
+          Click/tap (A) to open the toolbar; hover never opens it. No hover/pointer
+          media queries — iPads report those differently with/without a trackpad. */}
       <style>{`
 .sc-wrap .sc-hover { display: none; }
-.sc-wrap:hover .sc-hover { display: block; }
-.sc-wrap.sc-open .sc-hover { display: block !important; }
-.sc-wrap .sc-a { display: none; }
-@media (pointer: coarse) {
-  .sc-wrap:hover .sc-hover { display: none; }
-  .sc-wrap .sc-a { display: flex; }
-  .sc-wrap.sc-open .sc-hover { display: block !important; }
-}
+.sc-wrap.sc-open .sc-hover { display: block; }
+.sc-wrap .sc-a { display: flex; }
+.sc-wrap.sc-open .sc-a { background: var(--accent, #ffd700) !important; color: #000 !important; }
 `}</style>
       <span className={`sc-wrap${open ? " sc-open" : ""}`} style={{ display: "block", position: "relative", minWidth: 0 }}>
         <a href={href} style={{
           textDecoration: "none", color: "inherit", display: "flex", gap: 10, alignItems: "flex-start",
-          padding: "8px 0", borderTop: article.pinned ? "2px solid var(--accent, #ffd700)" : "1px solid rgba(150,150,150,.12)",
+          padding: isAdmin ? "8px 30px 8px 0" : "8px 0", borderTop: article.pinned ? "2px solid var(--accent, #ffd700)" : "1px solid rgba(150,150,150,.12)",
           minWidth: 0,
         }}>
           {article.imageUrl ? (
@@ -79,8 +77,8 @@ export default function StoryCard({ article, onChanged }: { article: StoryArticl
           </span>
         ) : null}
         {isAdmin ? (
-          <button className="sc-a" aria-label="Toggle admin tools" onClick={(e) => { e.preventDefault(); setOpen((v) => !v); }}
-            style={{ position: "absolute", top: 4, right: 6, zIndex: 5, width: 20, height: 20, borderRadius: "50%", border: "1px solid rgba(255,255,255,.25)", background: "rgba(0,0,0,.4)", color: "#fff", fontSize: 11, lineHeight: 1, alignItems: "center", justifyContent: "center", cursor: "pointer" }}>A</button>
+          <button className="sc-a" aria-label="Admin tools" aria-expanded={open} title="Admin tools" onClick={(e) => { e.preventDefault(); setOpen((v) => !v); }}
+            style={{ position: "absolute", top: 8, right: 2, zIndex: 5, width: 24, height: 24, borderRadius: "50%", border: "1.5px solid var(--accent, rgba(255,215,0,.7))", background: "rgba(10,12,16,.92)", color: "var(--accent, #ffd700)", fontSize: 11, fontWeight: 800, padding: 0, WebkitTapHighlightColor: "transparent", lineHeight: 1, alignItems: "center", justifyContent: "center", cursor: "pointer" }}>A</button>
         ) : null}
       </span>
     </>

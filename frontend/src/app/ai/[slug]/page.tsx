@@ -22,6 +22,7 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
   const [isAdmin, setIsAdmin] = useState(false);
   const [magazines, setMagazines] = useState<{ id: string; name: string }[]>([]);
   const [reloadKey, setReloadKey] = useState(0);
+  const [openTools, setOpenTools] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetch("/api/admin/session").then((r) => r.json()).then((j) => {
@@ -44,10 +45,14 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
   return (
     <>
       <style>{`@media(min-width:921px){.ai-mp{display:flex;gap:28px;align-items:flex-start}.ai-mp-main{flex:1 1 0;min-width:0}.ai-mp-rail{flex:0 0 280px;width:280px;max-width:100%;position:sticky;top:76px}}
-        /* Admin tools: hidden unless hovering the story card */
-        .ai-subcard-tools{opacity:0;pointer-events:none;transition:opacity .14s ease}
-        .ai-subcard:hover .ai-subcard-tools{opacity:1;pointer-events:auto}
-        @media(max-width:760px){.ai-subcard-tools{position:static!important;opacity:1!important;pointer-events:auto!important;margin-top:4px;border-radius:10px;border-top:1px solid rgba(150,150,150,.25)!important}}
+        /* Admin tools: the same (A) circle on every device; click/tap it to open the
+           toolbar (hover never does). No hover/pointer media queries on purpose. */
+        .ai-subcard-tools{display:none}
+        .ai-subcard.ai-open .ai-subcard-tools{display:block}
+        .ai-subcard-a{position:absolute;top:8px;right:8px;z-index:6;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--accent,rgba(255,215,0,.7));background:rgba(10,12,16,.92);color:var(--accent,#ffd700);font-size:12px;font-weight:800;line-height:1;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
+        .ai-subcard.ai-open .ai-subcard-a{background:var(--accent,#ffd700);color:#000}
+        /* Opens just below the card (pushes the list down) rather than covering it. */
+        .ai-subcard-tools{position:static!important;margin-top:4px;border-radius:10px!important;border-top:1px solid rgba(150,150,150,.25)!important}
       `}</style>
       <div className="ai-mp">
         <div className="ai-mp-main" style={{ maxWidth: 860, margin: "0 auto", padding: "24px 20px 60px" }}>
@@ -68,10 +73,10 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
               const showTools = isAdmin && !!a.sourceUrl;
               const label = sourceLabel(a.sourceUrl, undefined, a.sourceName);
               return (
-                <div key={a.id} className="ai-subcard" style={{ position: "relative" }}>
+                <div key={a.id} className={"ai-subcard" + (openTools[a.id] ? " ai-open" : "")} style={{ position: "relative" }}>
                   <a href={`/articles/${a.id}`} style={{
                     display: "flex", gap: 14, textDecoration: "none", color: "inherit",
-                    border: "1px solid var(--border,rgba(150,150,150,.16))", borderRadius: 12, padding: 14, transition: "border-color .12s", minWidth: 0,
+                    border: "1px solid var(--border,rgba(150,150,150,.16))", borderRadius: 12, padding: showTools ? "14px 44px 14px 14px" : 14, transition: "border-color .12s", minWidth: 0,
                   }} onMouseEnter={(e) => (e.currentTarget.style.borderColor = "var(--accent,#ffd700)")} onMouseLeave={(e) => (e.currentTarget.style.borderColor = "var(--border,rgba(150,150,150,.16))")}>
                     {a.imageUrl ? (
                       <img src={a.imageUrl} alt="" style={{ flex: "0 0 120px", width: 120, height: 76, objectFit: "cover", borderRadius: 8 }} loading="lazy" />
@@ -91,6 +96,10 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
                       </div>
                     </div>
                   </a>
+                  {showTools && (
+                    <button className="ai-subcard-a" aria-label="Admin tools" aria-expanded={!!openTools[a.id]} title="Admin tools"
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenTools((o) => ({ ...o, [a.id]: !o[a.id] })); }}>A</button>
+                  )}
                   {showTools && (
                     <div className="ai-subcard-tools" style={{
                       position: "absolute", left: 0, right: 0, bottom: 0, borderRadius: 0,

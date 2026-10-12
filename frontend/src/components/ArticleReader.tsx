@@ -31,7 +31,7 @@ const DEFAULT_SUBCATS = ["Features", "Analysis", "Explainers", "Briefs"];
 
 // Admin-only bar shown right under the summary: the same editorial tools that
 // appear on article cards, themed to match the page.
-function ArticleAdminBar({ article, magazine, C, backFallback, onSummary }: { article: ReaderArticle; magazine: ReaderMag; C: ReturnType<typeof palette>; backFallback: string; onSummary: (s: string | null) => void }) {
+function ArticleAdminBar({ article, magazine, C, backFallback, onSummary, onCommentary }: { article: ReaderArticle; magazine: ReaderMag; C: ReturnType<typeof palette>; backFallback: string; onSummary: (s: string | null) => void; onCommentary: (s: string | null) => void }) {
   const { isAdmin, magazines } = useAdmin();
   const router = useRouter();
   const [info, setInfo] = useState<{ status?: string; featured?: boolean; socialRepeat?: boolean; magazineId?: string | null; subcategory?: string | null } | null>(null);
@@ -69,6 +69,7 @@ function ArticleAdminBar({ article, magazine, C, backFallback, onSummary }: { ar
         pal={C}
         onChanged={() => { setVersion((v) => v + 1); router.refresh(); }}
         onSummary={(s) => { onSummary(s); router.refresh(); }}
+        onCommentary={(s) => { onCommentary(s); router.refresh(); }}
       />
     </div>
   );
@@ -77,10 +78,13 @@ function ArticleAdminBar({ article, magazine, C, backFallback, onSummary }: { ar
 export default function ArticleReader({ article, magazine, themeId }: { article: ReaderArticle; magazine: ReaderMag; themeId: string }) {
   const C = palette(themeId);
   const router = useRouter();
-  const { title, headline, sourceUrl, sourceName, imageUrl, efx, commentary, subcategory, publishedAt } = article;
+  const { title, headline, sourceUrl, sourceName, imageUrl, efx, subcategory, publishedAt } = article;
   // Local copy so an admin's "↻ Summary" shows the new text immediately.
   const [summary, setSummary] = useState(article.summary ?? null);
   useEffect(() => { setSummary(article.summary ?? null); }, [article.id, article.summary]);
+  // Same for "↻ Commentary".
+  const [commentary, setCommentary] = useState(article.commentary ?? null);
+  useEffect(() => { setCommentary(article.commentary ?? null); }, [article.id, article.commentary]);
   const magName = magazine?.name || "Anteroom";
   const agentName = magazine?.agentName || "The Desk";
   const displayTitle = headline || title;
@@ -199,7 +203,7 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
         </div>
       )}
 
-      <ArticleAdminBar article={article} magazine={magazine} C={C} backFallback={backFallback} onSummary={setSummary} />
+      <ArticleAdminBar article={article} magazine={magazine} C={C} backFallback={backFallback} onSummary={setSummary} onCommentary={setCommentary} />
 
       {/* AI commentary by the magazine's named agent */}
       <div style={{ border: `1px solid ${C.border}`, borderTop: `3px solid ${C.accent}`, borderRadius: 10, padding: "18px 20px 20px" }}>

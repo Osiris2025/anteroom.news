@@ -8,7 +8,8 @@
     "start": "next start",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:commentary": "node --experimental-strip-types --test scripts/commentary.test.mjs"
   },
   "dependencies": {
     "@better-auth/passkey": "1.6.26",

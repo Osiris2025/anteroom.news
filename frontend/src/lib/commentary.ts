@@ -106,6 +106,23 @@ function paragraphsOf(text: string): string[] {
   return text.replace(/\r\n?/g, "\n").split(/\n\s*\n+/).map((p) => p.replace(/\s+/g, " ").trim()).filter(Boolean);
 }
 
+// "Ends with a complete sentence": the last paragraph must finish with . ! or ?
+// (optionally followed by closing quotes/brackets), must not trail off with an
+// ellipsis, and must not end on a word that can't finish a sentence ("the.").
+const RE_TERMINAL_END = /[.!?]["”’')\]]*$/;
+const RE_ELLIPSIS_END = /(?:\.\.\.|…)["”’')\]]*$/;
+const RE_DANGLING_END = /\b(?:a|an|the|and|or|but|nor|than|because|whether|its|their|our|your|my)[.!?]["”’')\]]*$/i;
+
+/** True when the text stops mid-sentence (cut off, trailing ellipsis, dangling word). */
+export function endsIncomplete(text: string | null | undefined): boolean {
+  const paras = paragraphsOf(text || "");
+  if (paras.length === 0) return false; // empty is reported as "too short"
+  const last = paras[paras.length - 1];
+  return !RE_TERMINAL_END.test(last) || RE_ELLIPSIS_END.test(last) || RE_DANGLING_END.test(last);
+}
+
+export const PROBLEM_CUT_OFF = "ends mid-sentence (cut off)";
+
 /** Returns a list of human-readable problems; empty array means it passes. */
 export function validateCommentary(text: string | null | undefined): string[] {
   const t = (text || "").trim();
@@ -131,6 +148,7 @@ export function validateCommentary(text: string | null | undefined): string[] {
   }
   if (dup) problems.push("repeated paragraphs");
   if (paras.length > 6) problems.push("too many paragraphs");
+  if (t.length > 0 && endsIncomplete(t)) problems.push(PROBLEM_CUT_OFF);
   return problems;
 }
 
@@ -178,6 +196,7 @@ export function cleanCommentaryParagraphs(raw: string | null | undefined): strin
   t = t.replace(/\s*\(https?:\/\/[^)\s]+\)/g, "");                                  // (https://...)
   t = t.replace(/\b(from|at|via|see|on)\s+https?:\/\/[^\s)]+/gi, "$1 the source");   // "from https://..."
   t = t.replace(/<a\b[^>]*$/gi, "");                                                  // cut-off <a href=...
+  t = t.replace(/\\?["”]?\s*,\s*\\?"confidence\\?"\s*:\s*[\d.]+\s*\}\s*(?:```)?\s*$/, ""); // leaked JSON tail
   t = t.replace(/https?:\/\/[^\s)]*/g, "").replace(/\(\s*\)/g, "").replace(/[ \t]+([.,;:])/g, "$1"); // bare URLs
   t = t.replace(/(^|\s)\*\*(?=[^\s*])/g, "$1").replace(/(?<=[^\s*])\*\*(?=[\s.,;:!?]|$)/g, ""); // unpaired **
   const out: string[] = [];
@@ -192,6 +211,14 @@ export function cleanCommentaryParagraphs(raw: string | null | undefined): strin
     if (seen.has(key)) continue;                      // drop exact duplicates
     seen.add(key);
     out.push(p);
+  }
+  // A last paragraph that was cut off mid-sentence: keep it up to its last
+  // complete sentence, or drop it if it has none (never drop the only paragraph).
+  const last = out[out.length - 1];
+  if (last && !RE_TERMINAL_END.test(last)) {
+    const m = last.match(/^[\s\S]*[.!?]["”’')\]]*(?=\s)/);
+    if (m && m[0].trim().length >= 20) out[out.length - 1] = m[0].trim();
+    else if (out.length > 1) out.pop();
   }
   return out;
 }
@@ -217,7 +244,9 @@ export interface CommentaryResult {
 
 type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 
-async function callOnce(apiKey: string, model: string, messages: ChatMessage[], timeoutMs: number): Promise<string> {
+type CallResult = { text: string; finishReason: string };
+
+async function callOnce(apiKey: string, model: string, messages: ChatMessage[], timeoutMs: number): Promise<CallResult> {
   const resp = await fetch(`${OPENROUTER_BASE}/chat/completions`, {
     method: "POST",
     headers: {
@@ -238,10 +267,21 @@ async function callOnce(apiKey: string, model: string, messages: ChatMessage[], 
     throw new Error(`OpenRouter ${resp.status}: ${body.slice(0, 300)}`);
   }
   const data: any = await resp.json().catch(() => null);
-  const content = data?.choices?.[0]?.message?.content;
+  const choice = data?.choices?.[0];
+  const content = choice?.message?.content;
   // Empty content (e.g. finish_reason "length" after a reasoning runaway) is
   // treated as a failed attempt so the caller retries, not as a hard error.
-  return typeof content === "string" ? content.trim() : "";
+  return {
+    text: typeof content === "string" ? content.trim() : "",
+    finishReason: String(choice?.finish_reason || choice?.native_finish_reason || ""),
+  };
+}
+
+/** Validator problems for one API reply; hitting the token limit counts as cut off. */
+function problemsFor(r: CallResult): string[] {
+  const p = validateCommentary(r.text);
+  if (r.finishReason === "length" && !p.includes(PROBLEM_CUT_OFF)) p.push(PROBLEM_CUT_OFF);
+  return p;
 }
 
 /**
@@ -270,11 +310,13 @@ export async function generateCommentary(opts: {
     { role: "system", content: opts.system },
     { role: "user", content: opts.user },
   ];
-  const first = await callOnce(opts.apiKey, model, base, timeoutMs);
-  const p1 = validateCommentary(first);
+  const r1 = await callOnce(opts.apiKey, model, base, timeoutMs);
+  const first = r1.text;
+  const p1 = problemsFor(r1);
   if (p1.length === 0) return { text: first, passed: true, problems: [], attempts: 1, model };
 
   let second = "";
+  let secondProblems: string[] = validateCommentary("");
   let attempts = 1;
   try {
     // Retry as a revision of the first draft (keeps the good parts), quoting
@@ -283,17 +325,20 @@ export async function generateCommentary(opts: {
     const feedback = [
       `That draft breaks the style rules: ${p1.join("; ")}.`,
       examples.length ? `Rewrite these parts in plain, direct sentences:\n${examples.map((e) => `- "${e}"`).join("\n")}` : "",
+      p1.includes(PROBLEM_CUT_OFF) ? "It stopped mid-sentence. Keep it a little shorter and end on a complete sentence." : "",
       "Return the full revised commentary only, following every rule.",
     ].filter(Boolean).join("\n");
     const retryMessages: ChatMessage[] = first
       ? [...base, { role: "assistant", content: first }, { role: "user", content: feedback }]
       : base;
     attempts = 2;
-    second = await callOnce(opts.apiKey, model, retryMessages, timeoutMs);
+    const r2 = await callOnce(opts.apiKey, model, retryMessages, timeoutMs);
+    second = r2.text;
+    secondProblems = problemsFor(r2);
   } catch {
     second = "";
   }
-  const p2 = validateCommentary(second);
+  const p2 = secondProblems;
   if (second && p2.length === 0) return { text: second, passed: true, problems: [], attempts, model };
 
   // Neither passed. Prefer a non-empty attempt, then the one with fewer problems.

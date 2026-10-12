@@ -247,7 +247,9 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
           <>
             <button
               className="mz-admin-a-btn"
-              aria-label="Toggle admin tools"
+              aria-label="Admin tools"
+              aria-expanded={isOpen}
+              title="Admin tools"
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); setOpenTools((o) => ({ ...o, [c.key]: !o[c.key] })); }}
             >A</button>
             <div className="mz-admin-tools">
@@ -320,41 +322,37 @@ const totemCss = `
   #${UID} .mz-ed-wrap, #${UID} .mz-ed-cell, #${UID} .mz-ed-cell-wide, #${UID} .mz-ed-cell-narrow, #${UID} .mz-ed-cell-tall { grid-column: span 1 !important; grid-row: auto !important; }
   #${UID} .mz-ed-cell-wide .mz-ed-title, #${UID} .mz-ed-cell-tall .mz-ed-title { font-size: 19px; }
 }
-/* Admin inline-editor: toolbar revealed on hover of the card (bottom edge) */
-#${UID} .mz-admin-tools { position: absolute; left: 0; right: 0; bottom: 0; transform: translateY(0);
-  background: rgba(10,12,16,.94); border-top: 1px solid rgba(150,150,150,.25); border-radius: 0 0 12px 12px;
-  padding: 6px 8px; opacity: 0; pointer-events: none; transition: opacity .14s ease; z-index: 20;
+/* Admin inline-editor (admins only). The SAME (A) circle is used on every device
+   — phone, iPad (with or without a trackpad) and desktop. Tapping/clicking (A)
+   opens the toolbar; hovering a card never does. There are deliberately NO
+   hover/pointer media queries here: iPads report different hover/pointer values
+   depending on whether a trackpad is attached, which is what used to hide the
+   (A) circle (and with it every admin tool) on iPad. */
+#${UID} .mz-admin-a-btn { display: flex; position: absolute; top: 8px; right: 8px;
+  width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--accent, rgba(255,215,0,.7));
+  background: rgba(10,12,16,.92); color: var(--accent,#ffd700); font-size: 13px; font-weight: 800;
+  line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0;
+  z-index: 25; -webkit-tap-highlight-color: transparent; box-shadow: 0 2px 8px rgba(0,0,0,.35);
+  transition: background .12s ease, color .12s ease; }
+#${UID} .mz-admin-a-btn:focus-visible { outline: 2px solid var(--accent,#ffd700); outline-offset: 2px; }
+#${UID} .mz-ed-wrap.mz-admin-open .mz-admin-a-btn { background: var(--accent,#ffd700); color: #000; }
+#${UID} .mz-admin-tools { position: absolute; left: 0; right: 0; bottom: 0;
+  background: #0a0c10; border-top: 1px solid rgba(150,150,150,.25); border-radius: 0 0 12px 12px;
+  padding: 6px 8px; display: none; z-index: 24; max-height: calc(100% - 46px); overflow-y: auto;
   box-shadow: 0 -6px 18px rgba(0,0,0,.35); }
-#${UID} .mz-ed-wrap:hover .mz-admin-tools { opacity: 1; pointer-events: auto; }
-#${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { opacity: 1 !important; pointer-events: auto !important; }
-/* Touch devices (any width): tapping the card body emulates hover — do NOT reveal
-   the toolbar from a tap; only the (A) toggle should open it. */
-@media (hover: none) {
-  #${UID} .mz-ed-wrap:hover .mz-admin-tools { opacity: 0; pointer-events: none; }
-  #${UID} .mz-admin-a-btn { display: flex; }
-}
-/* Admin "(A)" toggle — touch/tablet only. On desktop the toolbar stays
-   hover-revealed (existing behavior) and the (A) button is not shown. */
-#${UID} .mz-admin-a-btn { display: none; }
+#${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { display: block; }
 @media (max-width: 760px) {
-  #${UID} .mz-ed-wrap.mz-admin-open .mz-admin-tools { opacity: 1 !important; pointer-events: auto !important; }
-  /* Touch devices emulate hover on tap — make sure tapping the card body does
-     NOT reveal the toolbar; only the (A) toggle should open it. */
-  #${UID} .mz-ed-wrap:hover .mz-admin-tools { opacity: 0; pointer-events: none; }
-  /* Stack card, then the (A) toggle below it on the lower-left. */
+  /* Phone: stack card, then the (A) circle below it on the lower-left. */
   #${UID} .mz-ed-wrap { display: flex; flex-direction: column; }
   #${UID} .mz-ed-cell { flex: 1 1 auto; }
   /* On mobile the thumbnail must keep a real height so it shows as an image
      band, not collapse to a sliver under the text. */
   #${UID} .mz-ed-thumb { flex: 0 0 170px; min-height: 0; }
   #${UID} .mz-ed-cell-narrow .mz-ed-thumb { flex-basis: 150px; }
-  #${UID} .mz-admin-a-btn { display: flex; position: relative; align-self: flex-start; margin: 10px 0 2px;
-    width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--accent, rgba(255,215,0,.7));
-    background: rgba(10,12,16,.95); color: var(--accent,#ffd700); font-size: 15px; font-weight: 800;
-    line-height: 1; cursor: pointer; align-items: center; justify-content: center; padding: 0;
-    z-index: 3; -webkit-tap-highlight-color: transparent; }
-  /* On mobile the admin toolbar is hidden by default and revealed by the (A) toggle as an overlay. */
-  #${UID} .mz-admin-tools { position: absolute; left: 8px; right: 8px; bottom: 44px; opacity: 0; pointer-events: none;
-    transform: translateY(0); background: rgba(10,12,16,.97); border: 1px solid rgba(150,150,150,.25); border-radius: 10px; z-index: 24; }
+  #${UID} .mz-admin-a-btn { position: relative; top: auto; right: auto; align-self: flex-start; margin: 10px 0 2px;
+    width: 34px; height: 34px; font-size: 15px; z-index: 3; box-shadow: none; }
+  /* The toolbar opens as an overlay just above the (A) circle. */
+  #${UID} .mz-admin-tools { left: 8px; right: 8px; bottom: 44px; max-height: none;
+    background: #0a0c10; border: 1px solid rgba(150,150,150,.25); border-radius: 10px; }
 }
 `;

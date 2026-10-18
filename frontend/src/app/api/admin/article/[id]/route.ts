@@ -101,6 +101,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   try { body = await req.json(); } catch {}
   const reason = (body.reason || "other").trim() || "other";
 
+  try {
   const [row] = await db.select().from(article).where(eq(article.id, id));
   if (row) {
     // Log WHY it was removed (drives troublesome-source stats + tuning).
@@ -121,4 +122,8 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
   await db.execute(sql`delete from notification where reference_type = 'article' and reference_id = ${id}`);
   await db.delete(article).where(eq(article.id, id));
   return Response.json({ ok: true, id, reason });
+  } catch (e: any) {
+    console.error("[admin/article DELETE]", id, e?.message || e);
+    return Response.json({ error: "Delete failed: " + (e?.message || "server error") }, { status: 500 });
+  }
 }

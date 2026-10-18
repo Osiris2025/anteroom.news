@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import FrontierRail from "@/components/FrontierRail";
 import AdminCardTools from "@/components/AdminCardTools";
 import { sourceLabel, hostOf } from "@/lib/sourceUtil";
+import { cleanTitle, cleanSummary } from "@/lib/cleanText";
 
 type NewsItem = {
   id: string; title: string; headline?: string | null; summary: string | null;
@@ -89,7 +90,7 @@ export default function ModelPage({ params }: { params: Promise<{ slug: string }
                     )}
                     <div style={{ minWidth: 0 }}>
                       {a.pinned && <div style={{ fontSize: 9, fontWeight: 700, color: "var(--accent,#ffd700)", letterSpacing: 1 }}>PINNED</div>}
-                      <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.3 }}>{a.headline || a.title}</div>
+                      <div style={{ fontSize: 15, fontWeight: 700, lineHeight: 1.3 }}>{cleanTitle(a.headline || a.title)}</div>
                       <div style={{ fontSize: 11, opacity: .55, marginTop: 6, display: "flex", gap: 10, flexWrap: "wrap" }}>
                         {a.sourceUrl && <span>via {label}</span>}
                         {a.publishedAt && <span>{new Date(a.publishedAt).toLocaleString()}</span>}

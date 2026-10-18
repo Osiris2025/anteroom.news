@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import AdminCardTools from "@/components/AdminCardTools";
 import { useAdmin } from "@/components/AdminProvider";
 import { subcatLabel } from "@/lib/subcategories";
+import { cleanTitle, cleanSummary } from "@/lib/cleanText";
 
 export type StoryArticle = {
   id: string;
@@ -25,7 +26,7 @@ const UID = "_storycard";
 export default function StoryCard({ article, onChanged }: { article: StoryArticle; onChanged?: () => void }) {
   const { isAdmin, magazines } = useAdmin();
   const [open, setOpen] = useState(false);
-  const title = article.headline || article.title;
+  const title = cleanTitle(article.headline || article.title);
   const subcats = article.subcategory ? [article.subcategory] : DEFAULT_SUBCATS;
   const mag = article.magazine?.name || "News";
   const href = `/articles/${article.id}`;
@@ -61,7 +62,7 @@ export default function StoryCard({ article, onChanged }: { article: StoryArticl
             </div>
             <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{title}</div>
             {article.summary ? (
-              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{article.summary}</div>
+              <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{cleanSummary(article.summary)}</div>
             ) : null}
             {article.readAt ? (
               <div style={{ fontSize: 11, opacity: 0.55, marginTop: 4 }}>

@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from "react";
 import { useTheme } from "@/lib/ThemeContext";
 import CommentaryBody from "@/components/CommentaryBody";
 import { DELETION_REASONS } from "@/lib/deletionReasons";
+import { cleanTitle, cleanSummary } from "@/lib/cleanText";
+import { copyText } from "@/lib/copyText";
 
 type QArticle = {
   id: string; title: string; sourceUrl: string | null; imageUrl?: string | null; summary: string | null;
@@ -63,7 +65,7 @@ function TitlePreview({ a }: { a: QArticle }) {
           borderBottom: "1px dashed rgba(150,150,150,.4)", paddingBottom: 1,
         }}
       >
-        {a.title}
+        {cleanTitle(a.title)}
       </span>
       {open && typeof document !== "undefined" && (
         <PreviewModal a={a} onClose={() => setOpen(false)} />
@@ -108,11 +110,11 @@ function PreviewModal({ a, onClose }: { a: QArticle; onClose: () => void }) {
           <img src={a.imageUrl} alt="" style={{ display: "block", width: "100%", maxHeight: 320, objectFit: "cover", flexShrink: 0 }} />
         )}
         <div style={{ padding: "16px 20px", overflowY: "auto" }}>
-          <div style={{ fontWeight: 800, fontSize: 19, lineHeight: 1.3, marginBottom: 12 }}>{a.title}</div>
+          <div style={{ fontWeight: 800, fontSize: 19, lineHeight: 1.3, marginBottom: 12 }}>{cleanTitle(a.title)}</div>
           {a.summary && (
             <div style={{ fontSize: 14, lineHeight: 1.65, color: "#c6ccd6", whiteSpace: "pre-wrap" }}>
               <b style={{ color: "#8f96a3", fontSize: 10, letterSpacing: 1.5, textTransform: "uppercase", display: "block", marginBottom: 4 }}>Summary</b>
-              {a.summary}
+              {cleanSummary(a.summary)}
             </div>
           )}
           {a.commentary && (
@@ -143,7 +145,7 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
   subcatsByMag: Record<string, string[]>; addSubcat: (magazineId: string | null | undefined, name: string) => void;
   onAct: (id: string, patch: any) => void;
   onMag: (id: string, magazineId: string) => void;
-  onDel: (id: string, reason?: string) => void;
+  onDel: (id: string, reason?: string) => Promise<string | null>;
   onPin: (id: string, title: string) => void;
   onSubcat: (id: string, subcategory: string | null) => void;
   onStatus: (id: string, newStatus: string) => void;
@@ -151,6 +153,20 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
 }) {
   const st = STATUS_TPL[a.status] || { label: a.status, bg: "#222", fg: "#aaa" };
   const [showCommentary, setShowCommentary] = useState(false);
+  const [delBusy, setDelBusy] = useState(false);
+  const [delErr, setDelErr] = useState("");
+  const [copied, setCopied] = useState<"" | "ok" | "fail">("");
+  async function confirmDelete() {
+    if (delBusy) return;
+    setDelBusy(true); setDelErr("");
+    const err = await onDel(a.id, delReason);
+    if (err) { setDelErr(err); setDelBusy(false); }
+  }
+  async function copyId() {
+    const ok = await copyText(a.id);
+    setCopied(ok ? "ok" : "fail");
+    setTimeout(() => setCopied(""), 1600);
+  }
   // "⚙ Commentary" / "↻ regenerate": the magazine's AI agent writes fresh
   // commentary, shown in place (same pattern as "↻ Summary" below).
   const [commentary, setCommentary] = useState<string | null>(a.commentary ?? null);
@@ -311,6 +327,10 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
         )}
         <button title="Pin as FLASH/hero article" onClick={() => onPin(a.id, a.title)} style={{ ...btn, color: "#ff4444", borderColor: "rgba(255,68,68,.4)" }}>📌 Pin</button>
         {a.sourceUrl && <a href={a.sourceUrl} target="_blank" rel="noreferrer" style={{ color: "var(--accent,#ffd700)", textDecoration: "none", marginLeft: "auto", fontSize: 11, alignSelf: "center" }}>source ↗</a>}
+        <button type="button" title={`Copy article ID (${a.id})`} onClick={copyId}
+          style={{ ...btn, color: copied === "ok" ? "#34d399" : copied === "fail" ? "#f87171" : "#ccc" }}>
+          {copied === "ok" ? "✓ Copied" : copied === "fail" ? "✕ Copy failed" : "⧉ ID"}
+        </button>
         <button title="Delete (records reason for source stats)" onClick={() => setDelOpen(true)} style={{ ...btn, color: "#f87171" }}>🗑</button>
         {delOpen && (
           <div style={{ width: "100%", marginTop: 8, display: "flex", gap: 6, alignItems: "center", flexWrap: "wrap" }}>
@@ -318,8 +338,12 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
               style={{ background: "#1c1f24", color: "#eee", border: "1px solid rgba(150,150,150,.3)", borderRadius: 6, padding: "4px 6px", fontSize: 12 }}>
               {DELETION_REASONS.map((r) => <option key={r.code} value={r.code}>{r.label}</option>)}
             </select>
-            <button onClick={() => onDel(a.id, delReason)} style={{ ...btn, color: "#fff", background: "#7f1d1d", fontWeight: 700 }}>Confirm delete</button>
-            <button onClick={() => setDelOpen(false)} style={{ ...btn, color: "#aaa" }}>✕</button>
+            <button type="button" onClick={confirmDelete} disabled={delBusy}
+              style={{ ...btn, color: "#fff", background: "#7f1d1d", fontWeight: 700, opacity: delBusy ? 0.6 : 1, cursor: delBusy ? "progress" : "pointer" }}>
+              {delBusy ? "… Deleting" : "Confirm delete"}
+            </button>
+            <button type="button" onClick={() => { setDelOpen(false); setDelErr(""); }} disabled={delBusy} style={{ ...btn, color: "#aaa" }}>✕</button>
+            {delErr && <span style={{ color: "#f87171", fontSize: 12 }}>✕ {delErr}</span>}
           </div>
         )}
       </div>
@@ -536,10 +560,21 @@ export default function AdminQueue() {
     load();
   };
 
-  async function del(id: string, reason = "other") {
-    if (!confirm("Delete this article permanently?")) return;
-    await fetch(`/api/admin/article/${id}`, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reason }) });
+  // Delete one article. The card's own "Confirm delete" step is the confirmation
+  // (the old extra window.confirm() was silently suppressed by Safari/iPad after
+  // repeated dialogs, so the click did nothing). Returns an error message or null.
+  async function del(id: string, reason = "other"): Promise<string | null> {
+    try {
+      const r = await fetch(`/api/admin/article/${id}`, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ reason }) });
+      if (!r.ok) {
+        const j = await r.json().catch(() => ({} as any));
+        return j.error || (r.status === 401 || r.status === 403 ? "signed out — please log in again" : `failed (${r.status})`);
+      }
+    } catch { return "network error — try again"; }
+    // Remove the card right away; don't wait for the list to reload.
+    setData((d) => (d ? { ...d, articles: d.articles.filter((x) => x.id !== id) } : d));
     load();
+    return null;
   };
 
   // Pin an article as FLASH / IMPORTANT

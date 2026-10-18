@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import CommentaryBody from "@/components/CommentaryBody";
 import { useTheme } from "@/lib/ThemeContext";
+import { cleanTitle, cleanSummary } from "@/lib/cleanText";
 
 type SocialArticle = {
   id: string;
@@ -257,7 +258,7 @@ export default function SocialFeedPage() {
                         cursor: "pointer",
                       }}
                     >
-                      {a.headline || a.title}
+                      {cleanTitle(a.headline || a.title)}
                     </h2>
                   </Link>
 

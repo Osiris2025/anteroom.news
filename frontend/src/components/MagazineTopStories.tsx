@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import AdminCardTools from "@/components/AdminCardTools";
 import { subcatLabel } from "@/lib/subcategories";
+import { cleanTitle, cleanSummary } from "@/lib/cleanText";
 
 type LiveArticle = {
   id: string; title: string; headline?: string | null; summary: string | null;
@@ -240,8 +241,8 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
             {c.article.pinned && c.article.pinKind ? <span className="mz-ed-pin">{c.article.pinKind}</span> : null}
             <span>{c.article.subcategory ? label(c.article.subcategory, magazine) : c.article.magazine?.name || "News"}</span>
           </div>
-          <div className="mz-ed-title">{c.article.headline || c.article.title}</div>
-          {c.article.summary && <div className="mz-ed-summary">{c.article.summary}</div>}
+          <div className="mz-ed-title">{cleanTitle(c.article.headline || c.article.title)}</div>
+          {c.article.summary && <div className="mz-ed-summary">{cleanSummary(c.article.summary)}</div>}
         </a>
         {showTools && (
           <>

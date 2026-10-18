@@ -15,6 +15,8 @@ from urllib.parse import urljoin
 from uuid import uuid4
 
 import httpx
+
+from .text_clean import clean_summary, clean_title
 import feedparser
 
 from ..config import StreamConfig
@@ -892,6 +894,11 @@ def insert_articles(db_conn, articles: list[dict], publish_settings: dict | None
     inserted = 0
     untagged: list[dict] = []  # inserted with no keyword subcategory -> LLM fallback
     for art in articles:
+        # Strip HTML tags (incl. entity-encoded ones like &lt;i&gt;), editorial
+        # marks and aggregator footers ("[link] [comments]", "Discuss") from the
+        # title and feed summary before anything else sees them.
+        art["title"] = clean_title(art.get("title") or "") or (art.get("title") or "").strip()
+        art["summary"] = clean_summary(art.get("summary") or "")
         # Shared routing rules (frontend/src/lib/routing-rules.json) + the legacy
         # political/paranormal keyword routes. Runs for YAML and DB feeds alike,
         # BEFORE subcategory tagging so the tag comes from the final magazine.

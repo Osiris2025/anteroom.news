@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { subcatLabel } from "@/lib/subcategories";
+import { cleanTitle, cleanSummary } from "@/lib/cleanText";
 
 type EditorialArticle = {
   id: string;
@@ -86,8 +87,8 @@ export default function MagazineEditorial({
               <span style={{ ...featuredPill }}>★ FEATURED</span>
             )}
           </div>
-          <h2 style={leaderTitle}>{leader.headline || leader.title}</h2>
-          {leader.summary && <p style={leaderSummary}>{leader.summary}</p>}
+          <h2 style={leaderTitle}>{cleanTitle(leader.headline || leader.title)}</h2>
+          {leader.summary && <p style={leaderSummary}>{cleanSummary(leader.summary)}</p>}
           <span style={{ ...readLink, borderColor: tagColor, color: tagColor }}>
             Read story →
           </span>

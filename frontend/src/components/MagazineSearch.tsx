@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { cleanTitle, cleanSummary } from "@/lib/cleanText";
 
 type Hit = {
   id: string;
@@ -82,7 +83,7 @@ export default function MagazineSearch({ vertical = false, fluid = false }: { ve
               onClick={() => setOpen(false)}
               style={{ display: "block", padding: "9px 12px", textDecoration: "none", color: "inherit", borderBottom: "1px solid rgba(150,150,150,.1)" }}
             >
-              <div style={{ fontSize: 13, lineHeight: 1.3 }}>{a.title}</div>
+              <div style={{ fontSize: 13, lineHeight: 1.3 }}>{cleanTitle(a.title)}</div>
               {a.magazine?.name && <div style={{ fontSize: 11, opacity: .6, marginTop: 2 }}>{a.magazine.name}</div>}
             </Link>
           ))}

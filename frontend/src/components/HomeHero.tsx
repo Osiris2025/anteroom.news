@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { MAGAZINES } from "@/lib/themes";
+import { cleanTitle, cleanSummary } from "@/lib/cleanText";
 
 /**
  * HomeHero — homepage opening composition (Todd spec, 2026-09-06):
@@ -103,7 +104,7 @@ export default function HomeHero({ dbMagazines }: { dbMagazines: Array<{ id: str
       <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
         {mags.map((m) => {
           const story = stories[m.id];
-          const title = story ? (story.headline || story.title) : null;
+          const title = story ? cleanTitle(story.headline || story.title) : null;
           const href = story ? `/articles/${story.id}` : `/magazines/${m.id}`;
           return (
             <div key={m.id} style={{
@@ -145,7 +146,7 @@ export default function HomeHero({ dbMagazines }: { dbMagazines: Array<{ id: str
                       </div>
                       {story?.summary && (
                         <div style={{ fontSize: 12.5, opacity: 0.7, marginTop: 6, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" }}>
-                          {story.summary}
+                          {cleanSummary(story.summary)}
                         </div>
                       )}
                     </>

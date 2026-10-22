@@ -14,3 +14,4 @@ frontend/.next/
 __pycache__/
 *.pyc
 *.tsbuildinfo
+*.egg-info/

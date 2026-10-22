@@ -1,3 +1,4 @@
+import { cleanSummary } from "@/lib/cleanText";
 import { NextRequest } from "next/server";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
@@ -230,7 +231,7 @@ export async function POST(req: NextRequest) {
     return Response.json({ error: `OpenRouter request failed: ${e?.message || e}` }, { status: 502 });
   }
 
-  const summary = extractSummary(reply);
+  const summary = cleanSummary(extractSummary(reply));
   if (summary.length < 20) return Response.json({ error: "The AI returned an empty summary — try again" }, { status: 502 });
 
   const next = {

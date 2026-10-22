@@ -11,6 +11,7 @@ import AdminCardTools from "./AdminCardTools";
 import { useAdmin } from "./AdminProvider";
 import { hostOf, sourceLabel } from "@/lib/sourceUtil";
 import { palette } from "@/lib/themePalette";
+import { cleanTitle, cleanSummary } from "@/lib/cleanText";
 
 type ReaderArticle = {
   id: string;
@@ -78,8 +79,10 @@ function ArticleAdminBar({ article, magazine, C, backFallback, onSummary, onComm
 export default function ArticleReader({ article, magazine, themeId }: { article: ReaderArticle; magazine: ReaderMag; themeId: string }) {
   const C = palette(themeId);
   const router = useRouter();
-  const { title, headline, sourceUrl, sourceName, imageUrl, efx, subcategory, publishedAt } = article;
+  const { title: rawTitle, headline: rawHeadline, sourceUrl, sourceName, imageUrl, efx, subcategory, publishedAt } = article;
   // Local copy so an admin's "↻ Summary" shows the new text immediately.
+  const title = cleanTitle(rawTitle);
+  const headline = rawHeadline ? cleanTitle(rawHeadline) : rawHeadline;
   const [summary, setSummary] = useState(article.summary ?? null);
   useEffect(() => { setSummary(article.summary ?? null); }, [article.id, article.summary]);
   // Same for "↻ Commentary".
@@ -199,7 +202,7 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
       {/* summary */}
       {summary && (
         <div style={{ background: C.box, border: `1px solid ${C.border}`, borderLeft: `4px solid ${C.accent}`, borderRadius: 10, padding: "18px 20px", marginBottom: 22, fontSize: 17, lineHeight: 1.55, color: C.ink }}>
-          {summary}
+          {cleanSummary(summary)}
         </div>
       )}
 

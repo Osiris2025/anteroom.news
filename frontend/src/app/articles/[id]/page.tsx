@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { article, magazine } from "@/drizzle/schema";
 import ArticlePageClient from "@/components/ArticlePageClient";
 import { SITE_URL } from "@/lib/site";
+import { cleanTitle, cleanSummary } from "@/lib/cleanText";
 
 // /articles/[id] — public on-site article reader (server component).
 // Fetches the article + its magazine, then hands off to ArticlePageClient, which
@@ -24,8 +25,8 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
 
   const a = r.article;
   const mag = r.magazine;
-  const title = a.headline || a.title || "Anteroom";
-  const rawDesc = a.summary || a.commentary || `Read on ${mag?.name || "Anteroom"}`;
+  const title = cleanTitle(a.headline || a.title) || "Anteroom";
+  const rawDesc = cleanSummary(a.summary) || a.commentary || `Read on ${mag?.name || "Anteroom"}`;
   // Plain text for previews: strip markdown markers and keep it to ~200 chars.
   const plain = String(rawDesc).replace(/[*_`#>]+/g, "").replace(/\s+/g, " ").trim();
   const description = plain.length > 200 ? plain.slice(0, 197).replace(/\s+\S*$/, "") + "…" : plain;
@@ -74,13 +75,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
   const mag = r.magazine;
 
   // JSON-LD Article structured data for SEO
-  const articleTitle = a.headline || a.title || "";
+  const articleTitle = cleanTitle(a.headline || a.title);
   const authorName = mag?.agentName || mag?.name || "Anteroom";
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Article",
     headline: articleTitle,
-    description: a.summary || "",
+    description: cleanSummary(a.summary),
     ...(a.imageUrl ? { image: a.imageUrl } : {}),
     datePublished: a.publishedAt ? new Date(a.publishedAt).toISOString() : undefined,
     dateModified: a.publishedAt ? new Date(a.publishedAt).toISOString() : undefined,
@@ -108,13 +109,13 @@ export default async function ArticlePage({ params }: { params: Promise<{ id: st
       <ArticlePageClient
         article={{
           id: a.id,
-          title: a.title,
-          headline: a.headline,
+          title: cleanTitle(a.title),
+          headline: a.headline ? cleanTitle(a.headline) : a.headline,
           sourceUrl: a.sourceUrl,
           sourceName: a.sourceName,
           imageUrl: a.imageUrl,
           efx: a.efx,
-          summary: a.summary,
+          summary: a.summary ? cleanSummary(a.summary) : a.summary,
           commentary: a.commentary,
           subcategory: a.subcategory,
           publishedAt: a.publishedAt,

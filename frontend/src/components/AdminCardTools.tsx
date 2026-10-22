@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { DELETION_REASONS, deletionReasonLabel } from "@/lib/deletionReasons";
 import { subcatLabel } from "@/lib/subcategories";
+import { copyText } from "@/lib/copyText";
 
 type Props = {
   articleId: string;
@@ -108,8 +109,9 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
         method: "DELETE", headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ reason: delReason }),
       });
-      const j = await r.json();
-      if (!r.ok) { flash("✕ " + (j.error || "failed")); return false; }
+      const j = await r.json().catch(() => ({} as any));
+      if (!r.ok) { flash("✕ " + (j.error || `delete failed (${r.status})`), 6000); return false; }
+      setDelOpen(false);
       flash("🗑 deleted (" + deletionReasonLabel(delReason) + ")");
       return true;
     } catch { flash("✕ network error"); return false; }
@@ -145,6 +147,10 @@ export default function AdminCardTools({ articleId, currentMag, currentSubcat, f
       {statusBtn("✕ Reject", "rejected", "#3a0d0d", "#f57b7b")}
       <button onClick={() => act(() => patch({ status: "draft" }))} disabled={busy} style={bt("#202020", "#ccc", 10)}>↩ Draft</button>
       <button onClick={() => act(async () => { const ok = await patch({ socialRepeat: !social }); if (ok) setSocial(!social); return ok; })} disabled={busy} style={bt(social ? "#0b1f33" : "#202020", social ? "#58a6ff" : "#ccc", 10)}> {social ? "\u21bb Social \u2713" : "\u21bb Social"} </button>
+
+      <button type="button" title={`Copy article ID (${articleId})`}
+        onClick={async () => flash((await copyText(articleId)) ? "✓ Copied ID" : "✕ Copy failed — ID: " + articleId, 2500)}
+        style={bt("#202020", "#ccc", 10)}>⧉ ID</button>
 
       {/* Delete — ask WHY (drives troublesome-source stats). */}
       {!delOpen ? (

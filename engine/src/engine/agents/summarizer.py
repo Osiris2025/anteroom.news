@@ -14,6 +14,7 @@ from openai import OpenAI
 logger = logging.getLogger(__name__)
 
 from . import has_substance, is_aggregator_link  # quality gate
+from .text_clean import clean_summary, clean_title
 from .commentary_style import (
     COMMENTARY_STYLE_RULES,
     ENGINE_MAX_TOKENS,
@@ -65,9 +66,9 @@ def _build_prompts(article: dict, stream_config: dict) -> dict:
 
     # No source URL here on purpose: the page already links the source, and
     # giving the model the URL made it paste "Source: https://..." into prose.
-    raw_source = article.get("summary", "") or ""
+    raw_source = clean_summary(article.get("summary", "") or "")
     user_prompt = (
-        f"Title: {article.get('title', 'N/A')}\n\n"
+        f"Title: {clean_title(article.get('title') or '') or 'N/A'}\n\n"
         f"Raw Summary/Description:\n{raw_source[:2000]}\n\n"
         f"Produce your response with <summary>, <commentary>, and <ai_thoughts> tags."
     )
@@ -203,7 +204,7 @@ def summarize_article(article: dict, stream_config: dict) -> Optional[dict]:
             )
 
         return {
-            "summary": parsed["summary"][:2000],
+            "summary": clean_summary(parsed["summary"])[:2000],
             "commentary": parsed["commentary"][:5000],
             "ai_thoughts": parsed["ai_thoughts"][:1000] if parsed["ai_thoughts"] else "{}",
         }

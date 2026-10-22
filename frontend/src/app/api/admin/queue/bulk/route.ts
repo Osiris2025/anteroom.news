@@ -24,7 +24,8 @@ const FROM: Record<string, string[]> = {
   // makes any other status unmatchable, whatever the UI sends.
   "delete-drafts": ["draft"],
 };
-const TO: Record<string, string> = { approve: "approved", publish: "live" };
+// Approve now publishes directly (nothing waits in Approved).
+const TO: Record<string, string> = { approve: "live", publish: "live" };
 
 function buildConds(action: string, magazine: string, status: string, q: string) {
   const conds: any[] = [];
@@ -145,7 +146,8 @@ export async function POST(req: NextRequest) {
     }
     // ---- status-mutating actions below ----
     const upd: any = { status: TO[action] };
-    if (action === "publish") upd.publishedAt = new Date();
+    if (upd.status === "live") upd.publishedAt = new Date();
+    if (action === "approve") upd.reviewedAt = new Date();
     const rows = await db.update(article).set(upd).where(buildConds(action, magazine, status, q)).returning({ id: article.id });
     return Response.json({ updated: rows.length, action, scope: { magazine, status, q } });
   } catch (e: any) {

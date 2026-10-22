@@ -45,8 +45,10 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   const upd: any = {};
   if (body.status !== undefined) {
     upd.status = body.status;
-    if (body.status === "live") upd.publishedAt = new Date();
-    if (body.status === "approved" || body.status === "rejected") upd.reviewedAt = new Date();
+    // 'approved' is no longer a holding state: treat it as publish.
+    if (body.status === "approved") upd.status = "live";
+    if (upd.status === "live") { upd.publishedAt = new Date(); if (!row.reviewedAt) upd.reviewedAt = new Date(); }
+    if (body.status === "rejected") upd.reviewedAt = new Date();
   }
   // Track magazine moves so the system learns the right home magazine.
   if (body.magazineId !== undefined) {

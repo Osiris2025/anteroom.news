@@ -858,8 +858,9 @@ def decide_tier(settings: dict, art: dict) -> str:
     if src:
         override = (src.get("override") or "").strip()
         # Per-source override honored ONLY when global autopublish is ON.
+        # 'approved' is no longer a holding state: it publishes (Todd, Oct 22).
         if enabled and override in ("live", "approved", "draft"):
-            return override
+            return "live" if override == "approved" else override
 
     th = settings.get("thresholds", {})
 
@@ -875,13 +876,37 @@ def decide_tier(settings: dict, art: dict) -> str:
         mc = src.get("move_count", 0)
         tune = src.get("tune", 0)
         if dc > th.get("max_delete_count", 2) or mc > th.get("max_move_count", 2):
-            return "approved"
+            return "live"  # was 'approved' (queue); nothing waits in Approved now
         if tune >= th.get("min_tune_autopublish", 0):
             return "live"
         if tune >= th.get("min_tune_approve", -3):
-            return "approved"
+            return "live"  # was 'approved'
         return "draft"
-    return "approved"
+    return "live"  # unknown source; was 'approved'
+
+
+def promote_approved(db_conn) -> int:
+    """Publish any article still sitting in 'approved' (stragglers from before
+    approve-means-publish). Runs each discovery cycle; only when autopublish is on."""
+    try:
+        with db_conn.cursor() as cur:
+            cur.execute(
+                "UPDATE article SET status = 'live', published_at = now(), "
+                "reviewed_at = COALESCE(reviewed_at, now()) WHERE status = 'approved'"
+            )
+            n = cur.rowcount
+        db_conn.commit()
+        if n:
+            logger.info("Promoted %d approved article(s) to live", n)
+        return n
+    except Exception as exc:
+        logger.warning("promote_approved failed: %s", exc)
+        try:
+            db_conn.rollback()
+        except Exception:
+            pass
+        return 0
+
 
 
 def insert_articles(db_conn, articles: list[dict], publish_settings: dict | None = None) -> int:
@@ -1113,6 +1138,8 @@ def run_discovery(configs: list[StreamConfig], db_url: str) -> dict:
     try:
         publish_settings = load_publishing_settings(conn)
         inserted = insert_articles(conn, unique, publish_settings)
+        if publish_settings.get("enabled"):
+            promote_approved(conn)
     finally:
         conn.close()
 

@@ -250,7 +250,7 @@ function ArticleCard({ a, magazines, subcatsByMag, addSubcat, onAct, onMag, onDe
         {a.siteName && <div style={{ fontSize: 10, color: "#58a6ff", letterSpacing: 1, textTransform: "uppercase", marginBottom: 8 }}>{a.siteName}</div>}
       </div>
       <div style={{ padding: "8px 10px", borderTop: "1px solid rgba(150,150,150,.12)", display: "flex", flexWrap: "wrap", gap: 6 }}>
-        {a.status === "draft" && <Btn onClick={() => onStatus(a.id, "approved")} bg="#00331f" fg="#34d399">✓ Approve</Btn>}
+        {a.status === "draft" && <Btn onClick={() => onStatus(a.id, "live")} bg="#00331f" fg="#34d399">✓ Publish</Btn>}
         {a.status === "approved" && <Btn onClick={() => onStatus(a.id, "live")} bg="#06253a" fg="#58a6ff">Publish</Btn>}
         {a.status !== "rejected" && <Btn onClick={() => onStatus(a.id, "rejected")} bg="#3a0a0a" fg="#f87171">✕ Reject</Btn>}
         <Btn onClick={() => onAct(a.id, { socialRepeat: !a.socialRepeat })} bg={a.socialRepeat ? "#06253a" : "#0d1b2a"} fg={a.socialRepeat ? "#58a6ff" : "#7fb3ff"}>{a.socialRepeat ? "↻ Social ✓" : "↻ Social"}</Btn>
@@ -482,7 +482,7 @@ export default function AdminQueue() {
   const runBulk = async (action: "approve" | "publish") => {
     if (busy) return;
     const n = counts ? counts[action] : 0;
-    const verb = action === "approve" ? "Approve" : "Publish";
+    const verb = "Publish";
     if (!n) { alert(`Nothing to ${verb.toLowerCase()} in ${scopeLabel()}.`); return; }
 
     // Breakdown before commit: show exactly what would be touched, by magazine + source.
@@ -511,7 +511,7 @@ export default function AdminQueue() {
     try {
       const r = await fetch("/api/admin/queue/bulk", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action, magazine: mag, status, q: q.trim() }) });
       const j = await r.json();
-      if (j.error) setErr(j.error); else setErr(`${verb === "Approve" ? "Approved" : "Published"} ${j.updated.toLocaleString()} articles.`);
+      if (j.error) setErr(j.error); else setErr(`Published ${j.updated.toLocaleString()} articles.`);
     } catch (e: any) { setErr(e.message); }
     setBusy("");
     load();
@@ -645,7 +645,7 @@ export default function AdminQueue() {
         </select>
         <span style={{ marginLeft: "auto", fontSize: 12, opacity: 0.7 }}>{data ? `${data.articles.length} shown · ${data.articles.filter((a) => a.socialRepeat).length} for social · ${counts ? `${counts.approve.toLocaleString()} draft · ${counts.publish.toLocaleString()} approved (in scope)` : "…"}` : "…"}</span>
         {counts && counts.approve > 0 && (
-          <button onClick={bulkApprove} disabled={!!busy} style={{ ...btn, color: "#34d399", borderColor: "rgba(52,211,153,.4)", fontWeight: 700 }}>{busy === "approving" ? "⏳ Approving…" : `✓ Approve All (${counts.approve.toLocaleString()})`}</button>
+          <button onClick={bulkApprove} disabled={!!busy} style={{ ...btn, color: "#34d399", borderColor: "rgba(52,211,153,.4)", fontWeight: 700 }}>{busy === "approving" ? "⏳ Approving…" : `✓ Publish All Drafts (${counts.approve.toLocaleString()})`}</button>
         )}
         {counts && counts.publish > 0 && (
           <button onClick={bulkPublish} disabled={!!busy} style={{ ...btn, color: "#58a6ff", borderColor: "rgba(88,166,255,.4)", fontWeight: 700 }}>{busy === "publishing" ? "⏳ Publishing…" : `📤 Publish All Approved (${counts.publish.toLocaleString()})`}</button>

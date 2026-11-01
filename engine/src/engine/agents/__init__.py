@@ -213,6 +213,23 @@ def apply_political_route(article: dict) -> None:
         article.pop("subcategory", None)
 
 
+# ---------------------------------------------------------------------------
+# Blocked-topic filter: drop stories whose TITLE mentions SNL / Saturday Night
+# Live (Todd's rule, Nov 1 2026). "SNL" is case-sensitive whole-word so words
+# like "snl" inside other tokens never match.
+# ---------------------------------------------------------------------------
+_BLOCKED_TOPIC_RES = (
+    re.compile(r"\bSNL\b"),
+    re.compile(r"saturday\s+night\s+live", re.IGNORECASE),
+)
+
+
+def is_blocked_topic(article: dict) -> bool:
+    """True if the title (or headline, when set) names a blocked topic."""
+    text = " ".join(str(article.get(k) or "") for k in ("title", "headline"))
+    return any(r.search(text) for r in _BLOCKED_TOPIC_RES)
+
+
 def is_junk_deal(article: dict) -> bool:
     """True if an article is clearly money-saving/coupon/% off junk (drop it)."""
     title = str(article.get("title") or "")
@@ -936,6 +953,9 @@ def insert_articles(db_conn, articles: list[dict], publish_settings: dict | None
                             art.get("magazine_id"), art.get("title", "?")[:70])
         except Exception as exc:  # routing must never break ingest
             logger.warning("routing failed for %s: %s", art.get("title", "?")[:60], exc)
+        if is_blocked_topic(art):
+            logger.info("  BLOCKED-TOPIC SKIP: %s", art.get("title", "?")[:80])
+            continue
         if is_junk_deal(art):
             logger.info("  JUNK-DEAL SKIP: %s", art.get("title", "?")[:80])
             continue

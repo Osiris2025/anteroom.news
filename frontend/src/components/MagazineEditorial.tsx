@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { subcatLabel } from "@/lib/subcategories";
+import { ingestDate } from "@/lib/ingestDate";
 import { cleanTitle, cleanSummary } from "@/lib/cleanText";
 
 type EditorialArticle = {
@@ -15,6 +16,7 @@ type EditorialArticle = {
   pinKind: string | null;
   magazine: { id: string; name: string } | null;
   publishedAt?: string | null;
+  createdAt?: string | null;
 };
 
 // LEADER / FEATURED hero for magazine pages — the newest featured article if one
@@ -89,6 +91,11 @@ export default function MagazineEditorial({
           </div>
           <h2 style={leaderTitle}>{cleanTitle(leader.headline || leader.title)}</h2>
           {leader.summary && <p style={leaderSummary}>{cleanSummary(leader.summary)}</p>}
+          {leader.createdAt ? (
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: 1.2, textTransform: "uppercase", color: tagColor, margin: "0 0 12px" }}>
+              {ingestDate(leader.createdAt)}
+            </div>
+          ) : null}
           <span style={{ ...readLink, borderColor: tagColor, color: tagColor }}>
             Read story →
           </span>

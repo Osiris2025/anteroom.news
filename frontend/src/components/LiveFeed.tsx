@@ -4,7 +4,7 @@ import StoryCard, { StoryArticle } from "@/components/StoryCard";
 
 type LiveArticle = {
   id: string; title: string; summary: string | null; sourceUrl: string | null;
-  subcategory: string | null; magazine: { id: string; name: string } | null;
+  subcategory: string | null; createdAt?: string | null; magazine: { id: string; name: string } | null;
   imageUrl?: string | null; pinned?: boolean; pinKind?: string | null;
 };
 
@@ -78,6 +78,7 @@ export default function LiveFeed({ magazine }: { magazine?: string }) {
               subcategory: a.subcategory,
               pinned: a.pinned,
               pinKind: a.pinKind,
+              createdAt: a.createdAt,
             };
             return <StoryCard key={a.id} article={art} onChanged={() => load(0)} />;
           })}

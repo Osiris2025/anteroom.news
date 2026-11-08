@@ -5,6 +5,7 @@ import { useSession } from "@/lib/auth-client";
 import StoryCard, { StoryArticle } from "@/components/StoryCard";
 
 type HistoryEntry = {
+  articleCreatedAt?: string | null;
   id: string;
   articleId: string;
   readAt: string;
@@ -94,6 +95,7 @@ export default function HistoryPage() {
               subcategory: entry.subcategory,
               readCount: entry.readCount,
               readAt: entry.readAt,
+              createdAt: entry.articleCreatedAt,
             };
             return <StoryCard key={entry.id} article={art} onChanged={load} />;
           })}

@@ -26,6 +26,7 @@ export async function GET(_req: NextRequest) {
       articleSourceUrl: article.sourceUrl,
       articleSourceName: article.sourceName,
       articlePublishedAt: article.publishedAt,
+      articleCreatedAt: article.createdAt,
       magazineId: article.magazineId,
       magazineName: magazine.name,
       subcategory: article.subcategory,

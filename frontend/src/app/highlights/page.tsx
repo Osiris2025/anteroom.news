@@ -4,6 +4,7 @@ import StoryCard, { StoryArticle } from "@/components/StoryCard";
 import { useEffect, useState } from "react";
 
 type HighlightArticle = {
+  createdAt?: string | null;
   id: string;
   title: string;
   summary: string;
@@ -138,7 +139,7 @@ export default function HighlightsPage() {
           <div style={{ display: "grid", gap: 10, gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))" }}>
             {mag.articles.map((a) => {
               const art: StoryArticle = {
-                id: a.id, title: a.title, headline: null, summary: a.summary, imageUrl: a.imageUrl || null,
+                id: a.id, title: a.title, headline: null, summary: a.summary, imageUrl: a.imageUrl || null, createdAt: a.createdAt || null,
                 magazine: { id: mag.id, name: mag.name }, subcategory: a.subcategory || null,
               };
               return <StoryCard key={a.id} article={art} onChanged={() => window.location.reload()} />;

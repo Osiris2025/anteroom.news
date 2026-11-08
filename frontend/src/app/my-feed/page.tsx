@@ -15,6 +15,7 @@ type FollowEntry = {
 };
 
 type ArticleItem = {
+  createdAt?: string | null;
   id: string;
   title: string;
   headline: string | null;
@@ -179,7 +180,7 @@ export default function MyFeedPage() {
         <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
           {articles.map((art) => {
             const art2: StoryArticle = {
-              id: art.id, title: art.title, headline: art.headline || null, summary: art.summary,
+              id: art.id, title: art.title, headline: art.headline || null, summary: art.summary, createdAt: art.createdAt || null,
               imageUrl: art.imageUrl || null,
               magazine: art.magazineId ? { id: art.magazineId, name: art.magazineName || "News" } : null,
             };

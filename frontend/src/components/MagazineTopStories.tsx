@@ -4,12 +4,13 @@ import { useSearchParams, useRouter } from "next/navigation";
 import AdminCardTools from "@/components/AdminCardTools";
 import { subcatLabel } from "@/lib/subcategories";
 import { cleanTitle, cleanSummary } from "@/lib/cleanText";
+import { ingestDate } from "@/lib/ingestDate";
 
 type LiveArticle = {
   id: string; title: string; headline?: string | null; summary: string | null;
   sourceUrl: string | null; imageUrl?: string | null; subcategory: string | null;
   featured?: boolean; pinned?: boolean; pinKind?: string | null; socialRepeat?: boolean;
-  magazine: { id: string; name: string } | null; publishedAt?: string | null;
+  magazine: { id: string; name: string } | null; publishedAt?: string | null; createdAt?: string | null;
   commentary?: string | null;
 };
 
@@ -243,6 +244,7 @@ export default function MagazineTopStories({ magazine }: { magazine: string }) {
           </div>
           <div className="mz-ed-title">{cleanTitle(c.article.headline || c.article.title)}</div>
           {c.article.summary && <div className="mz-ed-summary">{cleanSummary(c.article.summary)}</div>}
+          {c.article.createdAt ? <div className="mz-ed-kicker mz-ed-date">{ingestDate(c.article.createdAt)}</div> : null}
         </a>
         {showTools && (
           <>
@@ -298,6 +300,7 @@ const totemCss = `
 #${UID} .mz-ed-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
 #${UID} .mz-ed-pin { padding: 2px 8px; border-radius: 999px; border: 1px solid var(--accent, #ffd700); font-size: 9px; letter-spacing: 1px; }
 #${UID} .mz-ed-kicker { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 10px; letter-spacing: 1.2px; text-transform: uppercase; color: var(--accent, #ffd700); font-weight: 800; }
+#${UID} .mz-ed-date { margin: auto 0 0; padding-top: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 #${UID} .mz-ed-title { font-size: 17px; font-weight: 800; line-height: 1.28; letter-spacing: -0.01em; }
 #${UID} .mz-ed-cell-wide .mz-ed-title { font-size: 22px; }
 #${UID} .mz-ed-summary { margin-top: 8px; font-size: 13px; line-height: 1.5; opacity: .72; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }

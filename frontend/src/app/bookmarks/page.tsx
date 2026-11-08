@@ -7,6 +7,7 @@ import StoryCard, { StoryArticle } from "@/components/StoryCard";
 
 
 type BookmarkEntry = {
+  articleCreatedAt?: string | null;
   id: string;
   articleId: string;
   createdAt: string;
@@ -86,7 +87,7 @@ export default function BookmarksPage() {
           {bookmarks.map((bm) => {
             const art: StoryArticle = {
               id: bm.articleId, title: bm.articleTitle, headline: bm.articleHeadline || null,
-              summary: bm.articleSummary, imageUrl: bm.articleImageUrl || null,
+              summary: bm.articleSummary, imageUrl: bm.articleImageUrl || null, createdAt: bm.articleCreatedAt || null,
               magazine: bm.magazineId ? { id: bm.magazineId, name: bm.magazineName || "News" } : null,
             };
             return <StoryCard key={bm.id} article={art} onChanged={load} />;

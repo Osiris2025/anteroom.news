@@ -73,6 +73,7 @@ export async function GET() {
         commentary: (a.commentary || "").slice(0, 500),
         imageUrl: a.imageUrl,
         publishedAt: a.publishedAt,
+        createdAt: a.createdAt,
         subcategory: a.subcategory,
         featured: a.featured || false,
         sourceName: a.sourceName,

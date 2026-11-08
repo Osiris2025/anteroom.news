@@ -182,7 +182,7 @@ function SearchPageInner() {
           <div className="grid gap-4" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))" }}>
             {results.map((a) => {
               const art: StoryArticle = {
-                id: a.id, title: a.title, headline: a.headline || null, summary: a.summary,
+                id: a.id, title: a.title, headline: a.headline || null, summary: a.summary, createdAt: a.createdAt || null,
                 imageUrl: a.imageUrl || null,
                 magazine: a.magazine && a.magazine.name ? { id: a.magazine.id || "", name: a.magazine.name } : null,
                 subcategory: a.subcategory || null, pinned: !!a.pinned, pinKind: a.pinKind || null,

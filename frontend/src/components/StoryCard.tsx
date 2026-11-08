@@ -4,6 +4,7 @@ import AdminCardTools from "@/components/AdminCardTools";
 import { useAdmin } from "@/components/AdminProvider";
 import { subcatLabel } from "@/lib/subcategories";
 import { cleanTitle, cleanSummary } from "@/lib/cleanText";
+import { ingestDate } from "@/lib/ingestDate";
 
 export type StoryArticle = {
   id: string;
@@ -18,6 +19,7 @@ export type StoryArticle = {
   socialRepeat?: boolean;
   readCount?: number;
   readAt?: string | null;
+  createdAt?: string | null; // ingest time
 };
 
 const DEFAULT_SUBCATS = ["Features", "Analysis", "Explainers", "Briefs"];
@@ -63,6 +65,11 @@ export default function StoryCard({ article, onChanged }: { article: StoryArticl
             <div style={{ fontSize: 14, fontWeight: 700, lineHeight: 1.3, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{title}</div>
             {article.summary ? (
               <div style={{ fontSize: 12, opacity: 0.7, marginTop: 3, lineHeight: 1.4, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{cleanSummary(article.summary)}</div>
+            ) : null}
+            {article.createdAt ? (
+              <div style={{ fontSize: 10, color: "var(--accent,#ffd700)", letterSpacing: 1, textTransform: "uppercase", marginTop: 4, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                {ingestDate(article.createdAt)}
+              </div>
             ) : null}
             {article.readAt ? (
               <div style={{ fontSize: 11, opacity: 0.55, marginTop: 4 }}>

@@ -24,7 +24,7 @@
 | Host | Router | Backend | Note |
 |---|---|---|---|
 | `anteroom.news`, `www.anteroom.news` | `anteroom-http/https` | `nexus-frontend:3000` | DNS CNAME → `8e0d9521….cfargotunnel.com` (cut over 2026-09-04) |
-| `nexus.osiris2025.com` | same router | same | **BACKDOOR / TESTING ONLY** — legacy alias, do not publish |
+| `nexus.osiris2025.com` | *removed 2026-11-12* | — | Was a legacy alias served from the osiris2025.com CF zone (no WAF rules) and used by a scraper to bypass the anteroom.news blocks. Removed from Traefik; returns 404. Use `anteroom.news` or `http://100.65.69.37:3001` (Tailscale) instead. |
 | `preview.anteroom.news` | `anteroom-preview-*` | `anteroom-preview:3000` | staging, DB `nexus_preview` |
 
 ### Ops scripts (hl1)

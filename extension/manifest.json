@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "description": "Save any link to AI News Nexus as a draft. AI auto-detects the best magazine and checks suitability.",
   "permissions": ["activeTab", "tabs", "storage"],
-  "host_permissions": ["https://nexus.osiris2025.com/*"],
+  "host_permissions": ["https://anteroom.news/*", "https://www.anteroom.news/*"],
   "action": {
     "default_popup": "popup.html",
     "default_title": "Save to Nexus"

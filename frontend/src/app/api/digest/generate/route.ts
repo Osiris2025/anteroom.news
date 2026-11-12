@@ -12,6 +12,7 @@ import { db } from "@/lib/db";
 import { digestSubscription, article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 import { sendEmail } from "@/lib/email";
+import { SITE_URL } from "@/lib/site";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
 const CRON_SECRET = process.env.CRON_SECRET || "";
@@ -40,7 +41,7 @@ function renderDigestHtml(opts: {
   const { magazineGroups, unsubscribeToken } = opts;
   const items = magazineGroups.flatMap((g) => g.articles);
   const totalArticles = items.length;
-  const siteUrl = process.env.AUTH_URL || "https://anteroom.news";
+  const siteUrl = SITE_URL;
 
   const sections = magazineGroups.map((group) => {
     const articlesHtml = group.articles.slice(0, 5).map((art) => {

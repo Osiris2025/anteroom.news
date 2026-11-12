@@ -1,3 +1,5 @@
+import { SITE_URL } from "@/lib/site";
+
 // Shared commentary ("Just my opinion") writing guidance, validation and cleanup.
 //
 // Used by every place that writes article.commentary with the AI:
@@ -252,7 +254,7 @@ async function callOnce(apiKey: string, model: string, messages: ChatMessage[], 
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${apiKey}`,
-      "HTTP-Referer": "https://anteroom.news",
+      "HTTP-Referer": SITE_URL,
       "X-Title": "Anteroom",
     },
     body: JSON.stringify({

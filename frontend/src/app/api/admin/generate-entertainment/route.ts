@@ -6,6 +6,7 @@ import { article, magazine } from "@/drizzle/schema";
 import { auth } from "@/lib/auth";
 import crypto from "crypto";
 import { insertErrorResponse } from "@/lib/articleDuplicate";
+import { SITE_URL } from "@/lib/site";
 
 const ADMIN_ROLES = ["superadmin", "admin"];
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
@@ -92,7 +93,7 @@ export async function POST(req: NextRequest) {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://nexus.osiris2025.com",
+        "HTTP-Referer": SITE_URL,
         "X-Title": "Anteroom",
       },
       body: JSON.stringify({

@@ -8,6 +8,7 @@ import crypto from "crypto";
 import { duplicateResponse, insertErrorResponse } from "@/lib/articleDuplicate";
 import { applyRoutingRules, ROUTING_PROMPT_GUIDANCE } from "@/lib/routingRules";
 import { tagSubcategory } from "@/lib/subcategoryTagger";
+import { SITE_URL, SITE_HOST } from "@/lib/site";
 
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
 
@@ -22,7 +23,7 @@ async function extractMeta(url: string): Promise<{
     resp = await fetch(url, {
       signal: AbortSignal.timeout(15_000),
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; AINewsNexus/1.0; +https://nexus.osiris2025.com)",
+        "User-Agent": "Mozilla/5.0 (compatible; AINewsNexus/1.0; +" + SITE_URL + ")",
         Accept: "text/html,application/xhtml+xml",
       },
     });
@@ -104,7 +105,7 @@ async function detectMagazine(
       headers: {
         "Content-Type": "application/json",
         Authorization: "Bearer " + apiKey,
-        "HTTP-Referer": "https://nexus.osiris2025.com",
+        "HTTP-Referer": SITE_URL,
         "X-Title": "Anteroom",
       },
       body: JSON.stringify({
@@ -228,7 +229,7 @@ export async function POST(req: NextRequest) {
 export async function GET() {
   const bookmarkletCode = "javascript:(function(){" +
     "var u=location.href;" +
-    "fetch('https://nexus.osiris2025.com/api/link-collect',{" +
+    "fetch('" + SITE_URL + "/api/link-collect',{" +
     "method:'POST'," +
     "headers:{'Content-Type':'application/json'}," +
     "body:JSON.stringify({url:u})," +
@@ -271,7 +272,7 @@ export async function GET() {
     '\n' +
     '  <h2 style="font-size: 16px;">How to use</h2>\n' +
     '  <ol class="steps">\n' +
-    '    <li>Sign in to <a href="https://nexus.osiris2025.com">nexus.osiris2025.com</a></li>\n' +
+    '    <li>Sign in to <a href="' + SITE_URL + '">' + SITE_HOST + '</a></li>\n' +
     '    <li>Drag the <strong>"Save to Anteroom"</strong> button above to your browser bookmarks bar</li>\n' +
     '    <li>When you find an interesting article, click the bookmarklet</li>\n' +
     '    <li>AI auto-detects which magazine it belongs to with suitability warnings</li>\n' +
@@ -279,7 +280,7 @@ export async function GET() {
     '\n' +
     '  <div style="background: #1a1d21; border-radius: 8px; padding: 16px; margin-top: 24px; font-size: 13px; opacity: 0.7;">\n' +
     '    <strong>&#128161; Tip:</strong> After dropping links, visit \n' +
-    '    <a href="https://nexus.osiris2025.com/admin">Dispatch Desk</a> &rarr; Inbox to review, approve, and publish.\n' +
+    '    <a href="' + SITE_URL + '/admin">Dispatch Desk</a> &rarr; Inbox to review, approve, and publish.\n' +
     '    Links now get AI magazine detection + suitability warnings automatically.\n' +
     '  </div>\n' +
     '</body>\n' +

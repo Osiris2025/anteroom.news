@@ -1,4 +1,5 @@
 import { cleanSummary } from "@/lib/cleanText";
+import { SITE_URL } from "@/lib/site";
 import { NextRequest } from "next/server";
 import { headers } from "next/headers";
 import { eq } from "drizzle-orm";
@@ -53,7 +54,7 @@ async function fetchArticleText(url: string): Promise<{ text: string; descriptio
       signal: AbortSignal.timeout(15_000),
       redirect: "follow",
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; Anteroom/1.0; +https://anteroom.news)",
+        "User-Agent": "Mozilla/5.0 (compatible; Anteroom/1.0; +" + SITE_URL + ")",
         Accept: "text/html,application/xhtml+xml",
       },
     });
@@ -207,7 +208,7 @@ export async function POST(req: NextRequest) {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://anteroom.news",
+        "HTTP-Referer": SITE_URL,
         "X-Title": "Anteroom",
       },
       body: JSON.stringify({

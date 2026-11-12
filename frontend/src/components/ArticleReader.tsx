@@ -10,6 +10,7 @@ import ShareButton from "./ShareButton";
 import AdminCardTools from "./AdminCardTools";
 import { useAdmin } from "./AdminProvider";
 import { hostOf, sourceLabel } from "@/lib/sourceUtil";
+import { SITE_URL } from "@/lib/site";
 import { palette } from "@/lib/themePalette";
 import { cleanTitle, cleanSummary } from "@/lib/cleanText";
 
@@ -268,7 +269,7 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
             📌 Read the real article <span style={{ opacity: 0.7 }}>&#8599;</span>
           </a>
           <button
-            onClick={() => window.open(`https://x.com/intent/post?text=${encodeURIComponent(displayTitle + " https://anteroom.news/articles/" + article.id + "?utm_source=x&utm_medium=social&utm_campaign=share-button")}`, "_blank")}
+            onClick={() => window.open(`https://x.com/intent/post?text=${encodeURIComponent(displayTitle + " " + SITE_URL + "/articles/" + article.id + "?utm_source=x&utm_medium=social&utm_campaign=share-button")}`, "_blank")}
             style={{
               background: "transparent",
               border: `1px solid ${C.border}`,
@@ -286,7 +287,7 @@ export default function ArticleReader({ article, magazine, themeId }: { article:
           <ShareButton
             title={displayTitle}
             text={summary}
-            url={`https://anteroom.news/articles/${article.id}?utm_source=share&utm_medium=social&utm_campaign=share-button`}
+            url={`${SITE_URL}/articles/${article.id}?utm_source=share&utm_medium=social&utm_campaign=share-button`}
             style={{
               background: "transparent",
               border: `1px solid ${C.border}`,

@@ -8,6 +8,7 @@ import crypto from "crypto";
 import { duplicateResponse, insertErrorResponse } from "@/lib/articleDuplicate";
 import { applyRoutingRules, ROUTING_PROMPT_GUIDANCE } from "@/lib/routingRules";
 import { tagSubcategory } from "@/lib/subcategoryTagger";
+import { SITE_URL } from "@/lib/site";
 
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
 const MODEL = "deepseek/deepseek-v4-flash-0731";
@@ -37,7 +38,7 @@ async function extractMeta(url: string): Promise<{
     resp = await fetch(url, {
       signal: AbortSignal.timeout(15_000),
       headers: {
-        "User-Agent": "Mozilla/5.0 (compatible; AINewsNexus/1.0; +https://nexus.osiris2025.com)",
+        "User-Agent": "Mozilla/5.0 (compatible; AINewsNexus/1.0; +" + SITE_URL + ")",
         Accept: "text/html,application/xhtml+xml",
       },
     });
@@ -117,7 +118,7 @@ async function analyzeWithAI(
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
-        "HTTP-Referer": "https://nexus.osiris2025.com",
+        "HTTP-Referer": SITE_URL,
         "X-Title": "Anteroom",
       },
       body: JSON.stringify({

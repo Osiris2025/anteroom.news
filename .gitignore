@@ -3,6 +3,10 @@ node_modules/
 *.tgz
 dist/
 .env
+.env.*
+!.env.example
+*.bak
+anteroom-assets/
 audit-assigner/*.tsv
 backups/
 traefik/letsencrypt/

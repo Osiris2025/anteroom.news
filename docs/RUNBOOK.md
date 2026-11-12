@@ -16,7 +16,7 @@
 | Traefik (homelab stack) | `traefik` | :80/:443/:8080 | routes in `~/homelab/traefik/dynamic/anteroom.yml` |
 | cloudflared (homelab stack) | `cloudflared` | — | tunnel `adams-server` (remote-managed in CF dashboard) |
 
-Hostnames → live: `anteroom.news`, `www`, `nexus.osiris2025.com` (**backdoor/testing only**). Staging: `preview.anteroom.news`.
+Hostnames → live: `anteroom.news`, `www`. Staging: `preview.anteroom.news`. (`nexus.osiris2025.com` was retired 2026-11-12 — it routed through the osiris2025.com zone where the WAF rules do not apply, and a scraper used it to bypass them.)
 
 ## 2. Everyday commands
 

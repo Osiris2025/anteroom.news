@@ -23,7 +23,7 @@ export default function ProfilePage() {
       if (!m) return "Error";
       const lower = m.toLowerCase();
       if (lower.includes("invalid origin") || lower.includes("unknown origin") || (typeof window !== "undefined" && !window.isSecureContext))
-        return "🔒 This needs HTTPS — use the https:// URL (e.g. https://nexus.osiris2025.com).";
+        return "🔒 This needs HTTPS — use the https:// URL for this site.";
       if (lower.includes("invalid email or password")) return "Invalid email or password.";
       return m;
     };

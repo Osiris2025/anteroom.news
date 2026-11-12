@@ -1,6 +1,6 @@
 # AI News Nexus — Link Collector (Browser Extension)
 
-A browser extension for the [AI News Nexus](https://nexus.osiris2025.com) Raindrop.io-style link collector. Save any page as a draft article — AI auto-detects the best magazine and checks suitability.
+A browser extension for the [AI News Nexus](https://anteroom.news) Raindrop.io-style link collector. Save any page as a draft article — AI auto-detects the best magazine and checks suitability.
 
 ## 🚀 Installation (Chrome / Edge / Brave)
 
@@ -12,7 +12,7 @@ A browser extension for the [AI News Nexus](https://nexus.osiris2025.com) Raindr
 
 ## 📖 How to use
 
-1. Sign in to [nexus.osiris2025.com](https://nexus.osiris2025.com) (required)
+1. Sign in to [anteroom.news](https://anteroom.news) (required)
 2. Navigate to any article or page you'd like to save
 3. Click the **Save to Nexus** extension icon
 4. Review the auto-detected magazine and suitability warnings
@@ -20,7 +20,7 @@ A browser extension for the [AI News Nexus](https://nexus.osiris2025.com) Raindr
 
 ## 🔧 How it works
 
-- The extension calls the existing `/api/collect` endpoint on nexus.osiris2025.com
+- The extension calls the existing `/api/collect` endpoint on anteroom.news
 - AI analyzes the page title and description to pick the best-fit magazine
 - Suitability checks flag potential issues (spam, paywall, etc.)
 - Articles are saved as drafts — an admin must review before publishing

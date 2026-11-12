@@ -6,6 +6,7 @@ import hashlib
 import html
 import itertools
 import logging
+import os
 import re
 import urllib.request
 import xml.etree.ElementTree as ET
@@ -223,8 +224,9 @@ logger = logging.getLogger(__name__)
 # Image extraction helpers
 # ---------------------------------------------------------------------------
 # Short user-agent for fetching article pages (og:image extraction).
+_SITE_BASE_URL = os.environ.get("SITE_BASE_URL", "https://anteroom.news").rstrip("/")
 _IMG_HEADERS = {
-    "User-Agent": "Mozilla/5.0 (compatible; AI-News-Nexus/1.0; +https://nexus.osiris2025.com)",
+    "User-Agent": f"Mozilla/5.0 (compatible; AI-News-Nexus/1.0; +{_SITE_BASE_URL})",
 }
 
 def _resolve_url(url: str) -> str:

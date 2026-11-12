@@ -1,7 +1,15 @@
 // AI News Nexus — Link Collector Extension
 // Popup script: shows current tab, saves URL to /api/collect
 
-const API_BASE = 'https://nexus.osiris2025.com';
+// The extension is deployment-agnostic: the API origin defaults to the public
+// site below and can be overridden at runtime with
+//   chrome.storage.local.set({ apiBase: 'https://your-deployment.example' })
+const DEFAULT_API_BASE = 'https://anteroom.news';
+let API_BASE = DEFAULT_API_BASE;
+
+chrome.storage?.local?.get?.('apiBase', (v) => {
+  if (v?.apiBase) API_BASE = String(v.apiBase).replace(/\/+$/, '');
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   const urlEl = document.getElementById('pageUrl');
@@ -45,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
         statusEl.innerHTML = `❌ ${data.error}`;
         if (data.error.includes('signed in') || data.error.includes('Authentication')) {
           statusEl.innerHTML +=
-            '<br><a href="https://nexus.osiris2025.com/profile" target="_blank" style="font-size:12px">Sign in at nexus.osiris2025.com</a>';
+            `<br><a href="${API_BASE}/profile" target="_blank" style="font-size:12px">Sign in at ${API_BASE.replace(/^https?:\/\//, '')}</a>`;
         }
         saveBtn.disabled = false;
         saveBtn.textContent = '💾 Save to Nexus';
@@ -79,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Link to admin
       html +=
-        '<div style="font-size:11px;text-align:center;margin-top:4px">💡 <a href="https://nexus.osiris2025.com/admin" target="_blank">Review in Dispatch Desk</a></div>';
+        `<div style="font-size:11px;text-align:center;margin-top:4px">💡 <a href="${API_BASE}/admin" target="_blank">Review in Dispatch Desk</a></div>`;
 
       resultEl.innerHTML = html;
       saveBtn.textContent = '✅ Saved';

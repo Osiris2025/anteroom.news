@@ -4,6 +4,7 @@ import { customSession } from "better-auth/plugins";
 import { passkey } from "@better-auth/passkey";
 import { db } from "@/lib/db";
 import { sendEmail } from "@/lib/email";
+import { SITE_URL } from "@/lib/site";
 import * as schema from "@/drizzle/schema";
 
 const authUrl = process.env.AUTH_URL || "http://localhost:3001";
@@ -92,7 +93,21 @@ export const auth = betterAuth({
       };
     }),
   ],
-  trustedOrigins: [authUrl, "https://nexus.osiris2025.com", "http://localhost:3001", "http://100.65.69.37:3001"],
+  // Trusted origins come from config, never from hardcoded hostnames: the public
+  // origin (SITE_URL) plus any extra deployments (LAN/Tailscale/dev) listed in
+  // TRUSTED_ORIGINS as a comma-separated string.
+  trustedOrigins: Array.from(
+    new Set(
+      [
+        authUrl,
+        SITE_URL,
+        ...(process.env.TRUSTED_ORIGINS || "")
+          .split(",")
+          .map((o) => o.trim())
+          .filter(Boolean),
+      ].filter(Boolean)
+    )
+  ),
 });
 
 export type Session = typeof auth.$Infer.Session;

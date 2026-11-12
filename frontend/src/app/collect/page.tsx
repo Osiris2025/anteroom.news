@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { authClient, useSession } from "@/lib/auth-client";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * CollectPage — Link collector for any signed-in user (C7 Raindrop-style).
@@ -24,7 +25,7 @@ export default function CollectPage() {
   // Bookmarklet JavaScript code
   const bookmarkletCode = `javascript:(function(){
   const u=location.href;
-  fetch("https://nexus.osiris2025.com/api/collect",{
+  fetch("${SITE_URL}/api/collect",{
     method:"POST",
     headers:{"Content-Type":"application/json"},
     credentials:"include",
